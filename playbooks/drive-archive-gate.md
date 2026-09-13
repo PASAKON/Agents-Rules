@@ -17,6 +17,7 @@ an agent moves them only after the CEO says go on a specific alert.
 | `winbox: Documents/CookieRunScript/play_rec/bot_session-*/`, `playset/*` (bot recordings, training sets) | `BACKUP/CookieRun Backup/bot_sessions/`, `.../playsets/` | same rules; proposed 2026-09-06, file only after the CEO OKs each batch |
 | `~/Projects/Agents/worktrees/<wt>/` — the unmerged commits + dirty/untracked files of task worktrees being removed to reclaim disk | `BACKUP/Agents-worktrees-<YYYY-MM-DD>.tar` + `.manifest.json` at the BACKUP root (a `BACKUP/Agents Backup/` sub-folder is PROPOSED, not yet approved — move the tar there server-side once the CEO names it) | CEO-approved in chat 2026-09-10 ("สำรองถ้าไม่มั่นใจ ใน Skill google drive filling"). Staged with `~/Backups/agents-worktrees-<date>/wt_backup.py`: per worktree a git bundle of `base..branch`, `dirty.patch`, `untracked.tar`, `TASK.md`, `manifest.json`; one outer tar + sha256/md5 manifest; uploaded from the Mac through the Drive REST resumable upload (`scripts/gdrive-bridge/ilag_sync.py` `upload()`), `md5Checksum` checked against Drive BEFORE any worktree was removed; dirty files were additionally `git stash`ed into the owning repo (`git stash list \| grep 'CTO disk reclaim'`). Branches are never deleted. First item 2026-09-10: 38 worktrees, 48.8 MB, ~13.5 GB reclaimed. |
 | `~/Projects/PARKED-*/` gitignored data only (the tracked code lives on GitHub `PASAKON/PARKED-*`, archived) | `BACKUP/PARKED-<repo>-ignored.tar.gz` + `.manifest.json` at the BACKUP root | same approval 2026-09-10. tar.gz of the ignored dirs only (moonx: `backtest/data`, `backtest/out_*`; video-engine: `output/`), md5 verified on Drive, then the local clone deleted. Restore: `git clone <origin>` + `tar xzf` (the manifest carries both). Copies also under `~/Backups/parked-repos-<date>/`. |
+| `~/Projects/cookierun-bot/vision/from_pod/` — trained models that exist ONLY on the Mac (the rest of that directory is byte-identical to winbox and needs no backup) | `BACKUP/CookieRun Backup/from_pod-mac-only-<YYYY-MM-DD>.tar` + `.manifest.json` | CEO-approved in chat 2026-09-13 ("ถ้า เทรนแล้ว และ สำรองข้อมูลแล้ว ลบได้เลย ถ้ายังไม่สำรอง เอาไว้ใน Google drive"). Filed at the `CookieRun Backup` root, not a new sub-folder — a `models/` sub-folder is PROPOSED, not approved. **Decide what to back up by md5, not by name:** the first pass compared every file against winbox's own `from_pod` and found 29 identical, 2 identical under a different name, and 27 genuinely Mac-only (463.6 MB) — backing up all 58 would have uploaded 763 MB to save 464 MB of real content. The Mac cannot upload this itself: the rclone token lives only on winbox (`%APPDATA%\rclone\rclone.conf`) and `gdrive-filing` forbids copying it, so the tar is scp'd to the box and `rclone copy`'d from there, then `rclone check --one-way` before the Mac copy is deleted. |
 
 Anything not in this table needs a new row approved by the CEO first. The
 Drive folder is `/Users/gob/Library/CloudStorage/GoogleDrive-pass.gob1@gmail.com/ไดรฟ์ของฉัน`
@@ -54,6 +55,21 @@ Drive folder is `/Users/gob/Library/CloudStorage/GoogleDrive-pass.gob1@gmail.com
    date, source, destination, file count, bytes, sha-list checksum.
 7. Tell the CEO over SomPong what moved, how much came back, and the
    destination path (`lib.telegram_out.send_to_ceo` from the Agents repo).
+
+### When the data is on winbox, or the Mac lacks the credential
+
+The rclone token is deliberately confined to winbox, so a Mac-side item that
+needs Drive goes: **scp the tar to the box → `rclone copy` from the box →
+`rclone check --one-way` → delete the Mac copy.** Two traps measured 2026-09-13
+on that hop:
+
+- **macOS `tar` writes AppleDouble `._*` companions.** A 15,825-file transfer
+  arrived as 26,306 files; the 10,481 extras were pure metadata (1.7 MB) and made
+  a manifest comparison fail for no real reason. Use `COPYFILE_DISABLE=1 tar …`,
+  or strip `._*` and `.DS_Store` on the far side before verifying.
+- **Verify with a manifest hash, not a byte count.** Walk both trees, md5 every
+  file, sort `relpath\tmd5\tsize` and hash the joined list. One number on each
+  side either matches or does not — and it names the difference when it does not.
 
 ## Restore
 

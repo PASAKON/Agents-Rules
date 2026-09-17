@@ -1058,3 +1058,55 @@ so nobody could see why.
 **Transport success and operation success are different facts, and both are
 logged.** If a sweep cannot make progress, it must record why in a form a human
 can read, and it must stop repeating the identical call.
+
+---
+
+## Section 51 — Structure before prompts: no scene is generated until it has earned its place (CEO 2026-09-17, owner CTO)
+
+The CEO handed over `tig-scene-engine` — a five-element dramatic engine (Goal,
+Obstacle, Tactic, Reversal, Value Shift) with bespoke definitions — and said:
+
+> **"บังคับใช้กับ คนที่จะทำหนัง หรือ เขียน Prompt สร้าง Video ให้เลย"**
+
+Why this is a rule and not a suggestion: unlike a screenwriter's draft, every
+scene we keep costs credits, queue time and a re-shoot budget. A beautiful
+prompt for a scene that should not exist is paid for twice — once to generate
+it and once to discover, after the edit, that removing it costs the story
+nothing. The engine's removal test runs while the work is still free.
+
+1. **The skill is installed verbatim** at
+   `.claude/skills/tig-scene-engine/SKILL.md` in the Agents repo, symlinked
+   into `~/.claude/skills/` so it resolves from any project. Its body is the
+   CEO's text **unchanged** — the five definitions are bespoke and must not be
+   swapped for textbook craft definitions. Anyone editing it for style is
+   breaking the rule, not improving it.
+
+2. **It runs BEFORE the prompt layer, never instead of it.** The order is:
+   story → **tig-scene-engine** (structure, output = screenplay) →
+   `character-reference-sheet` → `seedance-scene-prompt` (shot, output =
+   prompt) → generation. The engine never writes a prompt and never touches
+   Higgsfield.
+
+3. **Who must run it.** Any agent about to write, audit or order a scene for a
+   multi-scene film, a branded short, or any narrative video: roles
+   `script_writer`, `prompt_engineer`, `video_editor`, and `browser_operator`
+   when it is being handed scenes to generate. A C-level directing a film runs
+   it before briefing anyone.
+
+4. **What it must produce before a single prompt is written.** For each scene:
+   the Goal as a causal link to the story goal; the Obstacle with what is at
+   risk and at what scale; the Tactic the threat forces and what its outcome
+   teaches; at least one Reversal per resolved sequence; and the Value Shift —
+   the audience's before-verdict and after-verdict. **If the before/after
+   verdict cannot be named, the reversal is inert and the scene is not ready to
+   generate.**
+
+5. **The removal test is a gate, not a note.** If a scene can be cut and the
+   chain to the story goal still holds, it does not get generated. Say so to
+   the CEO and let them overrule — do not quietly generate it.
+
+6. **Where it does not apply.** A 15-30s ad clip, a motion-graphic explainer,
+   a product loop, or any single standalone shot has no room for a reversal and
+   a re-judged character. Running the engine there is ceremony. Judge by whether
+   the piece has a story, not by whether it has a camera.
+

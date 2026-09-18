@@ -1110,3 +1110,17 @@ nothing. The engine's removal test runs while the work is still free.
    a re-judged character. Running the engine there is ceremony. Judge by whether
    the piece has a story, not by whether it has a camera.
 
+### §5 Code decisions are the C-level's — merge, do not ask (CEO 2026-09-19)
+
+Verbatim, after the CTO asked which of two gate-clean PRs to merge:
+"ไม่ใช่หน้าที่ฉัน ที่จะ Merge หรือ ตัดสินใจอะไร Coding คือหน้าที่คุณ คิดเห็นสมควรจัดการได้เลย ฉันมีหน้าที่วางแผน" — and then: "จริงๆ มันเป็นของคุณอยู่แล้ว".
+
+- A PR that passes the merge gates (`cto-merge-checklist`) is merged by the
+  C-level that reviewed it and reported in one line — on every repo, including
+  prod-adjacent ones. "ขออนุมัติ merge" is a defect in the report, not caution.
+- Unchanged: gates that exist because of consequences, not code — spending
+  money (exact amount, wait for OK), prod deploys and data migrations (announce
+  first, with rollback), secrets, anything outward-facing.
+- Ask the CEO only when a gate is red and the fix is a planning call.
+- Origin: Jules PRs #210/#211 on MoonieX-ClaudeFlow, verified on Node 20 with the
+  workflow's env block (1,150/1,150) + Opus 5 review, merged 2026-09-19.

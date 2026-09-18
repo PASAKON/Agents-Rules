@@ -1110,7 +1110,7 @@ nothing. The engine's removal test runs while the work is still free.
    a re-judged character. Running the engine there is ceremony. Judge by whether
    the piece has a story, not by whether it has a camera.
 
-### §5 Code decisions are the C-level's — merge, do not ask (CEO 2026-09-19)
+## Section 52 — Code decisions are the C-level's: merge gate-clean PRs, do not ask (CEO 2026-09-19, owner CTO)
 
 Verbatim, after the CTO asked which of two gate-clean PRs to merge:
 "ไม่ใช่หน้าที่ฉัน ที่จะ Merge หรือ ตัดสินใจอะไร Coding คือหน้าที่คุณ คิดเห็นสมควรจัดการได้เลย ฉันมีหน้าที่วางแผน" — and then: "จริงๆ มันเป็นของคุณอยู่แล้ว".

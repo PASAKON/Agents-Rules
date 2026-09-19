@@ -1124,3 +1124,16 @@ Verbatim, after the CTO asked which of two gate-clean PRs to merge:
 - Ask the CEO only when a gate is red and the fix is a planning call.
 - Origin: Jules PRs #210/#211 on MoonieX-ClaudeFlow, verified on Node 20 with the
   workflow's env block (1,150/1,150) + Opus 5 review, merged 2026-09-19.
+
+## Section 53 — งานเบราว์เซอร์ที่ทำซ้ำ = script ไม่ใช่โมเดล (CEO directive 2026-09-19)
+
+งานเบราว์เซอร์ใดที่ต้องทำขั้นตอนเดิมซ้ำ**เกิน 3 ครั้ง** ห้ามให้โมเดลคลิกเอง โมเดลทำได้ 2 อย่างเท่านั้น:
+
+1. **รอบแรกรอบเดียว** เพื่อสร้าง script ที่รันได้โดยไม่มีโมเดล
+2. **แก้เฉพาะแถวที่ script ตัดสินเองไม่ได้** (ปฏิเสธซ้ำ, dialog ใหม่, chip ไม่ติด) — เปิดเป็นงานเล็ก context สด ไม่ใช่ให้ operator ตัวเดิมวนต่อ
+
+**script = ไฟล์ที่ compile ผ่าน** (`python -m py_compile` / `node --check`) และมี ledger เป็นความจำ (1 แถวต่อชิ้นงาน, resume ได้, ชิ้นที่ verified แล้วไม่ทำซ้ำ) บันทึกวิธีทำเป็น prose **ไม่นับ** — `cto-merge-checklist` Gate 8 เช็คด้วย `tools/check_replay_script.py` ไม่ใช่ด้วยสายตา
+
+**ก่อน spawn browser_operator ทุกครั้ง C-level ต้องตอบก่อนว่า runner มีอยู่แล้วไหม** — ต้นแบบ `scripts/higgsfield/gen_loop.py` (Playwright ต่อ Chrome debug port + โปรไฟล์แยก, ดัชนี resume ได้) และดีไซน์สำหรับ Flow `docs/ops/flow-operator-design.md`
+
+**ที่มา (วัดจาก transcript):** 19 ก.ย. 69 — operator 2 ตัว 6.2 ชม. 405 screenshot **650M token → 8 คลิป (~80M/คลิป)** ขณะที่ developer สร้างระบบจริง 1 งาน = 77M. claude-in-chrome กิน 67% ของ usage 7 วัน และชน 95% ของ limit รายสัปดาห์. เหตุผลเชิงโครงสร้าง: screenshot ไม่เคยออกจาก context (§42) ฉากที่ 12 จ่ายค่าฉาก 1-11 ซ้ำทุกเทิร์น — บรีฟดีแค่ไหนก็แก้ไม่ได้ ต้องเอาโมเดลออกจากลูป

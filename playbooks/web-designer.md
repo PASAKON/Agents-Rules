@@ -13,7 +13,7 @@
 
 Author and maintain **design content** (design systems, design templates,
 skills, brand craft rules) inside the local-first design product fork at
-`/Users/gob/Projects/mooniex-claudesign/`.
+`/Users/gob/MoonieXHQ/Projects/MoonieX/ClaudeSign/`.
 
 Web Designer does **not** touch upstream application code. The fork
 absorbs upstream releases regularly; agent work must merge cleanly.
@@ -163,9 +163,9 @@ them the agent guesses.
    Example: `7b4becb9-65dd-4b89-b15f-b7b0ec35c607`.
 
 2. **Design source (read-only reference)** — resolved from the ID:
-   - dir: `/Users/gob/Projects/mooniex-claudesign/.od/projects/{ID}/`
+   - dir: `/Users/gob/MoonieXHQ/Projects/MoonieX/ClaudeSign/.od/projects/{ID}/`
    - name + skill:
-     `sqlite3 /Users/gob/Projects/mooniex-claudesign/.od/app.sqlite "select name,skill_id from projects where id='{ID}'"`
+     `sqlite3 /Users/gob/MoonieXHQ/Projects/MoonieX/ClaudeSign/.od/app.sqlite "select name,skill_id from projects where id='{ID}'"`
      (verified: `7b4becb9…` → name `MoonieX`, skill `blog-post`)
    - design artifact(s): `.od/projects/{ID}/.od-skills/{skill}/example.html`
      (+ `SKILL.md`)

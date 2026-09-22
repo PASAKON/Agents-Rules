@@ -276,3 +276,42 @@ skill. Committed+pushed to `mooniex-agents` main at `e67fae8`. Not
 touched: `policies/permissions.md` — already stale pre-ADR (lists a role
 set that predates the current 13-role schema entirely); needs its own
 refresh pass, out of scope here.
+
+## Addendum (2026-09-23) — Opus 5.5 @ xhigh is the C-level standard; Opus workers follow
+
+CEO order, verbatim: "ปรับ ORG Default C-Level และ worker อื่นๆ ที่ใช้ Opus อยู่
+ให้เป็น 5.5 xhigh เป็นมาตรฐานได้เลย … ส่วน Worker ไหนเป็น Sonnet อยู่ ก็ใช้ต่อไป
+ยังไม่เปลี่ยน".
+
+This **supersedes the table above for C-levels** — it is a re-tiering, not a
+version bump like the 2026-07-25 addendum.
+
+| Role(s) | Before | Now |
+|---|---|---|
+| CTO | Sonnet 5 @ xhigh, Opus escalation via skill | **`claude-opus-5-5[1m]` @ xhigh** |
+| CFO / CGO / CMO | Sonnet 5 @ high | **`claude-opus-5-5[1m]` @ xhigh** |
+| security_engineer | `claude-opus-5` @ xhigh | **`claude-opus-5-5` @ xhigh** |
+| devops_engineer | `claude-opus-5` @ high | **`claude-opus-5-5` @ xhigh** |
+| every Sonnet 5 worker | unchanged | unchanged |
+
+- **1M context for C-levels, 200k for workers.** C-levels get the 1M window
+  because that is what the CEO picks for himself with `/model` and their
+  sessions run for hours. The two Opus workers stay on the plain id: worker
+  sessions are short, and a larger window only postpones compaction and grows
+  per-turn cost (the open worker token-saving to-do).
+- Fallback for C-levels stays `claude-fable-5`.
+- Both ids answered a headless `claude -p --effort xhigh` probe on 2026-09-23
+  before anything was changed.
+- **Escalation is gone for C-levels** — there is no tier above the default.
+  `session-change-model` now only restores the standard when a session is
+  running lighter (a pre-change launch, a restart onto a stale default, a
+  `/model` downgrade, a GLM offload).
+- Updated: `policies/agents.yaml`, fallback literals in `scripts/cto-claude.sh`,
+  `scripts/cxo-claude.sh`, `runners/worker_init.py`, `runners/worker_resume.py`;
+  `roles/cto.md`, `cfo.md`, `cgo.md`, `cmo.md`, `_worker_shared.md`; the
+  `session-change-model` skill (Agents-Core). Not touched: `claude-home/settings.json`
+  (a separate harness rewrite owns it; launchers pass `--effort` explicitly, so
+  its per-model effort map does not decide anything here).
+- Applies at the next spawn/restart. Live sessions keep the model they were
+  launched with until someone runs `/model claude-opus-5-5[1m]` + `/effort xhigh`
+  in them.

@@ -1,0 +1,3958 @@
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src: __tests__
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/[locale]/dashboard: BottomTabs.tsx
+Only in /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/app/[locale]/dashboard: DashboardHeader.tsx
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/[locale]/dashboard: GmailConnectionCard.tsx
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/[locale]/dashboard: PullToRefresh.tsx
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/[locale]/dashboard: Sidebar.tsx
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/[locale]/dashboard: SketchyFilter.tsx
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/[locale]/dashboard: TagChip.tsx
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/[locale]/dashboard: TagFilterBar.tsx
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/[locale]/dashboard: ThemeToggle.tsx
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/[locale]/dashboard: Topbar.tsx
+diff -ru -x node_modules -x .next -x .git -x .obsidian -x *.tsbuildinfo /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/app/[locale]/dashboard/dashboard.css /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/[locale]/dashboard/dashboard.css
+--- /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/app/[locale]/dashboard/dashboard.css	2026-05-08 04:13:15
++++ /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/[locale]/dashboard/dashboard.css	2026-06-11 21:36:48
+@@ -1,33 +1,210 @@
++/* Dashboard — mobile-first, desktop sidebar at ≥769px
++   based on LungNote-design preview-all-states.html (mobile)
++   + brand/dashboard.html (desktop sidebar + grid) */
+ .lungnote-dashboard {
+-  --bg: #faf8f4;
+-  --surface: #fffef9;
+-  --border: #e0ddd4;
+-  --muted: #8a8578;
+-  --fg: #2c2a25;
+-  --accent: #6aab8e;
+-  --accent-light: #e8f4ed;
+-  --yellow: #f0d87a;
+-  --yellow-light: #fdf6dc;
+-  --danger: #d4685a;
++  /* Cardboard theme (replaces mint). See design/brand/cardboard-palette.html
++     and ADR-0013 — Cardboard Theme Overhaul. */
++  --bg: #f5ead4;
++  --surface: #faf5e8;
++  --border: #d4c4a0;
++  --muted: #a08050;
++  --fg: #3a3020;
++  --accent: #c9a040;
++  --accent-light: #f0e4c4;
++  /* Highlighter / tape stripe — was --yellow. Kept the var name as --yellow
++     for highlight-tape utility but value is now the cardboard tape tone. */
++  --yellow: #d4a855;
++  --yellow-light: #f0e4c4;
++  --red: #c45a3a;
++  --red-light: #f0d8d0;
++  --orange: #d4a040;
++  --orange-light: #f0e4c4;
+ 
+   background: var(--bg);
+   color: var(--fg);
+   font: 400 16px/1.6 var(--font-body);
+-  min-height: 100dvh;
+   -webkit-font-smoothing: antialiased;
++  min-height: 100dvh;
++  position: relative;
++  overflow-x: hidden;
+ }
+ 
++.dash-shell {
++  display: grid;
++  grid-template-columns: 1fr;
++  min-height: 100dvh;
++}
++.dash-shell > .dash-main {
++  max-width: 480px;
++  margin: 0 auto;
++  width: 100%;
++}
++
++.dash-sidebar {
++  display: none;
++}
++
++@media (min-width: 769px) {
++  .dash-shell {
++    grid-template-columns: 260px 1fr;
++  }
++  .dash-shell > .dash-main {
++    max-width: 1080px;
++    padding: 0 32px;
++  }
++  .dash-sidebar {
++    display: flex;
++    flex-direction: column;
++    gap: 4px;
++    padding: 24px 16px;
++    background: var(--surface);
++    border-right: 2px solid var(--border);
++    position: sticky;
++    top: 0;
++    height: 100dvh;
++    overflow-y: auto;
++  }
++  .sidebar-logo {
++    display: flex;
++    align-items: center;
++    gap: 8px;
++    text-decoration: none;
++    margin-bottom: 16px;
++    color: var(--fg);
++  }
++  .sidebar-logo-text {
++    font-family: var(--font-display);
++    font-size: 26px;
++    font-weight: 700;
++    color: var(--fg);
++  }
++  .sidebar-logo-text span {
++    color: var(--accent);
++  }
++  .nav-section {
++    font-size: 11px;
++    font-weight: 600;
++    color: var(--muted);
++    text-transform: uppercase;
++    letter-spacing: 0.5px;
++    padding: 16px 12px 6px;
++  }
++  .nav-item {
++    display: flex;
++    align-items: center;
++    gap: 10px;
++    padding: 10px 12px;
++    border-radius: 6px;
++    font-size: 14px;
++    color: var(--fg);
++    text-decoration: none;
++    cursor: pointer;
++    background: transparent;
++    border: none;
++    text-align: left;
++    width: 100%;
++    font-family: inherit;
++    transition: background 0.15s;
++    position: relative;
++  }
++  .nav-item:hover {
++    background: var(--accent-light);
++  }
++  .nav-item.active {
++    background: var(--accent-light);
++    color: var(--accent);
++    font-weight: 600;
++  }
++  .nav-item svg {
++    width: 18px;
++    height: 18px;
++    flex-shrink: 0;
++  }
++  .nav-badge {
++    margin-left: auto;
++    font-family: var(--font-mono);
++    font-size: 11px;
++    font-weight: 600;
++    color: var(--accent);
++    background: var(--accent-light);
++    padding: 2px 8px;
++    border-radius: 10px;
++  }
++  .nav-item.active .nav-badge {
++    background: var(--accent);
++    color: var(--surface);
++  }
++  .nav-item-logout {
++    color: var(--red);
++  }
++  .nav-item-logout:hover {
++    background: var(--red-light);
++  }
++  .sidebar-footer {
++    margin-top: auto;
++    padding-top: 12px;
++    border-top: 1px solid var(--border);
++  }
++
++  /* hide mobile-only bits on desktop */
++  .lungnote-dashboard .bottom-tabs {
++    display: none;
++  }
++  .lungnote-dashboard .topbar {
++    border-bottom: none;
++    padding: 16px 0;
++    background: transparent;
++  }
++  .lungnote-dashboard .greeting,
++  .lungnote-dashboard .search-bar,
++  .lungnote-dashboard .stats-row,
++  .lungnote-dashboard .section-h,
++  .lungnote-dashboard .recent-section,
++  .lungnote-dashboard .empty-block,
++  .lungnote-dashboard .note-form-wrap {
++    padding-left: 0;
++    padding-right: 0;
++  }
++  .lungnote-dashboard .stats-row {
++    grid-template-columns: repeat(4, 1fr);
++  }
++  .lungnote-dashboard .dash-body {
++    padding-bottom: 32px;
++  }
++}
++
++/* Cardboard dark vars — applied either via system preference (when no
++   theme override) or via explicit [data-theme="dark"] from cookie. */
++:where(html[data-theme="dark"]) .lungnote-dashboard {
++  --bg: #1a1810;
++  --surface: #2a2618;
++  --border: #3d3828;
++  --muted: #8a7850;
++  --fg: #e8e2d0;
++  --accent-light: #3d3420;
++  --yellow: #b89030;
++  --yellow-light: #3d3420;
++  --red: #c45a3a;
++  --red-light: #3d2820;
++  --orange: #d4a040;
++  --orange-light: #3d3420;
++}
+ @media (prefers-color-scheme: dark) {
+-  .lungnote-dashboard {
+-    --bg: #1e1e1c;
+-    --surface: #2a2a28;
+-    --border: #3a3835;
+-    --muted: #8a8578;
+-    --fg: #e8e6e0;
+-    --accent: #6aab8e;
+-    --accent-light: #1a3328;
+-    --yellow: #b8a550;
+-    --yellow-light: #3d3a2a;
++  /* Auto-dark only when user hasn't forced a theme. */
++  :where(html:not([data-theme="light"]):not([data-theme="dark"]))
++    .lungnote-dashboard {
++    --bg: #1a1810;
++    --surface: #2a2618;
++    --border: #3d3828;
++    --muted: #8a7850;
++    --fg: #e8e2d0;
++    --accent-light: #3d3420;
++    --yellow: #b89030;
++    --yellow-light: #3d3420;
++    --red: #c45a3a;
++    --red-light: #3d2820;
++    --orange: #d4a040;
++    --orange-light: #3d3420;
+   }
+ }
+ 
+@@ -37,209 +214,490 @@
+   box-sizing: border-box;
+ }
+ 
+-.dash-wrap {
+-  max-width: 720px;
+-  margin: 0 auto;
+-  padding: 16px;
++.sketchy-filter {
++  position: absolute;
++  width: 0;
++  height: 0;
+ }
+ 
+-.dash-header {
++.sketch-box {
++  position: relative;
++  background: var(--surface);
++}
++.sketch-box::before {
++  content: "";
++  position: absolute;
++  inset: -2px;
++  border: 2.5px solid var(--fg);
++  border-radius: 3px;
++  pointer-events: none;
++  z-index: 1;
++}
++
++.highlight-tape {
++  display: inline;
++  background: linear-gradient(
++    to bottom,
++    transparent 55%,
++    var(--yellow) 55%,
++    var(--yellow) 90%,
++    transparent 90%
++  );
++  padding: 0 4px;
++}
++
++/* Topbar */
++.topbar {
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+-  gap: 12px;
+-  padding: 12px 0 20px;
++  padding: 16px 20px;
++  position: sticky;
++  top: 0;
++  background: var(--bg);
++  z-index: 50;
++  border-bottom: 2px solid var(--border);
+ }
+-
+-.dash-brand {
++.topbar-logo {
+   display: flex;
+   align-items: center;
+-  gap: 8px;
++  gap: 6px;
++  text-decoration: none;
++}
++.topbar-logo svg {
++  width: 28px;
++  height: 28px;
++}
++.topbar-logo-text {
+   font-family: var(--font-display);
+   font-size: 24px;
+   font-weight: 700;
+   color: var(--fg);
+-  text-decoration: none;
+ }
+-.dash-brand span {
++.topbar-logo-text span {
+   color: var(--accent);
+ }
+-
+-.dash-user {
++.topbar-actions {
+   display: flex;
+-  align-items: center;
+   gap: 8px;
+ }
+-.dash-avatar {
++.topbar-btn {
+   width: 36px;
+   height: 36px;
++  border: 2px solid var(--border);
++  border-radius: 3px;
++  background: var(--surface);
++  display: flex;
++  align-items: center;
++  justify-content: center;
++  cursor: pointer;
++  color: var(--fg);
++  text-decoration: none;
++}
++.topbar-btn svg {
++  width: 18px;
++  height: 18px;
++}
++.topbar-avatar {
++  width: 36px;
++  height: 36px;
+   border-radius: 50%;
+-  border: 2px solid var(--fg);
++  border: 2px solid var(--border);
+   object-fit: cover;
+   background: var(--accent-light);
+-}
+-.dash-avatar.fallback {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   font-family: var(--font-display);
+   font-weight: 700;
+   color: var(--accent);
++  text-decoration: none;
+ }
+-.dash-username {
+-  font-size: 14px;
+-  font-weight: 500;
++
++.greeting {
++  padding: 20px 20px 16px;
++}
++.greeting h2 {
++  font-family: var(--font-display);
++  font-size: 28px;
++  font-weight: 700;
++  line-height: 1.1;
++}
++.greeting p {
++  font-size: 13px;
++  color: var(--muted);
++  margin-top: 2px;
++}
++
++.search-bar {
++  margin: 0 20px 20px;
++  position: relative;
++}
++.search-bar input {
++  width: 100%;
++  font-family: var(--font-display);
++  font-size: 18px;
++  padding: 12px 16px 12px 40px;
++  border: 2.5px solid var(--border);
++  border-radius: 3px;
++  background: var(--surface);
+   color: var(--fg);
++  outline: none;
+ }
++.search-bar input:focus {
++  border-color: var(--accent);
++}
++.search-bar input::placeholder {
++  color: var(--muted);
++}
++.search-bar svg {
++  position: absolute;
++  left: 12px;
++  top: 50%;
++  transform: translateY(-50%);
++  width: 18px;
++  height: 18px;
++  color: var(--muted);
++}
+ 
+-.dash-section-title {
++.stats-row {
++  display: grid;
++  grid-template-columns: repeat(3, 1fr);
++  gap: 10px;
++  padding: 0 20px;
++  margin-bottom: 20px;
++}
++.stat-mini {
++  padding: 14px 10px;
++  text-align: center;
++}
++.stat-mini-val {
+   font-family: var(--font-display);
+-  font-size: 32px;
++  font-size: 28px;
+   font-weight: 700;
+-  margin: 8px 0 16px;
++  line-height: 1;
+ }
++.stat-mini-val.mint {
++  color: var(--accent);
++}
++.stat-mini-val.orange {
++  color: var(--orange);
++}
++.stat-mini-val.ink {
++  color: var(--fg);
++}
++.stat-mini-label {
++  font-size: 11px;
++  color: var(--muted);
++  margin-top: 2px;
++}
+ 
+-.notes-grid {
+-  display: grid;
+-  grid-template-columns: 1fr;
+-  gap: 12px;
++.section-h {
++  display: flex;
++  align-items: center;
++  justify-content: space-between;
++  padding: 0 20px;
++  margin-bottom: 12px;
+ }
+-@media (min-width: 720px) {
+-  .notes-grid {
+-    grid-template-columns: repeat(2, 1fr);
+-  }
++.section-h h3 {
++  font-family: var(--font-display);
++  font-size: 22px;
++  font-weight: 700;
+ }
++.section-h a {
++  font-family: var(--font-display);
++  font-size: 14px;
++  color: var(--accent);
++  text-decoration: underline;
++  text-decoration-style: wavy;
++  text-underline-offset: 3px;
++}
+ 
+-.note-card {
+-  display: block;
++.recent-section {
++  padding: 0 20px;
++  margin-bottom: 24px;
++}
++.recent-list {
++  padding: 0;
+   background: var(--surface);
+-  border: 2px solid var(--fg);
+-  border-radius: 4px;
+-  padding: 16px 18px;
++  position: relative;
++}
++.recent-list::before {
++  content: "";
++  position: absolute;
++  inset: -2px;
++  border: 2.5px solid var(--fg);
++  border-radius: 3px;
++  pointer-events: none;
++}
++.note-row {
++  display: flex;
++  align-items: center;
++  gap: 12px;
++  padding: 12px;
++  cursor: pointer;
++  transition: background 0.15s;
++  border-bottom: 1px solid var(--border);
+   text-decoration: none;
+   color: var(--fg);
+-  transition: transform 0.1s;
++  position: relative;
+ }
+-.note-card:hover {
+-  transform: translate(-1px, -1px);
++.note-row:last-child {
++  border-bottom: none;
+ }
+-.note-card-title {
++.note-row:hover {
++  background: color-mix(in oklch, var(--accent) 5%, var(--surface));
++}
++.note-dot {
++  width: 8px;
++  height: 8px;
++  border-radius: 50%;
++  flex-shrink: 0;
++  background: var(--accent);
++}
++.note-info {
++  flex: 1;
++  min-width: 0;
++}
++.note-title {
+   font-family: var(--font-display);
+-  font-size: 22px;
++  font-size: 18px;
+   font-weight: 700;
+-  margin-bottom: 6px;
+   line-height: 1.2;
+-}
+-.note-card-preview {
+-  font-size: 14px;
+-  color: var(--muted);
+-  line-height: 1.5;
+-  display: -webkit-box;
+-  -webkit-line-clamp: 3;
+-  -webkit-box-orient: vertical;
++  white-space: nowrap;
+   overflow: hidden;
++  text-overflow: ellipsis;
+ }
+-.note-card-meta {
+-  margin-top: 10px;
++.note-meta {
+   font-size: 12px;
+   color: var(--muted);
+ }
++.note-arrow {
++  color: var(--border);
++  font-size: 18px;
++}
+ 
+-.empty-state {
++.empty-block {
+   text-align: center;
+-  padding: 48px 16px;
++  padding: 32px 20px;
+   color: var(--muted);
+ }
+-.empty-state h3 {
++.empty-illustration {
++  width: 120px;
++  height: 140px;
++  position: relative;
++  margin: 0 auto 16px;
++}
++.empty-notebook {
++  width: 100%;
++  height: 100%;
++  background: var(--surface);
++  border: 3px solid var(--fg);
++  border-radius: 3px;
++  position: relative;
++}
++.empty-notebook::after {
++  content: "";
++  position: absolute;
++  top: 20px;
++  left: 15px;
++  right: 15px;
++  height: 2px;
++  background: var(--border);
++  box-shadow:
++    0 20px 0 var(--border),
++    0 40px 0 var(--border),
++    0 60px 0 var(--border);
++}
++.empty-plus {
++  position: absolute;
++  bottom: 6px;
++  right: 6px;
++  width: 40px;
++  height: 40px;
++  background: var(--accent);
++  border-radius: 50%;
++  display: flex;
++  align-items: center;
++  justify-content: center;
++  color: #fff;
++  font-size: 24px;
++  font-weight: 700;
++  border: 3px solid var(--fg);
++}
++.empty-title {
+   font-family: var(--font-display);
+   font-size: 28px;
++  font-weight: 700;
+   color: var(--fg);
+-  margin-bottom: 8px;
++  margin-bottom: 4px;
+ }
++.empty-desc {
++  font-size: 14px;
++  color: var(--muted);
++  max-width: 280px;
++  margin: 0 auto;
++}
+ 
+-.btn-primary {
+-  display: inline-flex;
+-  align-items: center;
+-  gap: 6px;
++.btn-main {
+   font-family: var(--font-display);
+-  font-size: 18px;
++  font-size: 22px;
+   font-weight: 600;
+-  color: var(--fg);
+-  background: var(--yellow-light);
+-  padding: 10px 20px;
+-  border: 2px solid var(--fg);
+-  border-radius: 4px;
+-  text-decoration: none;
++  padding: 14px 32px;
++  border: 2.5px solid var(--fg);
++  border-radius: 3px;
+   cursor: pointer;
+   transition:
+     background 0.15s,
+     transform 0.15s;
++  text-decoration: none;
++  display: inline-block;
+ }
+-.btn-primary:hover {
+-  background: var(--yellow);
++.btn-main:hover {
+   transform: translate(-1px, -1px);
+ }
+-.btn-primary:disabled {
+-  opacity: 0.5;
+-  cursor: not-allowed;
+-  transform: none;
++.btn-main.primary {
++  background: var(--accent);
++  color: var(--surface);
++  border-color: var(--accent);
+ }
++.btn-main.secondary {
++  background: var(--surface);
++  color: var(--fg);
++}
++.btn-main.danger {
++  background: var(--red-light);
++  color: var(--red);
++  border-color: var(--red);
++}
+ 
+-.btn-secondary {
+-  display: inline-flex;
++/* Bottom tabs */
++.bottom-tabs {
++  position: fixed;
++  bottom: 0;
++  left: 50%;
++  transform: translateX(-50%);
++  width: 100%;
++  max-width: 480px;
++  display: flex;
++  background: var(--surface);
++  border-top: 2.5px solid var(--border);
++  padding: 8px 0 calc(8px + env(safe-area-inset-bottom, 0px));
++  z-index: 100;
++}
++.tab-item {
++  flex: 1;
++  display: flex;
++  flex-direction: column;
+   align-items: center;
+-  gap: 6px;
+-  font-size: 14px;
++  gap: 2px;
++  padding: 6px 0;
++  cursor: pointer;
++  position: relative;
++  border: none;
++  background: none;
+   color: var(--muted);
+-  background: transparent;
+-  padding: 8px 14px;
+-  border: 1.5px solid var(--border);
+-  border-radius: 4px;
++  font-family: var(--font-body);
++  font-size: 10px;
++  font-weight: 500;
++  transition: color 0.15s;
+   text-decoration: none;
+-  cursor: pointer;
+ }
+-.btn-secondary:hover {
+-  color: var(--fg);
+-  border-color: var(--fg);
++.tab-item.active {
++  color: var(--accent);
+ }
+-
+-.btn-danger {
+-  display: inline-flex;
+-  align-items: center;
+-  font-size: 14px;
+-  color: var(--danger);
+-  background: transparent;
+-  padding: 8px 14px;
+-  border: 1.5px solid var(--danger);
+-  border-radius: 4px;
+-  cursor: pointer;
++.tab-item.active::before {
++  content: "";
++  position: absolute;
++  top: -2px;
++  left: 20%;
++  right: 20%;
++  height: 3px;
++  background: var(--accent);
++  border-radius: 0 0 3px 3px;
+ }
+-.btn-danger:hover {
+-  background: var(--danger);
+-  color: white;
++.tab-item svg {
++  width: 22px;
++  height: 22px;
+ }
+-
+-.fab-add {
+-  position: fixed;
+-  bottom: 24px;
+-  right: 24px;
+-  width: 56px;
+-  height: 56px;
+-  border-radius: 50%;
++.tab-badge {
++  position: absolute;
++  top: 2px;
++  right: calc(50% - 18px);
++  min-width: 16px;
++  height: 16px;
+   background: var(--accent);
+-  color: white;
+-  border: 2px solid var(--fg);
+-  font-size: 28px;
++  color: #fff;
++  font-family: var(--font-mono);
++  font-size: 9px;
++  font-weight: 600;
++  border-radius: 8px;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+-  text-decoration: none;
+-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
++  padding: 0 4px;
+ }
+-.fab-add:hover {
+-  transform: translate(-1px, -1px);
++
++.dash-body {
++  padding-bottom: 80px;
+ }
+ 
++/* ============================================================
++ * Pull-to-refresh indicator
++ *   Sits directly under the Topbar in dashboard / todo / settings.
++ *   Hidden by default; height + opacity scale with drag, then
++ *   shimmers across while router.refresh() resolves.
++ * ============================================================ */
++.ptr-indicator {
++  position: relative;
++  width: 100%;
++  background: transparent;
++  overflow: hidden;
++  pointer-events: none;
++  transition: opacity 0.15s ease, height 0.15s ease;
++}
++.ptr-indicator .ptr-shimmer {
++  position: absolute;
++  inset: 0;
++  background: linear-gradient(
++    90deg,
++    transparent 0%,
++    var(--accent) 50%,
++    transparent 100%
++  );
++  background-size: 200% 100%;
++  background-position: 100% 0;
++  opacity: 0.85;
++}
++.ptr-indicator.ready .ptr-shimmer {
++  background: var(--accent);
++}
++.ptr-indicator.refreshing .ptr-shimmer {
++  animation: ptr-shimmer 1s linear infinite;
++}
++@keyframes ptr-shimmer {
++  0% {
++    background-position: 100% 0;
++  }
++  100% {
++    background-position: -100% 0;
++  }
++}
++
++/* Note edit form */
++.note-form-wrap {
++  padding: 20px;
++  padding-bottom: 100px;
++}
++.note-form-back {
++  display: inline-flex;
++  align-items: center;
++  gap: 6px;
++  font-size: 14px;
++  color: var(--muted);
++  text-decoration: none;
++  margin-bottom: 16px;
++}
+ .note-form {
+   display: flex;
+   flex-direction: column;
+@@ -249,9 +707,11 @@
+   display: flex;
+   flex-direction: column;
+   gap: 6px;
+-  font-size: 13px;
++  font-size: 12px;
+   font-weight: 500;
+   color: var(--muted);
++  text-transform: uppercase;
++  letter-spacing: 0.5px;
+ }
+ .note-form input,
+ .note-form textarea {
+@@ -259,7 +719,7 @@
+   background: var(--surface);
+   border: 2px solid var(--border);
+   border-radius: 4px;
+-  padding: 10px 12px;
++  padding: 12px 14px;
+   font: inherit;
+   color: var(--fg);
+   resize: vertical;
+@@ -271,11 +731,11 @@
+ }
+ .note-form input {
+   font-family: var(--font-display);
+-  font-size: 22px;
++  font-size: 24px;
+   font-weight: 700;
+ }
+ .note-form textarea {
+-  min-height: 240px;
++  min-height: 280px;
+   font-size: 16px;
+   line-height: 1.7;
+ }
+@@ -283,9 +743,99 @@
+   display: flex;
+   gap: 12px;
+   align-items: center;
++  margin-top: 8px;
+   flex-wrap: wrap;
+ }
+ .note-form-error {
+-  color: var(--danger);
++  color: var(--red);
+   font-size: 14px;
++}
++
++/* --- Tags: Gmail-label-style chips + filter bar -------------------------- */
++/* Each chip carries its tag colour via the inline --tag-color custom prop.
++   Soft 14% background keeps it subtle; text is mixed toward --fg so gold-on-
++   cream stays readable in light AND dark themes (no per-colour overrides). */
++.note-tags {
++  display: flex;
++  flex-wrap: wrap;
++  gap: 6px;
++  margin-top: 6px;
++}
++.tag-chip {
++  display: inline-flex;
++  align-items: center;
++  gap: 5px;
++  max-width: 100%;
++  padding: 2px 9px;
++  border-radius: 999px;
++  font-size: 12px;
++  font-weight: 500;
++  line-height: 1.5;
++  background: color-mix(in srgb, var(--tag-color, var(--accent)) 14%, transparent);
++  color: color-mix(in oklch, var(--tag-color, var(--accent)) 55%, var(--fg));
++}
++.tag-chip-dot {
++  width: 7px;
++  height: 7px;
++  border-radius: 50%;
++  flex-shrink: 0;
++  background: var(--tag-color, var(--accent));
++}
++.tag-chip-name {
++  overflow: hidden;
++  text-overflow: ellipsis;
++  white-space: nowrap;
++}
++
++/* Detail page: give the chip row a little breathing room above the form. */
++.note-form-wrap .note-tags {
++  margin-top: 0;
++  margin-bottom: 18px;
++}
++
++.tag-filter-bar {
++  display: flex;
++  flex-wrap: wrap;
++  gap: 8px;
++  padding: 0 20px;
++  margin-bottom: 16px;
++}
++.tag-filter-chip {
++  display: inline-flex;
++  align-items: center;
++  gap: 6px;
++  max-width: 220px;
++  padding: 5px 12px;
++  border-radius: 999px;
++  border: 1.5px solid var(--border);
++  background: var(--surface);
++  font-size: 13px;
++  font-weight: 500;
++  color: var(--fg);
++  text-decoration: none;
++  transition: border-color 0.15s, background 0.15s;
++}
++.tag-filter-chip:hover {
++  border-color: color-mix(
++    in oklch,
++    var(--tag-color, var(--accent)) 50%,
++    var(--border)
++  );
++}
++.tag-filter-chip.active {
++  border-color: var(--tag-color, var(--accent));
++  background: color-mix(in srgb, var(--tag-color, var(--accent)) 12%, var(--surface));
++}
++.tag-filter-name {
++  overflow: hidden;
++  text-overflow: ellipsis;
++  white-space: nowrap;
++}
++.tag-filter-count {
++  font-size: 11px;
++  color: var(--muted);
++  font-variant-numeric: tabular-nums;
++}
++.tag-filter-chip.active .tag-filter-count {
++  color: color-mix(in oklch, var(--tag-color, var(--accent)) 55%, var(--fg));
+ }
+diff -ru -x node_modules -x .next -x .git -x .obsidian -x *.tsbuildinfo /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/app/[locale]/dashboard/layout.tsx /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/[locale]/dashboard/layout.tsx
+--- /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/app/[locale]/dashboard/layout.tsx	2026-05-08 04:12:44
++++ /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/[locale]/dashboard/layout.tsx	2026-05-20 12:12:35
+@@ -1,4 +1,5 @@
+ import { redirect } from "next/navigation";
++import { cookies } from "next/headers";
+ import { createClient } from "@/lib/supabase/server";
+ 
+ export default async function DashboardLayout({
+@@ -6,10 +7,53 @@
+   params,
+ }: LayoutProps<"/[locale]/dashboard">) {
+   const { locale } = await params;
++
++  // Debug: log sb-* cookies received by the dashboard request before
++  // we hand them to the SSR client. Pairs with the
++  // session_cookies_present crumb from /api/auth/liff so we can see if
++  // fresh cookies actually arrived here.
++  const cookieStore = await cookies();
++  const sbCookies = cookieStore
++    .getAll()
++    .filter((c) => c.name.startsWith("sb-"))
++    .map((c) => ({ name: c.name, len: (c.value ?? "").length }));
++  console.log(
++    JSON.stringify({
++      tag: "dashboard_layout",
++      // eslint-disable-next-line react-hooks/purity
++      ts: Date.now(),
++      step: "cookies_received",
++      cookies: sbCookies,
++    }),
++  );
++
+   const supabase = await createClient();
+-  const {
+-    data: { user },
+-  } = await supabase.auth.getUser();
++  let user = null;
++  try {
++    const result = await supabase.auth.getUser();
++    user = result.data.user;
++    console.log(
++      JSON.stringify({
++        tag: "dashboard_layout",
++        // eslint-disable-next-line react-hooks/purity
++        ts: Date.now(),
++        step: "get_user_ok",
++        hasUser: !!user,
++      }),
++    );
++  } catch (err) {
++    console.log(
++      JSON.stringify({
++        tag: "dashboard_layout",
++        // eslint-disable-next-line react-hooks/purity
++        ts: Date.now(),
++        step: "get_user_error",
++        msg: err instanceof Error ? err.message : String(err),
++      }),
++    );
++    // Treat as unauthenticated — page-level redirect to landing handles
++    // the re-auth flow.
++  }
+ 
+   if (!user) {
+     redirect(`/${locale}`);
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/[locale]/dashboard: loading.tsx
+diff -ru -x node_modules -x .next -x .git -x .obsidian -x *.tsbuildinfo /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/app/[locale]/dashboard/notes/[id]/page.tsx /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/[locale]/dashboard/notes/[id]/page.tsx
+--- /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/app/[locale]/dashboard/notes/[id]/page.tsx	2026-05-08 04:13:45
++++ /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/[locale]/dashboard/notes/[id]/page.tsx	2026-06-11 21:36:48
+@@ -1,7 +1,12 @@
++import Link from "next/link";
+ import { notFound } from "next/navigation";
+ import { createClient } from "@/lib/supabase/server";
+-import { DashboardHeader } from "../../DashboardHeader";
++import { SketchyFilter } from "../../SketchyFilter";
++import { Topbar } from "../../Topbar";
++import { BottomTabs } from "../../BottomTabs";
+ import { NoteForm } from "../../NoteForm";
++import { TagChips } from "../../TagChip";
++import { getTagsForNote } from "@/lib/notes/tags";
+ import { updateNote, deleteNote } from "../../actions";
+ import "../../dashboard.css";
+ 
+@@ -32,6 +37,11 @@
+ 
+   if (!note) notFound();
+ 
++  const tags = await getTagsForNote(supabase, note.id);
++
++  const displayName = profile?.line_display_name ?? "ผู้ใช้ LINE";
++  const initial = displayName.trim().charAt(0).toUpperCase() || "?";
++
+   const updateAction = async (formData: FormData) => {
+     "use server";
+     return updateNote(note.id, formData);
+@@ -44,22 +54,39 @@
+ 
+   return (
+     <div className="lungnote-dashboard">
+-      <div className="dash-wrap">
+-        <DashboardHeader
+-          displayName={profile?.line_display_name ?? null}
+-          pictureUrl={profile?.line_picture_url ?? null}
+-          locale={locale}
+-        />
+-        <h1 className="dash-section-title">แก้ไขโน้ต</h1>
+-        <NoteForm
+-          initialTitle={note.title}
+-          initialBody={note.body}
+-          submitLabel="บันทึก"
+-          cancelHref="/dashboard"
+-          onSubmit={updateAction}
+-          onDelete={deleteAction}
+-        />
++      <SketchyFilter />
++      <Topbar
++        pictureUrl={profile?.line_picture_url ?? null}
++        initial={initial}
++        locale={locale}
++      />
++      <div className="dash-body">
++        <div className="note-form-wrap">
++          <Link href="/dashboard" className="note-form-back">
++            ← กลับ
++          </Link>
++          <h1
++            style={{
++              fontFamily: "var(--font-display)",
++              fontSize: 28,
++              fontWeight: 700,
++              marginBottom: 16,
++            }}
++          >
++            แก้ไขโน้ต
++          </h1>
++          <TagChips tags={tags} />
++          <NoteForm
++            initialTitle={note.title}
++            initialBody={note.body}
++            submitLabel="บันทึก"
++            cancelHref="/dashboard"
++            onSubmit={updateAction}
++            onDelete={deleteAction}
++          />
++        </div>
+       </div>
++      <BottomTabs active="home" />
+     </div>
+   );
+ }
+diff -ru -x node_modules -x .next -x .git -x .obsidian -x *.tsbuildinfo /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/app/[locale]/dashboard/notes/new/page.tsx /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/[locale]/dashboard/notes/new/page.tsx
+--- /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/app/[locale]/dashboard/notes/new/page.tsx	2026-05-08 04:13:40
++++ /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/[locale]/dashboard/notes/new/page.tsx	2026-05-20 12:12:35
+@@ -1,5 +1,8 @@
++import Link from "next/link";
+ import { createClient } from "@/lib/supabase/server";
+-import { DashboardHeader } from "../../DashboardHeader";
++import { SketchyFilter } from "../../SketchyFilter";
++import { Topbar } from "../../Topbar";
++import { BottomTabs } from "../../BottomTabs";
+ import { NoteForm } from "../../NoteForm";
+ import { createNote } from "../../actions";
+ import "../../dashboard.css";
+@@ -22,21 +25,40 @@
+     .eq("id", user.id)
+     .maybeSingle();
+ 
++  const displayName = profile?.line_display_name ?? "ผู้ใช้ LINE";
++  const initial = displayName.trim().charAt(0).toUpperCase() || "?";
++
+   return (
+     <div className="lungnote-dashboard">
+-      <div className="dash-wrap">
+-        <DashboardHeader
+-          displayName={profile?.line_display_name ?? null}
+-          pictureUrl={profile?.line_picture_url ?? null}
+-          locale={locale}
+-        />
+-        <h1 className="dash-section-title">สร้างโน้ตใหม่</h1>
+-        <NoteForm
+-          submitLabel="บันทึก"
+-          cancelHref="/dashboard"
+-          onSubmit={createNote}
+-        />
++      <SketchyFilter />
++      <Topbar
++        pictureUrl={profile?.line_picture_url ?? null}
++        initial={initial}
++        locale={locale}
++      />
++      <div className="dash-body">
++        <div className="note-form-wrap">
++          <Link href="/dashboard" className="note-form-back">
++            ← กลับ
++          </Link>
++          <h1
++            style={{
++              fontFamily: "var(--font-display)",
++              fontSize: 28,
++              fontWeight: 700,
++              marginBottom: 16,
++            }}
++          >
++            สร้างโน้ตใหม่
++          </h1>
++          <NoteForm
++            submitLabel="บันทึก"
++            cancelHref="/dashboard"
++            onSubmit={createNote}
++          />
++        </div>
+       </div>
++      <BottomTabs active="home" />
+     </div>
+   );
+ }
+diff -ru -x node_modules -x .next -x .git -x .obsidian -x *.tsbuildinfo /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/app/[locale]/dashboard/page.tsx /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/[locale]/dashboard/page.tsx
+--- /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/app/[locale]/dashboard/page.tsx	2026-05-08 04:13:29
++++ /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/[locale]/dashboard/page.tsx	2026-06-11 21:36:48
+@@ -1,14 +1,33 @@
+ import Link from "next/link";
+ import { createClient } from "@/lib/supabase/server";
+-import { DashboardHeader } from "./DashboardHeader";
++import {
++  getUserTags,
++  getAllNoteTagPairs,
++  withCounts,
++  groupTagsByNote,
++  noteIdsForTag,
++  type NoteTag,
++} from "@/lib/notes/tags";
++import { SketchyFilter } from "./SketchyFilter";
++import { Topbar } from "./Topbar";
++import { BottomTabs } from "./BottomTabs";
++import { Sidebar } from "./Sidebar";
++import { PullToRefresh } from "./PullToRefresh";
++import { TagFilterBar } from "./TagFilterBar";
++import { TagChips } from "./TagChip";
+ import "./dashboard.css";
+ 
+ export const dynamic = "force-dynamic";
+ 
+ export default async function DashboardPage({
+   params,
++  searchParams,
+ }: PageProps<"/[locale]/dashboard">) {
+   const { locale } = await params;
++  const sp = await searchParams;
++  const rawTag = sp?.tag;
++  const activeTag = Array.isArray(rawTag) ? rawTag[0] : rawTag;
++
+   const supabase = await createClient();
+ 
+   const {
+@@ -16,62 +35,184 @@
+   } = await supabase.auth.getUser();
+   if (!user) return null;
+ 
+-  const { data: profile } = await supabase
+-    .from("lungnote_profiles")
+-    .select("line_display_name, line_picture_url")
+-    .eq("id", user.id)
+-    .maybeSingle();
++  // 6 queries in parallel — RLS scopes them to user; cuts round-trips
++  // (sin1↔BKK ≈ 30 ms each) off first paint. Tag pairs + tag list feed
++  // both the per-row chips and the Gmail-style filter bar.
++  const [
++    profileRes,
++    notesCountRes,
++    todoOpenCountRes,
++    notesRes,
++    userTags,
++    tagPairs,
++  ] = await Promise.all([
++    supabase
++      .from("lungnote_profiles")
++      .select("line_display_name, line_picture_url")
++      .eq("id", user.id)
++      .maybeSingle(),
++    supabase
++      .from("lungnote_notes")
++      .select("*", { count: "exact", head: true }),
++    supabase
++      .from("lungnote_todos")
++      .select("*", { count: "exact", head: true })
++      .eq("done", false),
++    supabase
++      .from("lungnote_notes")
++      .select("id, title, body, updated_at")
++      .order("updated_at", { ascending: false })
++      .limit(20),
++    getUserTags(supabase),
++    getAllNoteTagPairs(supabase),
++  ]);
+ 
+-  const { data: notes } = await supabase
+-    .from("lungnote_notes")
+-    .select("id, title, body, updated_at")
+-    .order("updated_at", { ascending: false });
++  const profile = profileRes.data;
++  const notesCount = notesCountRes.count;
++  const todoOpenCount = todoOpenCountRes.count;
+ 
++  const tagsWithCount = withCounts(userTags, tagPairs);
++  const tagsById = new Map<string, NoteTag>(userTags.map((t) => [t.id, t]));
++  const tagsByNote = groupTagsByNote(tagPairs, tagsById);
++  const activeTagValid =
++    !!activeTag && userTags.some((t) => t.id === activeTag);
++
++  // Default: 20 most-recent notes. With ?tag= active, narrow to that tag's
++  // notes (one extra round-trip, only when filtering).
++  let notes = notesRes.data;
++  if (activeTagValid) {
++    const ids = noteIdsForTag(tagPairs, activeTag);
++    if (ids.length === 0) {
++      notes = [];
++    } else {
++      const { data } = await supabase
++        .from("lungnote_notes")
++        .select("id, title, body, updated_at")
++        .in("id", ids)
++        .order("updated_at", { ascending: false })
++        .limit(20);
++      notes = data;
++    }
++  }
++
++  const displayName = profile?.line_display_name ?? "ผู้ใช้ LINE";
++  const initial = displayName.trim().charAt(0).toUpperCase() || "?";
++  const today = new Date().toLocaleDateString("th-TH", {
++    weekday: "long",
++    day: "numeric",
++    month: "long",
++    year: "numeric",
++  });
++
+   return (
+     <div className="lungnote-dashboard">
+-      <div className="dash-wrap">
+-        <DashboardHeader
+-          displayName={profile?.line_display_name ?? null}
+-          pictureUrl={profile?.line_picture_url ?? null}
+-          locale={locale}
++      <SketchyFilter />
++      <div className="dash-shell">
++        <Sidebar
++          active="home"
++          notesCount={notesCount ?? undefined}
++          todoCount={todoOpenCount ?? undefined}
+         />
++        <main className="dash-main">
++          <Topbar
++            pictureUrl={profile?.line_picture_url ?? null}
++            initial={initial}
++            locale={locale}
++          />
+ 
+-        <h1 className="dash-section-title">โน้ตของฉัน</h1>
++          <PullToRefresh>
++          <div className="dash-body">
++        <div className="greeting">
++          <h2>
++            สวัสดี, <span className="highlight-tape">{displayName}</span>
++          </h2>
++          <p>{today}</p>
++        </div>
+ 
+-        {!notes || notes.length === 0 ? (
+-          <div className="empty-state">
+-            <h3>ยังไม่มีโน้ต</h3>
+-            <p>เริ่มต้นด้วยการสร้างเล่มแรกของคุณ</p>
+-            <p style={{ marginTop: 24 }}>
+-              <Link href="/dashboard/notes/new" className="btn-primary">
+-                + สร้างโน้ตใหม่
+-              </Link>
+-            </p>
++        <div className="stats-row">
++          <div className="sketch-box stat-mini">
++            <div className="stat-mini-val mint">{notesCount ?? 0}</div>
++            <div className="stat-mini-label">โน้ต</div>
+           </div>
++          <div className="sketch-box stat-mini">
++            <div className="stat-mini-val orange">{todoOpenCount ?? 0}</div>
++            <div className="stat-mini-label">Todo เหลือ</div>
++          </div>
++          <div className="sketch-box stat-mini">
++            <div className="stat-mini-val ink">0</div>
++            <div className="stat-mini-label">วัน Streak</div>
++          </div>
++        </div>
++
++        <div className="section-h">
++          <h3>โน้ตล่าสุด</h3>
++          <Link href="/dashboard/notes/new">+ ใหม่</Link>
++        </div>
++
++        <TagFilterBar
++          tags={tagsWithCount}
++          activeTag={activeTagValid ? activeTag : undefined}
++          basePath="/dashboard"
++        />
++
++        {!notes || notes.length === 0 ? (
++          activeTagValid ? (
++            <div className="empty-block">
++              <div className="empty-title">ไม่มีโน้ตที่มีแท็กนี้</div>
++              <p className="empty-desc">
++                ลองเลือกแท็กอื่น หรือดู
++                <Link href="/dashboard"> ทั้งหมด</Link>
++              </p>
++            </div>
++          ) : (
++            <div className="empty-block">
++              <div className="empty-illustration">
++                <div className="empty-notebook" />
++                <div className="empty-plus">+</div>
++              </div>
++              <div className="empty-title">ยังไม่มีโน้ต</div>
++              <p className="empty-desc">
++                สร้างโน้ตเล่มแรกของคุณ แล้วเริ่มจดสิ่งที่สำคัญ
++              </p>
++              <p style={{ marginTop: 16 }}>
++                <Link href="/dashboard/notes/new" className="btn-main primary">
++                  สร้างโน้ตแรก
++                </Link>
++              </p>
++            </div>
++          )
+         ) : (
+-          <div className="notes-grid">
+-            {notes.map((n) => (
+-              <Link
+-                key={n.id}
+-                href={`/dashboard/notes/${n.id}`}
+-                className="note-card"
+-              >
+-                <div className="note-card-title">{n.title}</div>
+-                <div className="note-card-preview">
+-                  {n.body || <em>ยังไม่มีเนื้อหา</em>}
+-                </div>
+-                <div className="note-card-meta">
+-                  แก้ไขล่าสุด {formatRelative(n.updated_at)}
+-                </div>
+-              </Link>
+-            ))}
++          <div className="recent-section">
++            <div className="recent-list">
++              {notes.map((n) => (
++                <Link
++                  key={n.id}
++                  href={`/dashboard/notes/${n.id}`}
++                  className="note-row"
++                >
++                  <span className="note-dot" />
++                  <div className="note-info">
++                    <div className="note-title">{n.title}</div>
++                    <TagChips tags={tagsByNote.get(n.id) ?? []} />
++                    <div className="note-meta">
++                      {formatRelative(n.updated_at)}
++                    </div>
++                  </div>
++                  <span className="note-arrow">›</span>
++                </Link>
++              ))}
++            </div>
+           </div>
+         )}
++          </div>
++          </PullToRefresh>
++        </main>
+       </div>
+-
+-      <Link href="/dashboard/notes/new" className="fab-add" aria-label="add">
+-        +
+-      </Link>
++      <BottomTabs
++        active="home"
++        notesCount={notesCount ?? undefined}
++        todoCount={todoOpenCount ?? undefined}
++      />
+     </div>
+   );
+ }
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/[locale]/dashboard: settings
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/[locale]/dashboard: skeleton.css
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/[locale]/dashboard: theme-actions.ts
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/[locale]/dashboard: todo
+diff -ru -x node_modules -x .next -x .git -x .obsidian -x *.tsbuildinfo /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/app/[locale]/layout.tsx /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/[locale]/layout.tsx
+--- /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/app/[locale]/layout.tsx	2026-05-07 23:43:40
++++ /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/[locale]/layout.tsx	2026-05-20 12:12:35
+@@ -3,6 +3,7 @@
+ import { notFound } from "next/navigation";
+ import "../globals.css";
+ import { isLocale, locales } from "@/i18n/config";
++import { getThemeFromCookies } from "@/lib/theme";
+ 
+ export function generateStaticParams() {
+   return locales.map((locale) => ({ locale }));
+@@ -89,7 +90,7 @@
+ 
+ export const viewport: Viewport = {
+   themeColor: [
+-    { media: "(prefers-color-scheme: light)", color: "#faf8f4" },
++    { media: "(prefers-color-scheme: light)", color: "#f5ead4" },
+     { media: "(prefers-color-scheme: dark)", color: "#1e1e1c" },
+   ],
+   width: "device-width",
+@@ -104,9 +105,15 @@
+   const { locale } = await params;
+   if (!isLocale(locale)) notFound();
+ 
++  // Theme cookie applied SSR so the page paints in the right theme
++  // immediately — no light/dark flash. "system" = no attribute, CSS
++  // falls back to prefers-color-scheme media query.
++  const theme = await getThemeFromCookies();
++
+   return (
+     <html
+       lang={locale}
++      data-theme={theme === "system" ? undefined : theme}
+       className={`${sarabun.variable} ${caveat.variable} ${jetbrainsMono.variable} h-full antialiased`}
+     >
+       <body className="min-h-full flex flex-col">{children}</body>
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/[locale]: legal
+diff -ru -x node_modules -x .next -x .git -x .obsidian -x *.tsbuildinfo /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/app/[locale]/page.tsx /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/[locale]/page.tsx
+--- /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/app/[locale]/page.tsx	2026-05-07 23:43:18
++++ /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/[locale]/page.tsx	2026-05-20 12:12:35
+@@ -1,10 +1,11 @@
+-import { notFound } from "next/navigation";
++import { notFound, redirect } from "next/navigation";
+ import { isLocale } from "@/i18n/config";
+ import "@/components/landing/landing.css";
+ import { getLandingContent } from "@/components/landing/content";
+ import { SketchyFilter } from "@/components/landing/SketchyFilter";
+ import { Nav } from "@/components/landing/Nav";
+ import { Hero } from "@/components/landing/Hero";
++import { BrandStory } from "@/components/landing/BrandStory";
+ import { Features } from "@/components/landing/Features";
+ import { HowItWorks } from "@/components/landing/HowItWorks";
+ import { Testimonials } from "@/components/landing/Testimonials";
+@@ -13,9 +14,34 @@
+ import { Footer } from "@/components/landing/Footer";
+ import { WavyDivider } from "@/components/landing/WavyDivider";
+ 
+-export default async function Home({ params }: PageProps<"/[locale]">) {
++export default async function Home({
++  params,
++  searchParams,
++}: PageProps<"/[locale]">) {
+   const { locale } = await params;
+   if (!isLocale(locale)) notFound();
++
++  // LIFF endpoint fallback: if the LIFF App in LINE Developer Console
++  // points at https://lungnote.com/ instead of /liff, the LIFF launch
++  // URL `?next=…` lands on the landing page. Catch the param here and
++  // forward to the LIFF auth flow so rich-menu buttons still work.
++  const sp = await searchParams;
++  const rawNext = sp?.next;
++  const next = Array.isArray(rawNext) ? rawNext[0] : rawNext;
++  if (typeof next === "string" && next.startsWith("/")) {
++    console.log(
++      JSON.stringify({
++        tag: "liff_debug",
++        // eslint-disable-next-line react-hooks/purity
++        ts: Date.now(),
++        step: "landing_redirect",
++        next,
++        locale,
++      }),
++    );
++    redirect(`/liff?next=${encodeURIComponent(next)}`);
++  }
++
+   const content = getLandingContent(locale);
+ 
+   return (
+@@ -23,6 +49,8 @@
+       <SketchyFilter />
+       <Nav content={content.nav} />
+       <Hero content={content.hero} />
++      <WavyDivider />
++      <BrandStory content={content.brand} />
+       <WavyDivider />
+       <Features content={content.features} />
+       <WavyDivider />
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app: admin
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/api: auth
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/api: cron
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/api: debug
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/api: gmail
+diff -ru -x node_modules -x .next -x .git -x .obsidian -x *.tsbuildinfo /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/app/api/line/webhook/route.ts /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/api/line/webhook/route.ts
+--- /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/app/api/line/webhook/route.ts	2026-05-08 04:14:51
++++ /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/api/line/webhook/route.ts	2026-06-15 01:41:08
+@@ -1,8 +1,17 @@
+ import { NextResponse, type NextRequest } from "next/server";
+ import { verifySignature } from "@/lib/line/verify";
+-import { replyMessage } from "@/lib/line/client";
++import { replyMessage, displayLoadingAnimation } from "@/lib/line/client";
++import { generateChatReply } from "@/lib/ai/reply";
++import { runAgent, TurnContext } from "@/lib/agent/runtime";
++import { pickVariant, type ABDecision } from "@/lib/agent/ab";
++import { loadMemory, saveMemory } from "@/lib/ai/memory";
++import { saveMemoryFromLine } from "@/lib/memory/save";
++import { listPendingFromLine } from "@/lib/memory/list";
+ import { dashboardLinkMessage, welcomeMessage } from "@/lib/line/flex";
++import { linkUserRichMenu, unlinkUserRichMenu } from "@/lib/line/rich-menu";
+ import { mintToken } from "@/lib/auth/line-link";
++import { TraceCollector } from "@/lib/observability/trace";
++import { checkAlreadyProcessed } from "@/lib/observability/dedup";
+ import type {
+   LineEvent,
+   LineWebhookBody,
+@@ -12,9 +21,30 @@
+ 
+ export const runtime = "nodejs";
+ export const dynamic = "force-dynamic";
++// The handler awaits handleEvent (the full agent turn) before returning 200,
++// so the function must stay alive for the slowest model. Variant B (Kimi
++// K2.6) runs ~19-40s; the default function timeout (10-15s) would kill it.
++// 60s is well within LungNote's Vercel Pro cap (300s — see the gmail cron
++// routes that already set maxDuration=300). The runtime also aborts a hung
++// Kimi call at 50s (AbortSignal in runtime.ts) so this is the outer ceiling.
++export const maxDuration = 60;
+ 
+ const SITE_URL = "https://lungnote.com";
+ const DASHBOARD_KEYWORDS = /^(dashboard|dash|เปิด|ลิงก์|link|\/login|\/dash)$/i;
++// Memory capture prefix (ADR-0012, broadened by ADR-0012 follow-up):
++// Single-word prefix: "จด <text>", "บันทึก <text>", "note <text>",
++//   "save <text>", "todo <text>", "ทำ <text>", "เตือน <text>", "อย่าลืม <text>".
++const MEMORY_PREFIX_SINGLE =
++  /^(?:จด|บันทึก|note|save|todo|ทำ|เตือน|อย่าลืม)\s+([\s\S]+)$/i;
++// Compound prefix: "เพิ่ม(สิ่งที่ต้องทำ|todo|งาน) <text>" — matches what
++// users naturally type when they think of LungNote as a todo app. The space
++// between "เพิ่ม" and the noun is optional because Thai often elides it.
++const MEMORY_PREFIX_COMPOUND =
++  /^เพิ่ม\s*(?:สิ่งที่ต้องทำ|todo|งาน|todos)\s+([\s\S]+)$/i;
++// List-pending intent: user asks to see what's pending. Matches whole-message
++// queries; no capture group — we just trigger the list handler.
++const LIST_PENDING_INTENT =
++  /^(?:.*มีงานอะไร.*|.*งานค้าง.*|ดู\s*(?:งาน|โน้ต|โน๊ต|todo).*|todo(?:\s+(?:อะไร|มีไหม|มีอะไร).*)?|รายการ|list)$/i;
+ 
+ export async function POST(req: NextRequest) {
+   const secret = process.env.LINE_CHANNEL_SECRET;
+@@ -24,8 +54,8 @@
+ 
+   const rawBody = await req.text();
+   const signature = req.headers.get("x-line-signature");
+-
+   const valid = await verifySignature(rawBody, signature, secret);
++
+   if (!valid) {
+     return NextResponse.json({ error: "invalid signature" }, { status: 401 });
+   }
+@@ -49,19 +79,26 @@
+   });
+ }
+ 
+-async function handleEvent(event: LineEvent): Promise<void> {
++async function handleEvent(event: LineEvent): Promise<unknown> {
+   if (event.type === "message") {
+     const ev = event as LineTextMessageEvent;
+-    if (ev.message?.type === "text") {
+-      await handleText(ev);
+-    }
+-    return;
++    if (ev.message?.type === "text") return handleText(ev);
++    return null;
+   }
+ 
+   if (event.type === "follow") {
+     const ev = event as LineFollowEvent;
+-    await replyMessage(ev.replyToken, welcomeMessage());
+-    return;
++    const userId = ev.source.type === "user" ? ev.source.userId : undefined;
++    // Link the Welcome rich menu (1-button "เริ่มต้นใช้งาน") for this
++    // user so they see it on first contact. Best-effort — failure
++    // doesn't block the welcome reply.
++    const welcomeMenuId = process.env.LINE_RICHMENU_WELCOME_ID;
++    if (userId && welcomeMenuId) {
++      void linkUserRichMenu(userId, welcomeMenuId).catch((err: unknown) => {
++        console.error("linkUserRichMenu (welcome) failed", { userId, err });
++      });
++    }
++    return replyMessage(ev.replyToken, welcomeMessage());
+   }
+ 
+   if (event.type === "postback") {
+@@ -72,36 +109,389 @@
+     };
+     const data = ev.postback?.data ?? "";
+     const userId = ev.source?.userId;
+-    if (!userId) return;
++    if (!userId) return null;
+ 
+     if (data.includes("action=open_dashboard")) {
+-      await sendDashboardLink(ev.replyToken, userId);
+-      return;
++      return sendDashboardLink(ev.replyToken, userId);
+     }
+     if (data.includes("action=help")) {
+-      await replyMessage(ev.replyToken, [
+-        { type: "text", text: helpText() },
+-      ]);
+-      return;
++      return replyMessage(ev.replyToken, [{ type: "text", text: helpText() }]);
+     }
+-    return;
++    return null;
+   }
++
++  return null;
+ }
+ 
+-async function handleText(ev: LineTextMessageEvent): Promise<void> {
++/**
++ * Routing strategy is controlled by AI_AGENT_MODE env:
++ *   "true"  → all messages go to the AI (with tools); regex shortcuts disabled
++ *   "false" → legacy regex shortcuts run first, AI fallback last
++ * Default = "true" (full agent). Toggle to "false" if AI cost / latency
++ * spikes or upstream LLM is down — shortcuts give a deterministic fallback.
++ */
++function isAgentMode(): boolean {
++  return (process.env.AI_AGENT_MODE ?? "true") !== "false";
++}
++
++async function handleText(ev: LineTextMessageEvent): Promise<unknown> {
+   const text = ev.message.text.trim();
+   const userId = ev.source.type === "user" ? ev.source.userId : undefined;
++  const trace = new TraceCollector(ev.message.id, userId, text);
+ 
++  // Idempotency — LINE can redeliver the same event on retry. Skip if a
++  // trace for this message.id already landed with a successful reply
++  // within the last 5 min. Best-effort; on DB outage we treat as fresh.
++  const dedup = await checkAlreadyProcessed(ev.message.id);
++  if (dedup.status === "already_processed") {
++    trace.step("dedup_skip", {
++      reason: "already_processed",
++      replied_chars: dedup.replyText?.length ?? 0,
++    });
++    // Don't finalize — that would insert a 2nd trace row for the same id.
++    return null;
++  }
++
++  // A/B model trial bucket for this user. Decided once here (stable per
++  // lineUserId) so the loading-animation window matches the variant's
++  // latency profile, then handed to the agent path which forces the model
++  // and tags the trace. Anonymous / disabled → control (see ab.ts).
++  const variant = pickVariant(userId ?? null);
++
++  // Fire the LINE typing indicator immediately so the user sees "..." while
++  // the AI / DB work runs. Best-effort: failure is silent; the dots auto-
++  // clear when our reply lands. Variant B (Kimi, ~19-40s) needs the full
++  // 60s LINE window (max allowed); control keeps 20s. Only agent mode runs
++  // the A/B, so legacy mode always uses 20s. Skip if no userId (group/room).
++  if (userId) {
++    const loadingSeconds =
++      isAgentMode() && variant.variant === "kimi_k2_6" ? 60 : 20;
++    void displayLoadingAnimation(userId, loadingSeconds).catch(
++      (err: unknown) => {
++        console.error("displayLoadingAnimation failed", { userId, err });
++      },
++    );
++  }
++
++  // Welcome rich menu graduation: when a new user taps the Welcome
++  // 1-button menu, they send the text "เริ่มต้นใช้งาน". After the AI
++  // intro reply lands, unlink the Welcome menu so the user reverts to
++  // the global Default rich menu. Best-effort, fire-and-forget.
++  if (userId && text === "เริ่มต้นใช้งาน") {
++    void unlinkUserRichMenu(userId).catch((err: unknown) => {
++      console.error("unlinkUserRichMenu failed", { userId, err });
++    });
++  }
++
++  if (isAgentMode()) {
++    return handleTextAgent(ev, text, userId, trace, variant);
++  }
++  return handleTextLegacy(ev, text, userId, trace);
++}
++
++/** Matches single-word affirmative replies that confirm a pending bulk op. */
++const BULK_AFFIRM_RE = /^(yes|ใช่|โอเค|ok|ยืนยัน|แน่ใจ|ลุย)$/i;
++
++/**
++ * Full agent mode (v2) — Vercel AI SDK + custom TurnContext + position-aware
++ * tools. Each turn instantiates a fresh TurnContext so the agent's working
++ * memory (cached pending/done lists) cannot leak across users or turns.
++ */
++async function handleTextAgent(
++  ev: LineTextMessageEvent,
++  text: string,
++  userId: string | undefined,
++  trace: TraceCollector,
++  variant: ABDecision,
++): Promise<unknown> {
++  trace.step("path_ai", { ab_variant: variant.variant });
++  const ctx = new TurnContext(userId ?? null, trace);
++  if (BULK_AFFIRM_RE.test(text.trim())) {
++    ctx.setBulkConfirmed(true);
++  }
++  // Variant B forces the Kimi model for every turn; control passes no
++  // override so the runtime keeps its normal router-driven pick.
++  const aiResult = await runAgent(text, ctx, variant.modelOverride);
++  const replyText = aiResult.ok
++    ? aiResult.text
++    : `ขอโทษ ระบบขัดข้อง — ลองอีกครั้งภายหลังนะ`;
++
++  // Multi-bubble: bubbles can be text or flex. Flush them all in a
++  // single reply call (LINE caps at 5; agent enforces). If runAgent
++  // failed, fall back to one canned-error text bubble.
++  const bubbles = aiResult.ok
++    ? aiResult.bubbles
++    : [{ type: "text" as const, text: replyText }];
++  const replyRes = await replyMessage(ev.replyToken, bubbles);
++  trace.step("reply_sent", {
++    status: replyRes.status,
++    ok: replyRes.ok,
++    bubble_count: bubbles.length,
++    flex_count: bubbles.filter((b) => b.type === "flex").length,
++  });
++  trace.finalize({
++    path: "ai",
++    replyText,
++    meta: {
++      // A/B tag on EVERY turn — including error/timeout turns where
++      // aiResult.meta is absent — so next month's query can group
++      // latency / error rate / cost by cohort (see TASK "How to measure").
++      ab_variant: variant.variant,
++      ab_model: variant.modelOverride ?? "control",
++      ...(aiResult.ok
++        ? {
++            model: aiResult.meta.model,
++            route_reason: aiResult.meta.routeReason,
++            tokens_in: aiResult.meta.tokensIn,
++            tokens_out: aiResult.meta.tokensOut,
++            cost_usd: aiResult.meta.costEstimate,
++          }
++        : {}),
++      reply_status: replyRes.status,
++      reply_ok: replyRes.ok,
++      ...(replyRes.detail ? { reply_detail: replyRes.detail.slice(0, 500) } : {}),
++    },
++    error: !aiResult.ok
++      ? `${aiResult.reason}: ${aiResult.error ?? ""}`
++      : !replyRes.ok
++        ? `reply_failed: HTTP ${replyRes.status} ${replyRes.detail ?? ""}`.slice(0, 500)
++        : undefined,
++    aiIterations: trace.aiIterations,
++  });
++  return null;
++}
++
++/**
++ * Legacy mode — keep regex shortcuts + AI fallback. Used when AI_AGENT_MODE
++ * is explicitly disabled (rollback safety net).
++ */
++async function handleTextLegacy(
++  ev: LineTextMessageEvent,
++  text: string,
++  userId: string | undefined,
++  trace: TraceCollector,
++): Promise<unknown> {
+   if (DASHBOARD_KEYWORDS.test(text) && userId) {
+-    await sendDashboardLink(ev.replyToken, userId);
+-    return;
++    trace.step("path_dashboard");
++    const out = sendDashboardLink(ev.replyToken, userId);
++    trace.finalize({ path: "dashboard" });
++    return out;
+   }
+ 
+-  await replyMessage(ev.replyToken, [
+-    { type: "text", text: buildReply(text) },
++  if (LIST_PENDING_INTENT.test(text) && userId) {
++    trace.step("path_list");
++    return handleMemoryList(ev.replyToken, userId, text, trace);
++  }
++
++  const memoryMatch =
++    MEMORY_PREFIX_SINGLE.exec(text) ?? MEMORY_PREFIX_COMPOUND.exec(text);
++  if (memoryMatch && userId) {
++    const memoryText = memoryMatch[1].trim();
++    if (memoryText) {
++      trace.step("path_memory", {
++        prefix_kind: MEMORY_PREFIX_SINGLE.test(text) ? "single" : "compound",
++      });
++      return handleMemoryCreate(ev.replyToken, userId, memoryText, text, trace);
++    }
++  }
++
++  const regexReply = matchRegex(text);
++  if (regexReply !== null) {
++    trace.step("path_regex");
++    const r = await replyMessage(ev.replyToken, [
++      { type: "text", text: regexReply },
++    ]);
++    trace.step("reply_sent", { status: r.status, ok: r.ok });
++    trace.finalize({
++      path: "regex",
++      replyText: regexReply,
++      meta: { reply_status: r.status, reply_ok: r.ok },
++      error: !r.ok ? `reply_failed: HTTP ${r.status}` : undefined,
++    });
++    return null;
++  }
++
++  trace.step("path_ai");
++  const aiUserId = userId ?? "anonymous";
++  const aiResult = await generateChatReply(aiUserId, text, trace);
++  const replyText = aiResult.ok
++    ? aiResult.text
++    : `รับข้อความแล้ว: "${text}"\nพิมพ์ 'ช่วย' เพื่อดูคำสั่ง`;
++
++  const replyRes2 = await replyMessage(ev.replyToken, [
++    { type: "text", text: replyText },
+   ]);
++  trace.step("reply_sent", { status: replyRes2.status, ok: replyRes2.ok });
++  trace.finalize({
++    path: "ai",
++    replyText,
++    meta: {
++      ...(aiResult.ok
++        ? {
++            model: aiResult.meta.model,
++            route_reason: aiResult.meta.routeReason,
++            tokens_in: aiResult.meta.tokensIn,
++            tokens_out: aiResult.meta.tokensOut,
++            cost_usd: aiResult.meta.costEstimate,
++          }
++        : {}),
++      reply_status: replyRes2.status,
++      reply_ok: replyRes2.ok,
++      ...(replyRes2.detail ? { reply_detail: replyRes2.detail.slice(0, 500) } : {}),
++    },
++    error: !aiResult.ok
++      ? `${aiResult.reason}: ${aiResult.error ?? ""}`
++      : !replyRes2.ok
++        ? `reply_failed: HTTP ${replyRes2.status} ${replyRes2.detail ?? ""}`.slice(0, 500)
++        : undefined,
++    aiIterations: trace.aiIterations,
++  });
++  return null;
+ }
+ 
++async function handleMemoryCreate(
++  replyToken: string,
++  lineUserId: string,
++  memoryText: string,
++  fullUserMessage: string,
++  trace: TraceCollector,
++): Promise<unknown> {
++  const result = await saveMemoryFromLine(lineUserId, memoryText);
++  trace.step("memory_save_result", { ok: result.ok, ...(result.ok ? { has_due: !!result.dueAt } : { reason: result.reason }) });
++
++  let replyText: string;
++  if (!result.ok && result.reason === "not_linked") {
++    replyText =
++      "ต้องลิงก์ account ก่อนถึงจะจดได้\nพิมพ์ 'dashboard' เพื่อรับลิงก์";
++  } else if (!result.ok && result.reason === "empty") {
++    replyText = "ข้อความว่างเปล่า ลองพิมพ์เนื้อหาที่จะจดด้วยนะ";
++  } else if (!result.ok) {
++    replyText = "ขอโทษ จดไม่สำเร็จ ลองอีกครั้งภายหลังนะ";
++  } else {
++    const dueLine = formatDueLine(result.dueAt, result.dueText);
++    const head = `บันทึกแล้ว ✓ "${result.text}"`;
++    replyText = dueLine
++      ? `${head}\n${dueLine}\nดูที่ ${SITE_URL}/dashboard/todo`
++      : `${head}\nดูที่ ${SITE_URL}/dashboard/todo`;
++  }
++
++  // Persist this turn into conversation memory so the AI fallback path remembers
++  // capture context (e.g. user later asks "เมื่อกี้พิมไรไป"). Best-effort —
++  // memory failure must not block the reply.
++  void persistTurn(lineUserId, fullUserMessage, replyText);
++
++  const r = await replyMessage(replyToken, [{ type: "text", text: replyText }]);
++  trace.step("reply_sent", { status: r.status, ok: r.ok });
++  trace.finalize({
++    path: "memory",
++    replyText,
++    meta: { reply_status: r.status, reply_ok: r.ok },
++    error: !result.ok
++      ? `${result.reason}: ${result.error ?? ""}`
++      : !r.ok
++        ? `reply_failed: HTTP ${r.status} ${r.detail ?? ""}`.slice(0, 500)
++        : undefined,
++  });
++  return null;
++}
++
++async function handleMemoryList(
++  replyToken: string,
++  lineUserId: string,
++  fullUserMessage: string,
++  trace: TraceCollector,
++): Promise<unknown> {
++  const result = await listPendingFromLine(lineUserId);
++  trace.step("memory_list_result", { ok: result.ok, ...(result.ok ? { count: result.items.length } : { reason: result.reason }) });
++
++  let replyText: string;
++  if (!result.ok && result.reason === "not_linked") {
++    replyText =
++      "ต้องลิงก์ account ก่อนถึงจะดูงานได้\nพิมพ์ 'dashboard' เพื่อรับลิงก์";
++  } else if (!result.ok) {
++    replyText = "ขอโทษ ดึงงานไม่สำเร็จ ลองอีกครั้งภายหลังนะ";
++  } else if (result.items.length === 0) {
++    replyText = "ไม่มีงานค้างเลย — ดีมาก! 🎉";
++  } else {
++    const lines = result.items.map((it, idx) => {
++      const due = formatDueShort(it.due_at);
++      return due
++        ? `${idx + 1}. ${it.text} — ⏰ ${due}`
++        : `${idx + 1}. ${it.text}`;
++    });
++    const header = `📋 งานค้าง ${result.items.length} รายการ`;
++    const footer = `\nดูทั้งหมดที่ ${SITE_URL}/dashboard/todo`;
++    replyText = [header, ...lines].join("\n") + footer;
++  }
++
++  void persistTurn(lineUserId, fullUserMessage, replyText);
++  const r = await replyMessage(replyToken, [{ type: "text", text: replyText }]);
++  trace.step("reply_sent", { status: r.status, ok: r.ok });
++  trace.finalize({
++    path: "list",
++    replyText,
++    meta: {
++      ...(result.ok ? { item_count: result.items.length } : {}),
++      reply_status: r.status,
++      reply_ok: r.ok,
++    },
++    error: !result.ok
++      ? `${result.reason}: ${result.error ?? ""}`
++      : !r.ok
++        ? `reply_failed: HTTP ${r.status} ${r.detail ?? ""}`.slice(0, 500)
++        : undefined,
++  });
++  return null;
++}
++
++function formatDueShort(iso: string | null): string | null {
++  if (!iso) return null;
++  const due = new Date(iso);
++  const now = new Date();
++  if (Number.isNaN(due.getTime())) return null;
++
++  const dayMs = 1000 * 60 * 60 * 24;
++  const dueDay = new Date(due.getFullYear(), due.getMonth(), due.getDate()).getTime();
++  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
++  const diff = Math.round((dueDay - today) / dayMs);
++
++  if (diff < 0) return `เลย ${Math.abs(diff)} วัน`;
++  if (diff === 0) return "วันนี้";
++  if (diff === 1) return "พรุ่งนี้";
++  if (diff <= 7) return `อีก ${diff} วัน`;
++  return due.toLocaleDateString("th-TH", { day: "numeric", month: "short" });
++}
++
++function formatDueLine(dueAt: string | null, dueText: string | null): string | null {
++  if (!dueAt) return null;
++  const d = new Date(dueAt);
++  if (Number.isNaN(d.getTime())) return null;
++  const formatted = d.toLocaleString("th-TH", {
++    weekday: "short",
++    day: "numeric",
++    month: "short",
++    hour: "2-digit",
++    minute: "2-digit",
++    timeZone: "Asia/Bangkok",
++  });
++  return dueText
++    ? `⏰ ${dueText} (${formatted})`
++    : `⏰ ${formatted}`;
++}
++
++async function persistTurn(
++  lineUserId: string,
++  userMessage: string,
++  assistantReply: string,
++): Promise<void> {
++  try {
++    const prior = await loadMemory(lineUserId);
++    await saveMemory(lineUserId, prior, userMessage, assistantReply);
++  } catch (err) {
++    console.error("persistTurn failed", { lineUserId, err });
++  }
++}
++
+ async function sendDashboardLink(
+   replyToken: string,
+   lineUserId: string,
+@@ -111,17 +501,22 @@
+     const url = `${SITE_URL}/auth/line?t=${token}`;
+     await replyMessage(replyToken, dashboardLinkMessage(url));
+   } catch (err) {
+-    const detail = err instanceof Error ? err.message : "unknown";
++    // Log server-side only — don't leak DB error fragments / Supabase
++    // hints / env names back to the user (OWASP info disclosure).
++    console.error("sendDashboardLink failed", {
++      lineUserId,
++      err: err instanceof Error ? err.message : "unknown",
++    });
+     await replyMessage(replyToken, [
+       {
+         type: "text",
+-        text: `เกิดข้อผิดพลาด สร้างลิงก์ไม่สำเร็จ — ลองอีกครั้งภายหลัง\n(${detail})`,
++        text: "เกิดข้อผิดพลาด สร้างลิงก์ไม่สำเร็จ — ลองอีกครั้งภายหลัง",
+       },
+     ]);
+   }
+ }
+ 
+-function buildReply(text: string): string {
++function matchRegex(text: string): string | null {
+   const lower = text.toLowerCase();
+   if (/(สวัสดี|hello|hi)/i.test(lower)) {
+     return "สวัสดีครับ! ผมคือ LungNote bot 📓\nพิมพ์ 'dashboard' เพื่อเปิดเว็บ\nพิมพ์ 'ช่วย' เพื่อดูคำสั่ง";
+@@ -135,15 +530,21 @@
+   if (/(เกี่ยว|about)/i.test(lower)) {
+     return `LungNote — แอปจดโน้ตเรียบง่ายสำหรับนักเรียนไทย\n${SITE_URL}`;
+   }
+-  return `รับข้อความแล้ว: "${text}"\nพิมพ์ 'ช่วย' เพื่อดูคำสั่ง`;
++  return null;
+ }
+ 
+ function helpText(): string {
+   return [
+     "คำสั่งที่ใช้ได้:",
+     "• dashboard — รับลิงก์เปิด Dashboard",
++    "• จด/บันทึก/todo/ทำ/เตือน/อย่าลืม <ข้อความ> — บันทึกความจำ",
++    "  ใส่วันที่ก็ได้ เช่น 'เตือน พรุ่งนี้ส่งการบ้านฟิสิกส์'",
++    "  หรือพิมพ์ 'เพิ่มสิ่งที่ต้องทำ <ข้อความ>'",
++    "• งานค้าง / ดูงาน / ดูโน้ต — ดูงานที่ค้างอยู่",
+     "• สวัสดี — ทักทาย",
+     "• เว็บ — ลิงก์ไปเว็บ",
+     "• เกี่ยวกับ — เกี่ยวกับ LungNote",
++    "",
++    "💡 ข้อความอื่นๆ จะถูก AI ช่วยตอบ (จำได้ 5 ข้อความล่าสุด)",
+   ].join("\n");
+ }
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app: apple-icon.png
+Only in /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/app: apple-icon.tsx
+diff -ru -x node_modules -x .next -x .git -x .obsidian -x *.tsbuildinfo /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/app/auth/line/error/page.tsx /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/auth/line/error/page.tsx
+--- /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/app/auth/line/error/page.tsx	2026-05-08 04:12:42
++++ /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/auth/line/error/page.tsx	2026-05-20 12:12:35
+@@ -8,6 +8,8 @@
+     "ลิงก์หมดอายุหรือถูกใช้ไปแล้ว — กลับไปที่ LINE OA แล้วพิมพ์ 'dashboard' เพื่อรับลิงก์ใหม่",
+   create_user_failed: "สร้างบัญชีไม่สำเร็จ — ลองอีกครั้งภายหลัง",
+   magic_link_failed: "สร้าง session ไม่สำเร็จ — ลองอีกครั้งภายหลัง",
++  admin_required:
++    "หน้า admin จำกัดเฉพาะผู้ดูแลระบบ — login ด้วย LINE userId ที่อยู่ใน allowlist เท่านั้น",
+ };
+ 
+ export default async function AuthLineErrorPage({
+diff -ru -x node_modules -x .next -x .git -x .obsidian -x *.tsbuildinfo /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/app/auth/line/route.ts /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/auth/line/route.ts
+--- /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/app/auth/line/route.ts	2026-05-08 04:15:21
++++ /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/auth/line/route.ts	2026-05-20 12:12:35
+@@ -3,6 +3,7 @@
+ import { syntheticEmailFromLineUserId } from "@/lib/auth/synthetic-email";
+ import { getLineProfile } from "@/lib/line/profile";
+ import { createAdminClient } from "@/lib/supabase/admin";
++import { createClient as createServerClient } from "@/lib/supabase/server";
+ 
+ export const runtime = "nodejs";
+ export const dynamic = "force-dynamic";
+@@ -20,16 +21,15 @@
+ 
+   const admin = createAdminClient();
+ 
+-  const { data: profileRow } = (await admin
++  const { data: profileRow } = await admin
+     .from("lungnote_profiles")
+     .select("id")
+     .eq("line_user_id", lineUserId)
+-    .maybeSingle()) as { data: { id: string } | null };
++    .maybeSingle();
+ 
+   let userId: string;
+   if (profileRow?.id) {
+     userId = profileRow.id;
+-    // refresh profile fields
+     if (profile) {
+       await admin
+         .from("lungnote_profiles")
+@@ -40,24 +40,20 @@
+         .eq("id", userId);
+     }
+   } else {
+-    // create auth user
+-    const { data: created, error: createErr } = await admin.auth.admin.createUser(
+-      {
+-        email,
+-        email_confirm: true,
+-        user_metadata: {
+-          provider: "line",
+-          line_user_id: lineUserId,
+-          display_name: profile?.displayName ?? null,
+-        },
++    const { data: created, error: createErr } = await admin.auth.admin.createUser({
++      email,
++      email_confirm: true,
++      user_metadata: {
++        provider: "line",
++        line_user_id: lineUserId,
++        display_name: profile?.displayName ?? null,
+       },
+-    );
++    });
+     if (createErr || !created.user) {
+       return errorRedirect(req, "create_user_failed");
+     }
+     userId = created.user.id;
+ 
+-    // upsert profile row
+     await admin.from("lungnote_profiles").insert({
+       id: userId,
+       line_user_id: lineUserId,
+@@ -66,20 +62,30 @@
+     });
+   }
+ 
+-  // mint magic link → redirect browser to Supabase verify URL → cookie set → /dashboard
+-  const redirectTo = new URL("/dashboard", siteUrl(req)).toString();
+-  const { data: linkData, error: linkErr } =
+-    await admin.auth.admin.generateLink({
+-      type: "magiclink",
+-      email,
+-      options: { redirectTo },
+-    });
+-
+-  if (linkErr || !linkData.properties?.action_link) {
++  // Mint a magic-link, but DO NOT redirect the browser to the Supabase
++  // verify endpoint (which would land at the project Site URL with
++  // #access_token=… fragment). Instead, take the hashed_token and verify
++  // it server-side via our cookie-aware @supabase/ssr client — that sets
++  // the auth cookies on this response, then we redirect to /dashboard
++  // ourselves.
++  const { data: linkData, error: linkErr } = await admin.auth.admin.generateLink({
++    type: "magiclink",
++    email,
++  });
++  if (linkErr || !linkData.properties?.hashed_token) {
+     return errorRedirect(req, "magic_link_failed");
+   }
+ 
+-  return NextResponse.redirect(linkData.properties.action_link);
++  const supabase = await createServerClient();
++  const { error: verifyErr } = await supabase.auth.verifyOtp({
++    type: "magiclink",
++    token_hash: linkData.properties.hashed_token,
++  });
++  if (verifyErr) {
++    return errorRedirect(req, "verify_failed");
++  }
++
++  return NextResponse.redirect(new URL("/dashboard", siteUrl(req)));
+ }
+ 
+ function errorRedirect(req: NextRequest, code: string): NextResponse {
+diff -ru -x node_modules -x .next -x .git -x .obsidian -x *.tsbuildinfo /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/app/globals.css /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/globals.css
+--- /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/app/globals.css	2026-05-07 21:32:55
++++ /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/globals.css	2026-05-20 12:12:35
+@@ -122,6 +122,10 @@
+   * {
+     @apply border-border outline-ring/50;
+   }
++  html,
++  body {
++    overscroll-behavior: none;
++  }
+   body {
+     @apply bg-background text-foreground;
+   }
+diff -ru -x node_modules -x .next -x .git -x .obsidian -x *.tsbuildinfo /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/app/icon.svg /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/icon.svg
+--- /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/app/icon.svg	2026-05-07 21:36:11
++++ /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/icon.svg	2026-05-20 12:12:35
+@@ -1,5 +1,28 @@
+-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="32" height="32">
+-  <rect width="48" height="48" rx="8" fill="#faf8f4"/>
+-  <rect x="6" y="6" width="36" height="36" rx="4" fill="none" stroke="#2c2a25" stroke-width="3"/>
+-  <path d="M14 24 L21 31 L34 16" fill="none" stroke="#6aab8e" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
++<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="512" height="512" fill="none" stroke="#3a3020" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
++  <rect width="200" height="200" rx="44" fill="#f5ead4" stroke="none"/>
++  <!-- Square box — wobbly edges -->
++  <path d="M42 38 Q44 35 52 34 Q80 32 100 32 Q130 31 148 34 Q156 35 158 38 Q162 48 163 70 Q164 100 163 128 Q162 148 158 156 Q156 160 148 162 Q130 164 100 164 Q70 164 52 162 Q44 160 42 156 Q38 148 38 128 Q37 100 38 70 Q38 48 42 38Z"/>
++  <!-- Sketch overlay -->
++  <path d="M43 39 Q45 36 54 35 Q82 33 102 33 Q132 32 150 35 Q157 36 159 39 Q163 50 164 72 Q165 102 164 130 Q163 150 159 157 Q157 161 150 163 Q132 165 102 165 Q72 165 54 163 Q45 161 43 157 Q39 150 39 130 Q38 102 39 72 Q39 50 43 39Z" stroke-width="1.5" opacity="0.3"/>
++  <!-- Long tape — wobbly -->
++  <path d="M54 30 Q56 26 64 24 Q80 22 100 22 Q120 22 136 24 Q144 26 146 30 Q148 34 148 38 Q146 44 144 46 Q136 48 120 48 Q100 48 80 48 Q64 46 56 44 Q54 42 54 38 Q54 34 54 30Z" stroke-width="2.5"/>
++  <!-- Tape texture -->
++  <path d="M68 30 Q70 26 72 34 Q74 42 72 46" stroke-width="1" opacity="0.25"/>
++  <path d="M100 28 Q102 24 104 34 Q106 44 104 48" stroke-width="1" opacity="0.25"/>
++  <path d="M132 30 Q134 26 136 34 Q138 42 136 46" stroke-width="1" opacity="0.25"/>
++  <!-- Eyes -->
++  <circle cx="74" cy="78" r="12" fill="#3a3020" stroke="none"/>
++  <circle cx="126" cy="76" r="10" fill="#3a3020" stroke="none"/>
++  <!-- Check mouth -->
++  <path d="M76 114 Q78 116 80 118 Q84 122 90 128 Q94 126 100 118 Q108 108 118 98 Q122 94 126 92" stroke-width="5"/>
++  <path d="M77 115 Q80 118 84 122 Q88 126 91 129 Q95 125 102 116 Q112 104 120 96 Q124 92 127 91" stroke-width="2" opacity="0.25"/>
++  <!-- Left arm -->
++  <path d="M36 82 Q28 76 20 74 Q12 72 6 78 Q2 84 4 90"/>
++  <path d="M2 86 Q4 82 8 84 Q10 88 6 92" stroke-width="2.5"/>
++  <!-- Right arm -->
++  <path d="M164 80 Q172 74 180 72 Q188 70 194 76 Q198 82 196 88"/>
++  <path d="M198 84 Q196 80 192 82 Q190 86 194 90" stroke-width="2.5"/>
++  <!-- Feet -->
++  <path d="M62 162 Q64 168 66 172 Q68 176 76 178 Q84 176 86 172 Q88 168 86 162" stroke-width="3"/>
++  <path d="M114 162 Q116 168 118 172 Q120 176 128 178 Q136 176 138 172 Q140 168 138 162" stroke-width="3"/>
+ </svg>
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app: liff
+diff -ru -x node_modules -x .next -x .git -x .obsidian -x *.tsbuildinfo /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/app/manifest.ts /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/manifest.ts
+--- /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/app/manifest.ts	2026-05-07 21:36:04
++++ /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/manifest.ts	2026-05-20 12:12:35
+@@ -9,23 +9,16 @@
+     start_url: "/",
+     scope: "/",
+     display: "standalone",
+-    background_color: "#faf8f4",
+-    theme_color: "#faf8f4",
++    background_color: "#f5ead4",
++    theme_color: "#f5ead4",
+     orientation: "portrait",
+     lang: "th",
+     icons: [
+-      {
+-        src: "/icon.svg",
+-        sizes: "any",
+-        type: "image/svg+xml",
+-        purpose: "any",
+-      },
+-      {
+-        src: "/icon-maskable.svg",
+-        sizes: "any",
+-        type: "image/svg+xml",
+-        purpose: "maskable",
+-      },
++      { src: "/lungnote-icon-180.png", sizes: "180x180", type: "image/png" },
++      { src: "/lungnote-icon-256.png", sizes: "256x256", type: "image/png" },
++      { src: "/lungnote-icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
++      { src: "/lungnote-icon-1024.png", sizes: "1024x1024", type: "image/png", purpose: "maskable" },
++      { src: "/icon.svg", sizes: "any", type: "image/svg+xml", purpose: "any" },
+     ],
+   };
+ }
+diff -ru -x node_modules -x .next -x .git -x .obsidian -x *.tsbuildinfo /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/app/opengraph-image.tsx /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/opengraph-image.tsx
+--- /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/app/opengraph-image.tsx	2026-05-07 22:57:43
++++ /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/app/opengraph-image.tsx	2026-05-20 12:12:35
+@@ -11,7 +11,7 @@
+         style={{
+           width: "100%",
+           height: "100%",
+-          background: "#faf8f4",
++          background: "#f5ead4",
+           display: "flex",
+           flexDirection: "column",
+           alignItems: "center",
+@@ -34,42 +34,39 @@
+             viewBox="0 0 48 48"
+             xmlns="http://www.w3.org/2000/svg"
+           >
+-            <rect
+-              x={6}
+-              y={6}
+-              width={36}
+-              height={36}
+-              rx={4}
++            {/* Cardboard mascot — wobbly box with check-mouth (ADR-0013).
++                Coords scaled from design/mascot-icon/lungnote-mascot-icon.svg. */}
++            <g
+               fill="none"
+-              stroke="#2c2a25"
+-              strokeWidth={3}
+-            />
+-            <path
+-              d="M14 24 L21 31 L34 16"
+-              fill="none"
+-              stroke="#6aab8e"
+-              strokeWidth={3.5}
++              stroke="#3a3020"
++              strokeWidth={1.4}
+               strokeLinecap="round"
+               strokeLinejoin="round"
+-            />
++            >
++              <path d="M10 9.6 Q10.4 9 12.4 8.8 Q19.2 8.4 24 8.4 Q31.2 8.2 35.4 8.8 Q37.4 9 38 9.6 Q38.8 12 39 16.8 Q39.4 24 39 30.8 Q38.8 35.4 38 37.4 Q37.4 38.4 35.4 38.8 Q31.2 39.4 24 39.4 Q16.8 39.4 12.4 38.8 Q10.4 38.4 10 37.4 Q9.2 35.4 9 30.8 Q8.6 24 9 16.8 Q9 12 10 9.6Z" />
++              <path d="M13 8 Q13.6 7.2 15.4 6.8 Q19.2 6.4 24 6.4 Q28.8 6.4 32.6 6.8 Q34.4 7.2 35 8 Q35.4 8.6 35.4 9.6 Q35 10.8 34.4 11 Q32.6 11.4 28.8 11.4 Q24 11.4 19.2 11.4 Q15.4 11 13.6 10.8 Q13 10.4 13 9.6 Q13 8.6 13 8Z" strokeWidth={1} />
++              <circle cx={17.8} cy={18.6} r={2.4} fill="#3a3020" stroke="none" />
++              <circle cx={30.2} cy={18.2} r={2} fill="#3a3020" stroke="none" />
++              <path d="M18 27.4 Q20 29.2 21.6 30.8 Q22.6 30.4 24 28.4 Q26 25.8 30.2 22" strokeWidth={2} stroke="#c9a040" />
++            </g>
+           </svg>
+           <div
+             style={{
+               display: "flex",
+               fontSize: 96,
+               fontWeight: 700,
+-              color: "#2c2a25",
++              color: "#3a3020",
+               letterSpacing: -2,
+             }}
+           >
+             <span>Lung</span>
+-            <span style={{ color: "#6aab8e" }}>Note</span>
++            <span style={{ color: "#c9a040" }}>Note</span>
+           </div>
+         </div>
+         <div
+           style={{
+             fontSize: 48,
+-            color: "#2c2a25",
++            color: "#3a3020",
+             textAlign: "center",
+             lineHeight: 1.2,
+             maxWidth: 900,
+@@ -80,7 +77,7 @@
+         <div
+           style={{
+             fontSize: 28,
+-            color: "#8a8578",
++            color: "#a08050",
+             textAlign: "center",
+             marginTop: 24,
+           }}
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/components: MascotMark.tsx
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/components/landing: BrandStory.tsx
+diff -ru -x node_modules -x .next -x .git -x .obsidian -x *.tsbuildinfo /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/components/landing/Features.tsx /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/components/landing/Features.tsx
+--- /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/components/landing/Features.tsx	2026-05-07 23:42:51
++++ /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/components/landing/Features.tsx	2026-05-20 12:12:35
+@@ -1,4 +1,5 @@
+ import type { LandingContent } from "./content";
++import { MascotMark } from "@/components/MascotMark";
+ 
+ const icons = [
+   (
+@@ -16,26 +17,14 @@
+       <path d="M18 22 Q24 20 30 22 T42 22" filter="url(#sketchy)" />
+       <path d="M18 30 Q22 28 26 30" filter="url(#sketchy)" />
+       <path d="M18 38 Q26 36 34 38 T40 38" filter="url(#sketchy)" />
+-      <circle cx={40} cy={10} r={4} fill="#f0d87a" stroke="none" />
++      <circle cx={40} cy={10} r={4} fill="#d4a855" stroke="none" />
+     </svg>
+   ),
++  // "Checklist" feature → mascot itself (the box has a check-mouth, doubles
++  // as the checklist visual). ADR-0013 follow-up.
++  <MascotMark key="check" size={56} />,
+   (
+     <svg
+-      key="check"
+-      viewBox="0 0 56 56"
+-      fill="none"
+-      stroke="currentColor"
+-      strokeWidth={2}
+-      strokeLinecap="round"
+-      strokeLinejoin="round"
+-      aria-hidden="true"
+-    >
+-      <rect x={10} y={10} width={36} height={36} rx={2} filter="url(#sketchy)" />
+-      <path d="M18 28 L24 34 L38 20" strokeWidth={3} filter="url(#sketchy)" />
+-    </svg>
+-  ),
+-  (
+-    <svg
+       key="folder"
+       viewBox="0 0 56 56"
+       fill="none"
+@@ -49,7 +38,7 @@
+         d="M8 44 L8 14 C8 12 10 10 12 10 L22 10 L26 16 L44 16 C46 16 48 18 48 20 L48 44 C48 46 46 48 44 48 L12 48 C10 48 8 46 8 44Z"
+         filter="url(#sketchy)"
+       />
+-      <circle cx={28} cy={34} r={3} fill="#6aab8e" stroke="none" />
++      <circle cx={28} cy={34} r={3} fill="#c9a040" stroke="none" />
+     </svg>
+   ),
+ ];
+diff -ru -x node_modules -x .next -x .git -x .obsidian -x *.tsbuildinfo /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/components/landing/Hero.tsx /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/components/landing/Hero.tsx
+--- /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/components/landing/Hero.tsx	2026-05-07 23:42:42
++++ /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/components/landing/Hero.tsx	2026-05-20 12:12:35
+@@ -9,7 +9,7 @@
+         height={48}
+         viewBox="0 0 48 48"
+         fill="none"
+-        stroke="#2c2a25"
++        stroke="#3a3020"
+         strokeWidth={2}
+         aria-hidden="true"
+       >
+@@ -25,7 +25,7 @@
+         height={40}
+         viewBox="0 0 40 40"
+         fill="none"
+-        stroke="#6aab8e"
++        stroke="#c9a040"
+         strokeWidth={2}
+         aria-hidden="true"
+       >
+@@ -37,7 +37,7 @@
+         height={40}
+         viewBox="0 0 60 40"
+         fill="none"
+-        stroke="#2c2a25"
++        stroke="#3a3020"
+         strokeWidth={2}
+         strokeLinecap="round"
+         aria-hidden="true"
+@@ -55,7 +55,8 @@
+         {content.titleAfter}
+       </h1>
+       <p className="subtitle">{content.subtitle}</p>
+-      <a href="#download" className="btn-sketchy">
++      {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
++      <a href="/api/auth/line/oauth/start" className="btn-sketchy">
+         {content.cta}
+       </a>
+ 
+diff -ru -x node_modules -x .next -x .git -x .obsidian -x *.tsbuildinfo /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/components/landing/LogoMark.tsx /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/components/landing/LogoMark.tsx
+--- /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/components/landing/LogoMark.tsx	2026-05-07 21:34:21
++++ /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/components/landing/LogoMark.tsx	2026-05-20 12:12:35
+@@ -1,39 +1,14 @@
++import { MascotMark } from "@/components/MascotMark";
++
+ type LogoMarkProps = {
+   size?: number;
+   className?: string;
+ };
+ 
++/**
++ * Re-export shim: kept so existing landing imports (`./LogoMark`) still work
++ * while the underlying mark is now the shared MascotMark (ADR-0013 follow-up).
++ */
+ export function LogoMark({ size = 36, className }: LogoMarkProps) {
+-  return (
+-    <svg
+-      className={className}
+-      width={size}
+-      height={size}
+-      viewBox="0 0 48 48"
+-      fill="none"
+-      xmlns="http://www.w3.org/2000/svg"
+-      aria-hidden="true"
+-    >
+-      <g filter="url(#sketchy)">
+-        <rect
+-          x={6}
+-          y={6}
+-          width={36}
+-          height={36}
+-          rx={4}
+-          stroke="currentColor"
+-          strokeWidth={3}
+-          fill="none"
+-        />
+-        <path
+-          d="M14 24 L21 31 L34 16"
+-          stroke="currentColor"
+-          strokeWidth={3.5}
+-          strokeLinecap="round"
+-          strokeLinejoin="round"
+-          fill="none"
+-        />
+-      </g>
+-    </svg>
+-  );
++  return <MascotMark size={size} className={className} />;
+ }
+diff -ru -x node_modules -x .next -x .git -x .obsidian -x *.tsbuildinfo /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/components/landing/Nav.tsx /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/components/landing/Nav.tsx
+--- /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/components/landing/Nav.tsx	2026-05-07 23:42:31
++++ /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/components/landing/Nav.tsx	2026-05-20 12:12:35
+@@ -25,7 +25,11 @@
+             <a href="#faq">{content.faq}</a>
+           </li>
+           <li>
+-            <a href="#download" className="btn-sketchy btn-nav">
++            {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
++            <a
++              href="/api/auth/line/oauth/start"
++              className="btn-sketchy btn-nav"
++            >
+               {content.download}
+             </a>
+           </li>
+diff -ru -x node_modules -x .next -x .git -x .obsidian -x *.tsbuildinfo /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/components/landing/content.ts /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/components/landing/content.ts
+--- /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/components/landing/content.ts	2026-05-07 23:42:20
++++ /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/components/landing/content.ts	2026-05-20 12:12:35
+@@ -29,6 +29,12 @@
+     todos: { text: string; done: boolean }[];
+     noteLine: string;
+   };
++  brand: {
++    label: string;
++    name: string;
++    pronunciation: string;
++    body: string;
++  };
+   features: {
+     label: string;
+     titleLine1: string;
+@@ -77,7 +83,7 @@
+     how: "วิธีใช้",
+     reviews: "รีวิว",
+     faq: "คำถาม",
+-    download: "ดาวน์โหลด",
++    download: "เริ่มเลย",
+   },
+   hero: {
+     eyebrow: "Note-taking for students",
+@@ -87,7 +93,7 @@
+     titleAfter: "ของคุณ",
+     subtitle:
+       "โน้ต เช็คลิสต์ และไอเดีย — ทุกอย่างอยู่ในที่เดียว เรียบง่ายเหมือนเปิดสมุดโน้ตเล่มใหม่",
+-    cta: "เริ่มจดฟรี →",
++    cta: "เริ่มเลย →",
+     notebookHeader: "บันทึกของฉัน — วันนี้",
+     todos: [
+       { text: "อ่านบท 5 วิชาฟิสิกส์", done: true },
+@@ -97,6 +103,12 @@
+     ],
+     noteLine: "อย่าลืมถามอาจารย์เรื่องเกรด...",
+   },
++  brand: {
++    label: "~ ทำความรู้จักกับเรา ~",
++    name: "LungNote",
++    pronunciation: "อ่านว่า ลังโน้ต",
++    body: "เราเป็นลัง (กล่องกระดาษสีเหลือง) ที่จะคอยช่วยคุณจดโน้ตและเตือนความจำของคุณ ไม่ว่าโน้ตจะสั้นหรือยาว เราช่วยได้ทั้งหมด — เพื่อให้คุณไม่ลืมสิ่งที่จะต้องทำในอนาคต",
++  },
+   features: {
+     label: "~ จุดเด่น ~",
+     titleLine1: "ทุกอย่างที่ต้องการ",
+@@ -215,7 +227,7 @@
+     how: "How it works",
+     reviews: "Reviews",
+     faq: "FAQ",
+-    download: "Download",
++    download: "Start now",
+   },
+   hero: {
+     eyebrow: "Note-taking for students",
+@@ -225,7 +237,7 @@
+     titleAfter: "",
+     subtitle:
+       "Notes, checklists, and ideas — all in one place. As simple as opening a fresh notebook.",
+-    cta: "Start writing — free →",
++    cta: "Start now →",
+     notebookHeader: "My notes — today",
+     todos: [
+       { text: "Read chapter 5 of physics", done: true },
+@@ -234,6 +246,12 @@
+       { text: "Prep Wednesday presentation", done: false },
+     ],
+     noteLine: "Don't forget to ask the teacher about grades...",
++  },
++  brand: {
++    label: "~ Meet LungNote ~",
++    name: "LungNote",
++    pronunciation: 'pronounced "Lung-Note" — Lung means "box" in Thai',
++    body: "We're the cardboard box (a yellow one) that helps you jot down notes and remember things — short notes, long notes, we hold them all. So you never forget what you need to do next.",
+   },
+   features: {
+     label: "~ Features ~",
+diff -ru -x node_modules -x .next -x .git -x .obsidian -x *.tsbuildinfo /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/components/landing/landing.css /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/components/landing/landing.css
+--- /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/components/landing/landing.css	2026-05-07 21:34:10
++++ /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/components/landing/landing.css	2026-05-20 12:12:35
+@@ -1,13 +1,13 @@
+ .lungnote-landing {
+-  --bg: #faf8f4;
+-  --surface: #fffef9;
+-  --border: #e0ddd4;
+-  --muted: #8a8578;
+-  --fg: #2c2a25;
+-  --accent: #6aab8e;
+-  --accent-light: #e8f4ed;
+-  --yellow: #f0d87a;
+-  --yellow-light: #fdf6dc;
++  --bg: #f5ead4;
++  --surface: #faf5e8;
++  --border: #d4c4a0;
++  --muted: #a08050;
++  --fg: #3a3020;
++  --accent: #c9a040;
++  --accent-light: #f0e4c4;
++  --yellow: #d4a855;
++  --yellow-light: #f0e4c4;
+ 
+   --max-w: 1080px;
+   --px: 24px;
+@@ -23,9 +23,9 @@
+     --bg: #1e1e1c;
+     --surface: #2a2a28;
+     --border: #3a3835;
+-    --muted: #8a8578;
++    --muted: #a08050;
+     --fg: #e8e6e0;
+-    --accent: #6aab8e;
++    --accent: #c9a040;
+     --accent-light: #1a3328;
+     --yellow: #b8a550;
+     --yellow-light: #3d3a2a;
+@@ -182,6 +182,57 @@
+   color: var(--border);
+ }
+ 
++/* ── Brand story (Meet LungNote) ─────────────────────────────────── */
++.lungnote-landing .brand-story {
++  padding: 48px 0;
++}
++.lungnote-landing .brand-story-inner {
++  display: grid;
++  grid-template-columns: auto 1fr;
++  gap: 40px;
++  align-items: center;
++  max-width: 720px;
++  margin: 0 auto;
++}
++.lungnote-landing .brand-story-mascot {
++  color: var(--fg);
++  flex-shrink: 0;
++  filter: drop-shadow(0 4px 0 var(--accent-light));
++}
++.lungnote-landing .brand-story-name {
++  font-family: var(--font-display);
++  font-size: clamp(40px, 7vw, 60px);
++  font-weight: 700;
++  line-height: 1;
++  color: var(--fg);
++  margin-bottom: 6px;
++}
++.lungnote-landing .brand-story-pron {
++  font-family: var(--font-display);
++  font-size: 22px;
++  color: var(--accent);
++  margin-bottom: 14px;
++}
++.lungnote-landing .brand-story-body {
++  font-size: 17px;
++  line-height: 1.75;
++  color: var(--fg);
++  max-width: 480px;
++}
++@media (max-width: 640px) {
++  .lungnote-landing .brand-story-inner {
++    grid-template-columns: 1fr;
++    text-align: center;
++    gap: 20px;
++  }
++  .lungnote-landing .brand-story-mascot {
++    margin: 0 auto;
++  }
++  .lungnote-landing .brand-story-body {
++    margin: 0 auto;
++  }
++}
++
+ .lungnote-landing .doodle-star,
+ .lungnote-landing .doodle-arrow,
+ .lungnote-landing .doodle-circle {
+@@ -223,7 +274,7 @@
+   left: 0;
+   right: 0;
+   height: 6px;
+-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='6'%3E%3Cpath d='M0 3 Q10 0 20 3 T40 3 T60 3 T80 3' fill='none' stroke='%236aab8e' stroke-width='1.5'/%3E%3C/svg%3E")
++  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='6'%3E%3Cpath d='M0 3 Q10 0 20 3 T40 3 T60 3 T80 3' fill='none' stroke='%23c9a040' stroke-width='1.5'/%3E%3C/svg%3E")
+     repeat-x;
+   background-size: 80px 6px;
+ }
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/lib: admin
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/lib: agent
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/lib: ai
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/lib/auth: liff-verify.ts
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/lib/auth: line-oauth.ts
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/lib/auth: line-session.ts
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/lib: gmail
+diff -ru -x node_modules -x .next -x .git -x .obsidian -x *.tsbuildinfo /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/lib/line/client.ts /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/lib/line/client.ts
+--- /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/lib/line/client.ts	2026-05-08 01:52:05
++++ /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/lib/line/client.ts	2026-05-20 12:12:35
+@@ -3,8 +3,15 @@
+ const LINE_API = "https://api.line.me/v2/bot";
+ 
+ export type TextMessage = { type: "text"; text: string };
+-export type LineMessage = TextMessage;
+ 
++export type FlexMessage = {
++  type: "flex";
++  altText: string;
++  contents: Record<string, unknown>;
++};
++
++export type LineMessage = TextMessage | FlexMessage;
++
+ export async function replyMessage(
+   replyToken: string,
+   messages: LineMessage[],
+@@ -19,6 +26,41 @@
+       Authorization: `Bearer ${token}`,
+     },
+     body: JSON.stringify({ replyToken, messages }),
++  });
++
++  return {
++    ok: res.ok,
++    status: res.status,
++    detail: res.ok ? undefined : await res.text(),
++  };
++}
++
++/**
++ * Show the "..." typing indicator in the LINE chat. Auto-clears as soon as
++ * the bot sends its real reply, or after `loadingSeconds` expires (max 60).
++ *
++ * Best-effort: fire-and-forget from the webhook handler so the user sees
++ * the dots even if the indicator API is slow. Failure is non-fatal.
++ *
++ * Docs: https://developers.line.biz/en/reference/messaging-api/#display-a-loading-indicator
++ */
++export async function displayLoadingAnimation(
++  chatId: string,
++  loadingSeconds = 20,
++): Promise<{ ok: boolean; status: number; detail?: string }> {
++  const token = process.env.LINE_CHANNEL_ACCESS_TOKEN;
++  if (!token) return { ok: false, status: 0, detail: "missing token" };
++
++  const res = await fetch(`${LINE_API}/chat/loading/start`, {
++    method: "POST",
++    headers: {
++      "Content-Type": "application/json",
++      Authorization: `Bearer ${token}`,
++    },
++    body: JSON.stringify({
++      chatId,
++      loadingSeconds: Math.max(5, Math.min(60, loadingSeconds)),
++    }),
+   });
+ 
+   return {
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/lib/line: flex-templates
+diff -ru -x node_modules -x .next -x .git -x .obsidian -x *.tsbuildinfo /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/lib/line/flex.ts /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/lib/line/flex.ts
+--- /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/lib/line/flex.ts	2026-05-08 04:11:48
++++ /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/lib/line/flex.ts	2026-05-20 12:12:35
+@@ -1,34 +1,79 @@
+-import type { LineMessage } from "./client";
++import type { FlexMessage, LineMessage } from "./client";
++import welcomeTemplate from "./flex-templates/welcome.json";
++import dashboardLinkTemplate from "./flex-templates/dashboard-link.json";
+ 
+-// Minimal text-message stand-ins until designer-supplied Flex JSON lands
+-// (see wikis/50-Workflows/Designer-Handoff-LINE-Dashboard.md §2)
++// Designer-supplied Flex JSON lives in ./flex-templates/.
++// Each template ships with the placeholder `YOUR_LIFF_ID` baked into
++// LIFF launcher URIs (https://liff.line.me/YOUR_LIFF_ID?next=...).
++// At runtime we swap that token for the real LIFF id from env so the
++// button opens the LIFF launcher → auto-login → next path.
++// AI-driven templates (todo_*, error_inline, multi_save_summary) go
++// through the separate builder in @/lib/agent/flex/templates.ts.
+ 
+-export function dashboardLinkMessage(url: string): LineMessage[] {
+-  return [
+-    {
+-      type: "text",
+-      text: [
+-        "🔗 ลิงก์ Dashboard ของคุณ",
+-        url,
+-        "",
+-        "ลิงก์ใช้ได้ภายใน 5 นาที, 1 ครั้งเท่านั้น.",
+-        "ถ้าหมดอายุ พิมพ์ 'dashboard' อีกครั้ง.",
+-      ].join("\n"),
+-    },
+-  ];
++const SITE_URL = "https://lungnote.com";
++
++function getLiffId(): string {
++  return (process.env.NEXT_PUBLIC_LINE_LIFF_ID ?? "").trim();
+ }
+ 
++/**
++ * Resolve YOUR_LIFF_ID inside a URI.
++ *
++ * - LIFF id configured → swap YOUR_LIFF_ID → real id. The LIFF launcher
++ *   handles auth automatically via id_token.
++ * - No LIFF id (dev / preview) → fall back to the one-time auth-link
++ *   URL if provided, else a plain SITE_URL+path deep link.
++ */
++function resolveLiffUri(uri: string, authUrl?: string): string {
++  if (!uri.includes("YOUR_LIFF_ID")) return uri;
++  const id = getLiffId();
++  if (id) return uri.replace("YOUR_LIFF_ID", id);
++  if (authUrl) return authUrl;
++  try {
++    const u = new URL(uri.replace("YOUR_LIFF_ID", "_"));
++    const next = u.searchParams.get("next");
++    const path = next ? decodeURIComponent(next) : "/th/dashboard";
++    return `${SITE_URL}${path}`;
++  } catch {
++    return `${SITE_URL}/th/dashboard`;
++  }
++}
++
++export function dashboardLinkMessage(authUrl: string): LineMessage[] {
++  const tpl = clone(dashboardLinkTemplate) as FlexMessage;
++  rewriteUriActions(tpl.contents, (uri) => resolveLiffUri(uri, authUrl));
++  return [tpl];
++}
++
+ export function welcomeMessage(): LineMessage[] {
+-  return [
+-    {
+-      type: "text",
+-      text: [
+-        "ยินดีต้อนรับสู่ LungNote 📓",
+-        "จดโน้ต เช็คลิสต์ จัดระเบียบชีวิต",
+-        "",
+-        "พิมพ์ 'dashboard' เพื่อรับลิงก์เปิดเว็บ",
+-        "พิมพ์ 'ช่วย' เพื่อดูเมนู",
+-      ].join("\n"),
+-    },
+-  ];
++  const tpl = clone(welcomeTemplate) as FlexMessage;
++  rewriteUriActions(tpl.contents, (uri) => resolveLiffUri(uri));
++  return [tpl];
++}
++
++// ---------- helpers ----------
++
++function clone<T>(value: T): T {
++  return JSON.parse(JSON.stringify(value));
++}
++
++function rewriteUriActions(
++  node: unknown,
++  rewrite: (uri: string) => string,
++): void {
++  if (Array.isArray(node)) {
++    for (const item of node) rewriteUriActions(item, rewrite);
++    return;
++  }
++  if (node && typeof node === "object") {
++    const obj = node as Record<string, unknown>;
++    const action = obj.action as Record<string, unknown> | undefined;
++    if (action && action.type === "uri" && typeof action.uri === "string") {
++      action.uri = rewrite(action.uri);
++    }
++    if (typeof obj.uri === "string" && obj.type === "uri") {
++      obj.uri = rewrite(obj.uri);
++    }
++    for (const v of Object.values(obj)) rewriteUriActions(v, rewrite);
++  }
+ }
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/lib/line: rich-menu.ts
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/lib: memory
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/lib: notes
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/lib: observability
+diff -ru -x node_modules -x .next -x .git -x .obsidian -x *.tsbuildinfo /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/lib/supabase/client.ts /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/lib/supabase/client.ts
+--- /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/lib/supabase/client.ts	2026-05-08 04:15:58
++++ /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/lib/supabase/client.ts	2026-05-20 12:12:35
+@@ -1,9 +1,18 @@
+ import { createBrowserClient } from "@supabase/ssr";
+ import type { Database } from "./database.types";
+ 
++/**
++ * `cookieEncoding: "raw"` works around a known bug in @supabase/ssr's
++ * default base64url encoder that throws "Invalid UTF-8 sequence" once
++ * a session cookie holds certain byte patterns. Confirmed by
++ * https://github.com/supabase/ssr/issues/67. Server + browser must
++ * agree on the encoding — set the same flag in middleware.ts and
++ * server.ts.
++ */
+ export function createClient() {
+   return createBrowserClient<Database>(
+     process.env.NEXT_PUBLIC_SUPABASE_URL!,
+     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
++    { cookieEncoding: "raw" },
+   );
+ }
+diff -ru -x node_modules -x .next -x .git -x .obsidian -x *.tsbuildinfo /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/lib/supabase/database.types.ts /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/lib/supabase/database.types.ts
+--- /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/lib/supabase/database.types.ts	2026-05-08 04:15:51
++++ /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/lib/supabase/database.types.ts	2026-06-14 10:32:12
+@@ -1,6 +1,5 @@
+ // Hand-written Database type for Supabase typing.
+-// Covers only the lungnote_* tables we touch from app code.
+-// Regenerate with `supabase gen types typescript --linked` once schema stabilises.
++// Covers lungnote_* tables. Regenerate with `supabase gen types typescript --linked` once stable.
+ 
+ export type Database = {
+   public: {
+@@ -57,10 +56,66 @@
+         };
+         Relationships: [];
+       };
++      lungnote_folders: {
++        Row: {
++          id: string;
++          user_id: string;
++          parent_folder_id: string | null;
++          name: string;
++          created_at: string;
++          updated_at: string;
++        };
++        Insert: {
++          id?: string;
++          user_id: string;
++          parent_folder_id?: string | null;
++          name: string;
++          created_at?: string;
++          updated_at?: string;
++        };
++        Update: {
++          id?: string;
++          user_id?: string;
++          parent_folder_id?: string | null;
++          name?: string;
++          updated_at?: string;
++        };
++        Relationships: [];
++      };
++      lungnote_notebooks: {
++        Row: {
++          id: string;
++          user_id: string;
++          folder_id: string | null;
++          name: string;
++          cover_color: string;
++          created_at: string;
++          updated_at: string;
++        };
++        Insert: {
++          id?: string;
++          user_id: string;
++          folder_id?: string | null;
++          name: string;
++          cover_color?: string;
++          created_at?: string;
++          updated_at?: string;
++        };
++        Update: {
++          id?: string;
++          user_id?: string;
++          folder_id?: string | null;
++          name?: string;
++          cover_color?: string;
++          updated_at?: string;
++        };
++        Relationships: [];
++      };
+       lungnote_notes: {
+         Row: {
+           id: string;
+           user_id: string;
++          notebook_id: string | null;
+           title: string;
+           body: string;
+           created_at: string;
+@@ -69,6 +124,7 @@
+         Insert: {
+           id?: string;
+           user_id: string;
++          notebook_id?: string | null;
+           title: string;
+           body?: string;
+           created_at?: string;
+@@ -77,9 +133,443 @@
+         Update: {
+           id?: string;
+           user_id?: string;
++          notebook_id?: string | null;
+           title?: string;
+           body?: string;
+           updated_at?: string;
++        };
++        Relationships: [];
++      };
++      lungnote_todos: {
++        Row: {
++          id: string;
++          user_id: string;
++          note_id: string;
++          text: string;
++          done: boolean;
++          position: number;
++          due_at: string | null;
++          due_text: string | null;
++          source: "chat" | "web" | "liff" | "email";
++          source_external_id: string | null;
++          source_url: string | null;
++          created_at: string;
++          updated_at: string;
++        };
++        Insert: {
++          id?: string;
++          user_id: string;
++          note_id: string;
++          text: string;
++          done?: boolean;
++          position?: number;
++          due_at?: string | null;
++          due_text?: string | null;
++          source?: "chat" | "web" | "liff" | "email";
++          source_external_id?: string | null;
++          source_url?: string | null;
++          created_at?: string;
++          updated_at?: string;
++        };
++        Update: {
++          id?: string;
++          user_id?: string;
++          note_id?: string;
++          text?: string;
++          done?: boolean;
++          position?: number;
++          due_at?: string | null;
++          due_text?: string | null;
++          source?: "chat" | "web" | "liff" | "email";
++          source_external_id?: string | null;
++          source_url?: string | null;
++          updated_at?: string;
++        };
++        Relationships: [];
++      };
++      lungnote_tags: {
++        Row: {
++          id: string;
++          user_id: string;
++          name: string;
++          color: string;
++          created_at: string;
++          updated_at: string;
++        };
++        Insert: {
++          id?: string;
++          user_id: string;
++          name: string;
++          color?: string;
++          created_at?: string;
++          updated_at?: string;
++        };
++        Update: {
++          id?: string;
++          user_id?: string;
++          name?: string;
++          color?: string;
++          updated_at?: string;
++        };
++        Relationships: [];
++      };
++      lungnote_notes_tags: {
++        Row: {
++          note_id: string;
++          tag_id: string;
++          created_at: string;
++        };
++        Insert: {
++          note_id: string;
++          tag_id: string;
++          created_at?: string;
++        };
++        Update: {
++          note_id?: string;
++          tag_id?: string;
++        };
++        Relationships: [];
++      };
++      lungnote_user_memory: {
++        Row: {
++          line_user_id: string;
++          memory: unknown;
++          updated_at: string;
++        };
++        Insert: {
++          line_user_id: string;
++          memory?: unknown;
++          updated_at?: string;
++        };
++        Update: {
++          line_user_id?: string;
++          memory?: unknown;
++          updated_at?: string;
++        };
++        Relationships: [];
++      };
++      lungnote_agent_settings: {
++        Row: {
++          id: string;
++          system_prompt_override: string | null;
++          notes: string | null;
++          updated_at: string;
++        };
++        Insert: {
++          id?: string;
++          system_prompt_override?: string | null;
++          notes?: string | null;
++          updated_at?: string;
++        };
++        Update: {
++          id?: string;
++          system_prompt_override?: string | null;
++          notes?: string | null;
++          updated_at?: string;
++        };
++        Relationships: [];
++      };
++      lungnote_chat_traces: {
++        Row: {
++          id: string;
++          trace_id: string;
++          line_user_id: string | null;
++          user_text: string;
++          path: "dashboard" | "list" | "memory" | "regex" | "ai" | "error";
++          history_count: number;
++          ai_iterations: number;
++          tool_calls: unknown;
++          reply_text: string | null;
++          meta: unknown;
++          error_text: string | null;
++          created_at: string;
++        };
++        Insert: {
++          id?: string;
++          trace_id: string;
++          line_user_id?: string | null;
++          user_text: string;
++          path: "dashboard" | "list" | "memory" | "regex" | "ai" | "error";
++          history_count?: number;
++          ai_iterations?: number;
++          tool_calls?: unknown;
++          reply_text?: string | null;
++          meta?: unknown;
++          error_text?: string | null;
++          created_at?: string;
++        };
++        Update: {
++          id?: string;
++          trace_id?: string;
++          line_user_id?: string | null;
++          user_text?: string;
++          path?: "dashboard" | "list" | "memory" | "regex" | "ai" | "error";
++          history_count?: number;
++          ai_iterations?: number;
++          tool_calls?: unknown;
++          reply_text?: string | null;
++          meta?: unknown;
++          error_text?: string | null;
++        };
++        Relationships: [];
++      };
++      lungnote_gmail_connections: {
++        Row: {
++          id: string;
++          user_id: string;
++          google_user_id: string;
++          email: string;
++          refresh_token_enc: string; // base64 ciphertext (text column)
++          access_token_enc: string | null;
++          access_token_expires_at: string | null;
++          scope: string;
++          status: "active" | "revoked" | "error" | "expired";
++          last_error: string | null;
++          last_history_id: string | null;
++          last_synced_at: string | null;
++          watch_expires_at: string | null;
++          watch_resource_state: string | null;
++          created_at: string;
++          updated_at: string;
++        };
++        Insert: {
++          id?: string;
++          user_id: string;
++          google_user_id: string;
++          email: string;
++          refresh_token_enc: string;
++          access_token_enc?: string | null;
++          access_token_expires_at?: string | null;
++          scope: string;
++          status?: "active" | "revoked" | "error" | "expired";
++          last_error?: string | null;
++          last_history_id?: string | null;
++          last_synced_at?: string | null;
++          watch_expires_at?: string | null;
++          watch_resource_state?: string | null;
++          created_at?: string;
++          updated_at?: string;
++        };
++        Update: {
++          id?: string;
++          user_id?: string;
++          google_user_id?: string;
++          email?: string;
++          refresh_token_enc?: string;
++          access_token_enc?: string | null;
++          access_token_expires_at?: string | null;
++          scope?: string;
++          status?: "active" | "revoked" | "error" | "expired";
++          last_error?: string | null;
++          last_history_id?: string | null;
++          last_synced_at?: string | null;
++          watch_expires_at?: string | null;
++          watch_resource_state?: string | null;
++          updated_at?: string;
++        };
++        Relationships: [];
++      };
++      lungnote_gmail_oauth_state: {
++        // Issue #79: single-use OAuth handshake ticket carrying identity into
++        // the external system browser (no sb-* session there). Service-role
++        // only. PK = sha256(state); raw state never stored.
++        Row: {
++          state_hash: string;
++          user_id: string;
++          tier: "read" | "send" | "edit" | "full";
++          created_at: string;
++          expires_at: string;
++        };
++        Insert: {
++          state_hash: string;
++          user_id: string;
++          tier?: "read" | "send" | "edit" | "full";
++          created_at?: string;
++          expires_at: string;
++        };
++        Update: {
++          state_hash?: string;
++          user_id?: string;
++          tier?: "read" | "send" | "edit" | "full";
++          created_at?: string;
++          expires_at?: string;
++        };
++        Relationships: [];
++      };
++      lungnote_gmail_synced_messages: {
++        Row: {
++          id: string;
++          user_id: string;
++          connection_id: string;
++          message_id: string;
++          thread_id: string | null;
++          internal_date: string | null;
++          from_truncated: string | null;
++          subject_truncated: string | null;
++          scanned_at: string;
++          is_todo: boolean;
++          todo_id: string | null;
++          ai_reason: string | null;
++          suggested_actions: unknown; // jsonb — ClassifiedAction[] in app code
++        };
++        Insert: {
++          id?: string;
++          user_id: string;
++          connection_id: string;
++          message_id: string;
++          thread_id?: string | null;
++          internal_date?: string | null;
++          from_truncated?: string | null;
++          subject_truncated?: string | null;
++          scanned_at?: string;
++          is_todo?: boolean;
++          todo_id?: string | null;
++          ai_reason?: string | null;
++          suggested_actions?: unknown;
++        };
++        Update: {
++          id?: string;
++          user_id?: string;
++          connection_id?: string;
++          message_id?: string;
++          thread_id?: string | null;
++          internal_date?: string | null;
++          from_truncated?: string | null;
++          subject_truncated?: string | null;
++          scanned_at?: string;
++          is_todo?: boolean;
++          todo_id?: string | null;
++          ai_reason?: string | null;
++          suggested_actions?: unknown;
++        };
++        Relationships: [];
++      };
++      lungnote_quick_actions: {
++        Row: {
++          id: string;
++          user_id: string;
++          label: string;
++          body: string;
++          intent: "approve" | "reject" | "ask" | "ack" | "other";
++          scope: "global" | "category";
++          match_category: string | null;
++          need_reason: boolean;
++          emoji: string | null;
++          position: number;
++          enabled: boolean;
++          created_at: string;
++          updated_at: string;
++        };
++        Insert: {
++          id?: string;
++          user_id: string;
++          label: string;
++          body: string;
++          intent?: "approve" | "reject" | "ask" | "ack" | "other";
++          scope?: "global" | "category";
++          match_category?: string | null;
++          need_reason?: boolean;
++          emoji?: string | null;
++          position?: number;
++          enabled?: boolean;
++          created_at?: string;
++          updated_at?: string;
++        };
++        Update: {
++          id?: string;
++          user_id?: string;
++          label?: string;
++          body?: string;
++          intent?: "approve" | "reject" | "ask" | "ack" | "other";
++          scope?: "global" | "category";
++          match_category?: string | null;
++          need_reason?: boolean;
++          emoji?: string | null;
++          position?: number;
++          enabled?: boolean;
++          created_at?: string;
++          updated_at?: string;
++        };
++        Relationships: [];
++      };
++      lungnote_email_replies: {
++        Row: {
++          id: string;
++          user_id: string;
++          todo_id: string;
++          thread_id: string | null;
++          message_id: string | null;
++          body: string;
++          status: "sent" | "failed";
++          gmail_message_id: string | null;
++          error: string | null;
++          created_at: string;
++        };
++        Insert: {
++          id?: string;
++          user_id: string;
++          todo_id: string;
++          thread_id?: string | null;
++          message_id?: string | null;
++          body: string;
++          status?: "sent" | "failed";
++          gmail_message_id?: string | null;
++          error?: string | null;
++          created_at?: string;
++        };
++        Update: {
++          id?: string;
++          user_id?: string;
++          todo_id?: string;
++          thread_id?: string | null;
++          message_id?: string | null;
++          body?: string;
++          status?: "sent" | "failed";
++          gmail_message_id?: string | null;
++          error?: string | null;
++          created_at?: string;
++        };
++        Relationships: [];
++      };
++      lungnote_conversation_memory: {
++        Row: {
++          line_user_id: string;
++          messages: unknown; // jsonb — typed as ChatMessage[] in app code
++          updated_at: string;
++        };
++        Insert: {
++          line_user_id: string;
++          messages?: unknown;
++          updated_at?: string;
++        };
++        Update: {
++          line_user_id?: string;
++          messages?: unknown;
++          updated_at?: string;
++        };
++        Relationships: [];
++      };
++      lungnote_bulk_ops: {
++        Row: {
++          id: string;
++          user_id: string;
++          op_kind: "complete" | "delete" | "uncomplete";
++          todo_ids: string[];
++          created_at: string;
++        };
++        Insert: {
++          id?: string;
++          user_id: string;
++          op_kind: "complete" | "delete" | "uncomplete";
++          todo_ids: string[];
++          created_at?: string;
++        };
++        Update: {
++          id?: string;
++          user_id?: string;
++          op_kind?: "complete" | "delete" | "uncomplete";
++          todo_ids?: string[];
++          created_at?: string;
+         };
+         Relationships: [];
+       };
+diff -ru -x node_modules -x .next -x .git -x .obsidian -x *.tsbuildinfo /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/lib/supabase/middleware.ts /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/lib/supabase/middleware.ts
+--- /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/lib/supabase/middleware.ts	2026-05-07 23:40:30
++++ /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/lib/supabase/middleware.ts	2026-05-20 12:12:35
+@@ -1,6 +1,14 @@
+ import { createServerClient } from "@supabase/ssr";
+ import { NextResponse, type NextRequest } from "next/server";
+ 
++/**
++ * Auth cookie domain — TEMPORARILY DISABLED to isolate the LIFF
++ * login regression. With this undefined, cookies are host-scoped
++ * (lungnote.com only). admin.lungnote.com loses session sharing
++ * and needs its own login flow. Was: .lungnote.com in production.
++ */
++const COOKIE_DOMAIN: string | undefined = undefined;
++
+ export async function updateSession(request: NextRequest) {
+   let response = NextResponse.next({ request });
+ 
+@@ -8,6 +16,10 @@
+     process.env.NEXT_PUBLIC_SUPABASE_URL!,
+     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+     {
++      // See lib/supabase/server.ts and lib/supabase/client.ts —
++      // cookieEncoding "raw" must match across all three clients to
++      // dodge supabase/ssr#67 ("Invalid UTF-8 sequence").
++      cookieEncoding: "raw",
+       cookies: {
+         getAll() {
+           return request.cookies.getAll();
+@@ -18,14 +30,52 @@
+           }
+           response = NextResponse.next({ request });
+           for (const { name, value, options } of cookiesToSet) {
+-            response.cookies.set(name, value, options);
++            const opts = COOKIE_DOMAIN
++              ? { ...options, domain: COOKIE_DOMAIN }
++              : options;
++            response.cookies.set(name, value, opts);
+           }
+         },
+       },
+     },
+   );
+ 
+-  await supabase.auth.getUser();
++  // getUser auto-refreshes if access_token expired. If the refresh
++  // token is invalid (rotated / orphaned), Supabase throws and the
++  // middleware would 500 on every page render. Swallow the error +
++  // clear the stale sb-* cookies so the user can re-auth cleanly.
++  try {
++    await supabase.auth.getUser();
++  } catch (err) {
++    // Dump the offending cookies so we can see what Supabase choked on.
++    const cookieDump = request.cookies
++      .getAll()
++      .filter((c) => c.name.startsWith("sb-"))
++      .map((c) => ({
++        name: c.name,
++        len: (c.value ?? "").length,
++        prefix: (c.value ?? "").slice(0, 40),
++      }));
++    console.log(
++      JSON.stringify({
++        tag: "liff_auth",
++        ts: Date.now(),
++        step: "middleware_refresh_error",
++        msg: err instanceof Error ? err.message : String(err),
++        cookies: cookieDump,
++      }),
++    );
++    for (const c of request.cookies.getAll()) {
++      if (c.name.startsWith("sb-")) {
++        response.cookies.set(c.name, "", {
++          path: "/",
++          maxAge: 0,
++          ...(COOKIE_DOMAIN ? { domain: COOKIE_DOMAIN } : {}),
++        });
++        response.cookies.set(c.name, "", { path: "/", maxAge: 0 });
++      }
++    }
++  }
+ 
+   return response;
+ }
+diff -ru -x node_modules -x .next -x .git -x .obsidian -x *.tsbuildinfo /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/lib/supabase/server.ts /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/lib/supabase/server.ts
+--- /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/lib/supabase/server.ts	2026-05-08 04:15:57
++++ /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/lib/supabase/server.ts	2026-05-20 12:12:35
+@@ -3,13 +3,24 @@
+ import { cookies } from "next/headers";
+ import type { Database } from "./database.types";
+ 
++// Auth cookie domain — TEMPORARILY DISABLED to test if LIFF login
++// regressed because of cross-subdomain sharing. With this undefined
++// the cookie is host-scoped (lungnote.com only); admin.lungnote.com
++// will need its own login. Was: .lungnote.com when VERCEL_ENV=production.
++const COOKIE_DOMAIN: string | undefined = undefined;
++
+ export async function createClient() {
+   const cookieStore = await cookies();
+ 
+-  return createServerClient<Database>(
++  const client = createServerClient<Database>(
+     process.env.NEXT_PUBLIC_SUPABASE_URL!,
+     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+     {
++      // Bypass @supabase/ssr's default base64url encoder — it throws
++      // "Invalid UTF-8 sequence" once a session cookie holds certain
++      // byte patterns (https://github.com/supabase/ssr/issues/67).
++      // Server + browser + middleware must all use the same encoding.
++      cookieEncoding: "raw",
+       cookies: {
+         getAll() {
+           return cookieStore.getAll();
+@@ -17,7 +28,10 @@
+         setAll(cookiesToSet) {
+           try {
+             for (const { name, value, options } of cookiesToSet) {
+-              cookieStore.set(name, value, options);
++              const opts = COOKIE_DOMAIN
++                ? { ...options, domain: COOKIE_DOMAIN }
++                : options;
++              cookieStore.set(name, value, opts);
+             }
+           } catch {
+             // setAll called from a Server Component — middleware refreshes the session
+@@ -26,4 +40,34 @@
+       },
+     },
+   );
++
++  // Wrap auth.getUser so a stale-refresh failure NEVER throws inside a
++  // Server Component page render. Refresh rotation in pages is doomed
++  // (Server Components can't write cookies — setAll above silently
++  // swallows), so when the next call uses the now-invalid refresh_token
++  // Supabase throws AuthApiError. We catch and return { user: null }
++  // so the page's existing redirect/empty-state logic handles re-auth
++  // cleanly. Middleware is the one place where refresh + cookie write
++  // actually works.
++  const originalGetUser = client.auth.getUser.bind(client.auth);
++  client.auth.getUser = (async () => {
++    try {
++      return await originalGetUser();
++    } catch (err) {
++      console.log(
++        JSON.stringify({
++          tag: "supabase_server",
++          ts: Date.now(),
++          step: "get_user_swallowed",
++          msg: err instanceof Error ? err.message : String(err),
++        }),
++      );
++      return {
++        data: { user: null },
++        error: null,
++      } as unknown as Awaited<ReturnType<typeof originalGetUser>>;
++    }
++  }) as typeof client.auth.getUser;
++
++  return client;
+ }
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/lib: theme.ts
+diff -ru -x node_modules -x .next -x .git -x .obsidian -x *.tsbuildinfo /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/proxy.ts /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/proxy.ts
+--- /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/webapp/src/proxy.ts	2026-05-07 23:40:34
++++ /Users/gob/MoonieXHQ/Projects/LungNote/Webapp/src/proxy.ts	2026-05-20 12:12:35
+@@ -3,6 +3,14 @@
+ import { locales, defaultLocale } from "@/i18n/config";
+ import { updateSession } from "@/lib/supabase/middleware";
+ 
++const LOCALE_FREE_PREFIXES = ["/auth", "/liff"];
++const ADMIN_HOSTS = new Set([
++  "admin.lungnote.com",
++  // local + vercel preview convenience
++  "admin.localhost",
++  "admin.localhost:3000",
++]);
++
+ function getLocaleFromHeader(request: NextRequest): string {
+   const accept = request.headers.get("accept-language") ?? "";
+   const preferred = accept.split(",")[0]?.split("-")[0]?.toLowerCase() ?? "";
+@@ -11,8 +19,41 @@
+     : defaultLocale;
+ }
+ 
++/**
++ * Subdomain split:
++ *   admin.lungnote.com  → rewrite path → `/admin/*`, no locale prefix
++ *   www.lungnote.com    → existing landing/dashboard locale flow
++ *
++ * Auth for admin routes is enforced in `app/admin/layout.tsx` (line userId
++ * allowlist via ADMIN_LINE_USER_IDS env). Middleware only handles routing.
++ */
+ export async function proxy(request: NextRequest) {
++  const host = request.headers.get("host") ?? "";
+   const { pathname } = request.nextUrl;
++
++  // ── Admin subdomain ─────────────────────────────────────────────────
++  if (ADMIN_HOSTS.has(host)) {
++    // Already under /admin? just refresh session and continue.
++    if (pathname === "/admin" || pathname.startsWith("/admin/")) {
++      return updateSession(request);
++    }
++    const url = request.nextUrl.clone();
++    url.pathname =
++      pathname === "/" ? "/admin" : `/admin${pathname}`;
++    return NextResponse.rewrite(url);
++  }
++
++  // ── Public (lungnote.com) ───────────────────────────────────────────
++  // Block direct hits to /admin paths from the public host — admin only
++  // ships under admin.lungnote.com.
++  if (pathname === "/admin" || pathname.startsWith("/admin/")) {
++    return new NextResponse("Not Found", { status: 404 });
++  }
++
++  const isLocaleFree = LOCALE_FREE_PREFIXES.some(
++    (p) => pathname === p || pathname.startsWith(`${p}/`),
++  );
++  if (isLocaleFree) return updateSession(request);
+ 
+   const hasLocale = locales.some(
+     (locale) => pathname === `/${locale}` || pathname.startsWith(`/${locale}/`),
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Wikis: .DS_Store
+diff -ru -x .git -x .obsidian /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/wikis/00-Index/README.md /Users/gob/MoonieXHQ/Projects/LungNote/Wikis/00-Index/README.md
+--- /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/wikis/00-Index/README.md	2026-05-08 04:00:55
++++ /Users/gob/MoonieXHQ/Projects/LungNote/Wikis/00-Index/README.md	2026-08-03 23:20:20
+@@ -18,10 +18,16 @@
+ - [[../20-Conventions/Wiki-Style|Wiki Style & Authoring Rules]] — กฎเขียน-แก้-ลบ wiki
+ - [[../20-Conventions/Database-Naming|Database Naming Conventions]] — `lungnote_*` prefix, RLS, migrations
+ - [[../30-Domain/Glossary|Domain Glossary]] — product + business + technical terms
++- [[../30-Domain/JTBD-Positioning|JTBD + Positioning (Business Idea)]] — job statement, competitors, business model, scary question
++- [[../30-Domain/Schema-Relationships|Schema Relationships]] — ER diagram + JOIN/RLS/perf patterns
+ - [[../40-Decisions/README|Decision Log (ADR)]] — บันทึกการตัดสินใจ
+ - [[../50-Workflows/Dev-Workflow|Dev Workflow]] — branch, PR, review (code)
+ - [[../50-Workflows/Wiki-Workflow|Wiki Workflow]] — workflow แก้ vault
+ - [[../50-Workflows/Multi-Repo-Workflow|Multi-Repo Workflow]] — 3-repo setup, .env sharing, conflict prevention
++- [[../50-Workflows/Rich-Menu-Install|Rich Menu Install Runbook]] — install/refresh LINE OA menu via script
++- [[../50-Workflows/Database-Migration|Database Migration]] — Supabase CLI workflow
++- [[../50-Workflows/LINE-Auth-Flow|LINE Auth Flow]] — sequence diagram (account-linking + LIFF + OAuth)
++- [[../50-Workflows/Designer-Handoff-LINE-Dashboard|Designer Handoff]] — assets spec + delivery status
+ - [[../90-Templates/ADR-Template|ADR Template]]
+ - [[../90-Templates/Page-Template|General Page Template]]
+ 
+diff -ru -x .git -x .obsidian /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/wikis/10-Architecture/Overview.md /Users/gob/MoonieXHQ/Projects/LungNote/Wikis/10-Architecture/Overview.md
+--- /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/wikis/10-Architecture/Overview.md	2026-05-07 22:44:32
++++ /Users/gob/MoonieXHQ/Projects/LungNote/Wikis/10-Architecture/Overview.md	2026-05-20 12:08:37
+@@ -70,7 +70,60 @@
+ - Mutation ผ่าน Server Action เป็นหลัก, fallback REST เฉพาะที่ต้อง
+ - Realtime / Storage = ค่อยเพิ่มเมื่อมี use case
+ 
++## AI Agent
++
++LungNote's LINE bot routes every user message through a tool-using
++LLM agent at `webapp/src/lib/agent/`. The agent exposes 11 tools
++(save / list / complete / uncomplete / update / delete / save_note
++/ dashboard_link / update_memory / send_text_reply / send_flex_reply).
++
++Model selection is layered:
++
++```
++LINE webhook
++   │
++   ▼
++runAgent(userText, ctx)
++   │
++   ├─→ routeModel(userText)      ← heuristic intent router
++   │       └─→ { modelId, reason }     (ADR-0016)
++   │
++   ├─→ resolveModel(modelId)     ← provider routing
++   │       ├─ anthropic/*  + ANTHROPIC_API_KEY → Anthropic direct (cache on)
++   │       └─ else                              → OpenRouter passthrough
++   │
++   └─→ generateText(...) → tool loop → flush bubbles → reply
++```
++
++- **Default model**: `google/gemini-2.5-flash` ([[../40-Decisions/0014-llm-default-gemini-2-5-flash|ADR-0014]]).
++  Set via Vercel env `LLM_MODEL`. ~98% cheaper than Sonnet, 4.4s p50
++  latency on the eval corpus.
++- **Intent router**: `webapp/src/lib/agent/router.ts`
++  ([[../40-Decisions/0016-intent-router|ADR-0016]]). Heuristic
++  regex+length classifier. Escalates ~5 high-failure patterns
++  (update verbs, profile facts, multi-position, long messages,
++  multi-clause) to Gemini 2.5 Pro. Toggle via `LLM_ROUTER_ENABLED=true`.
++- **Empty-reply rescue**: post-hoc retry inside `runAgent`. When
++  Flash ends a turn with no LINE bubble after a read-only tool
++  (`list_pending`/`list_done`), retry once with the complex model
++  using only the reply tools. Brings tool-match to Pro-only quality
++  (96.8%) at ~17× lower cost. Toggle via `LLM_REPLY_RETRY_ENABLED`
++  (default on). See [[../40-Decisions/0016-intent-router|ADR-0016]]
++  *Update 2026-05-15*.
++- **Eval harness**: `webapp/scripts/eval/`
++  ([[../40-Decisions/0015-agent-eval-harness|ADR-0015]]). 31-case
++  curated Thai corpus, mocked tools (no Supabase / no LINE), LLM
++  judge for reply equivalence, Markdown reports. Baseline snapshots
++  in `webapp/eval/baselines/`.
++
++**Trace observability**: every turn writes one row to
++`lungnote_chat_traces`. The admin viewer at `admin.lungnote.com/traces`
++shows model id + a route-reason pill + tool calls + reply.
++
+ ## See Also
+ 
+ - [[../20-Conventions/Code-Style]]
+ - [[../40-Decisions/README]]
++- [[../40-Decisions/0014-llm-default-gemini-2-5-flash|ADR-0014 — Default LLM]]
++- [[../40-Decisions/0015-agent-eval-harness|ADR-0015 — Eval Harness]]
++- [[../40-Decisions/0016-intent-router|ADR-0016 — Intent Router]]
+diff -ru -x .git -x .obsidian /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/wikis/30-Domain/Glossary.md /Users/gob/MoonieXHQ/Projects/LungNote/Wikis/30-Domain/Glossary.md
+--- /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/wikis/30-Domain/Glossary.md	2026-05-08 04:10:25
++++ /Users/gob/MoonieXHQ/Projects/LungNote/Wikis/30-Domain/Glossary.md	2026-05-20 12:08:37
+@@ -13,29 +13,49 @@
+ 
+ | Term | Definition |
+ |------|------------|
+-| **Note** | บันทึกข้อความ/ลิสต์/ไอเดีย หน่วยเล็กสุดของเนื้อหา |
+-| **Notebook** | สมุดโน้ต — กลุ่ม note หลายอันรวมกัน, มีชื่อ + สีปก |
+-| **Todo / Checklist** | ไอเทมแบบ checkbox (done/undone) ในโน้ต |
+-| **Folder** | จัดกลุ่ม notebook ตามวิชา/โปรเจค/หมวด |
+-| **Tag** | label หลายอันต่อ note ใช้ filter/search |
++| **Memory item** | หน่วยความจำหลัก (note ≡ todo) ตั้งแต่ [[../40-Decisions/0012-unified-todo-memory-model\|ADR-0012]]. Row ใน `lungnote_todos` มี `text + done + due_at + due_text + source`. ทุกอย่างที่ user "จด" / "เตือน" / "todo" ผ่าน chat หรือ Web ลงตัวเดียวกัน |
++| **Note (container)** | หลัง ADR-0012 เป็นแค่ container/group สำหรับ memory items. Row ใน `lungnote_notes` |
++| **Inbox note** | "📥 Inbox" — note อัตโนมัติต่อ user ที่ chat-captured items ลงไป (เพราะ `lungnote_todos.note_id` NOT NULL). Lazy-create ที่ first capture |
++| **Notebook** | สมุดโน้ต — กลุ่ม note หลายอันรวมกัน, มีชื่อ + `cover_color`. Table: `lungnote_notebooks` |
++| **Todo** | alias ของ Memory item — UI เรียก "Todo" ที่ `/dashboard/todo`. Table: `lungnote_todos`. ลำดับด้วย `position` |
++| **due_at / due_text** | timestamp + raw user phrase ("พรุ่งนี้") ที่ AI extract จาก message ตอน capture ([[../40-Decisions/0012-unified-todo-memory-model\|ADR-0012]]) |
++| **source (todo)** | enum `'chat' \| 'web' \| 'liff'` — บอก origin ของ memory item เพื่อ analytics + filter |
++| **Folder** | จัดกลุ่ม notebook (nested ได้ผ่าน `parent_folder_id`, app cap ≤ 3 ระดับ). Table: `lungnote_folders` |
++| **Tag** | label สี ใช้ filter/search. Many-to-many กับ note ผ่าน junction. Tables: `lungnote_tags` + `lungnote_notes_tags` |
+ 
+ ## Business
+ 
+ | Term | Definition |
+ |------|------------|
+-| **LungNote** | ชื่อโปรเจค — webapp จดโน้ต/เช็คลิสต์/จัดระเบียบสำหรับนักเรียน-นักศึกษาไทย. Tagline: "จดโน้ต เช็คลิสต์ จัดระเบียบชีวิต" |
++| **LungNote** | ชื่อโปรเจค — อ่านว่า **"ลังโน้ต"**. "ลัง" = กล่องกระดาษสีเหลือง (the cardboard box mascot). Brand story: เราเป็นลังที่จะคอยช่วยคุณจดโน้ตและเตือนความจำ ไม่ว่าโน้ตจะสั้นหรือยาว — เพื่อให้คุณไม่ลืมสิ่งที่จะต้องทำในอนาคต. Webapp จดโน้ต/เช็คลิสต์/เตือนความจำสำหรับนักเรียน-นักศึกษาไทย. Tagline: "จดโน้ต เช็คลิสต์ จัดระเบียบชีวิต" |
+ | **Production domain** | `lungnote.com` |
+ | **Plan: Free** | ฟีเจอร์หลัก, สร้าง notebook/note ไม่จำกัด |
+ | **Plan: Pro** | เพิ่ม sync ข้ามอุปกรณ์ + backup auto |
+ | **Plan: Education** | สำหรับโรงเรียน/มหาวิทยาลัย, จัดการห้องเรียน, ติดต่อ school@lungnote.app |
+ | **Wiki** | knowledge vault (`wikis/`), ไม่ใช่ runtime data |
+ 
++## Brand
++
++| Term | Definition |
++|------|------------|
++| **Cardboard palette** | Brand colors ที่ใช้ตั้งแต่ [[../40-Decisions/0013-cardboard-theme-overhaul\|ADR-0013]]. Light: bg `#F5EAD4`, surface `#FAF5E8`, accent `#C9A040`, fg `#3A3020`. Dark: bg `#1A1810`, surface `#2A2618`, accent `#C9A040`, fg `#E8E2D0`. แทน mint palette เดิม |
++| **Mascot** | กล่องกระดาษมีปาก (✓-shape) + แขนข้างๆ. ใช้เป็น app icon + OG image. Source: `design/mascot-icon/lungnote-mascot-icon.svg` |
++| **WordMark** | "Lung**Note**" — Lung สี fg, Note สี accent. Font: Caveat (display) |
++| **Tape** | สี `#D4A855` (light) / `#B89030` (dark) — ใช้เป็น highlight stripe ภายใต้ข้อความ (`.highlight-tape`) เลียนกระดาษเทปไฮไลต์ |
++
+ ## Technical Alias
+ 
+ | Term | Means |
+ |------|-------|
+ | **App** | `webapp/` — Next.js app |
+ | **Vault** | `wikis/` — Obsidian vault |
++| **Agent** | The tool-using LLM that handles every LINE message — `webapp/src/lib/agent/`. Not a generic chatbot; it has a curated tool catalog (11 tools) |
++| **Intent router** | Per-turn heuristic at `webapp/src/lib/agent/router.ts` that picks the model based on the user message ([[../40-Decisions/0016-intent-router\|ADR-0016]]). Flash default; Pro on escalation patterns |
++| **Eval harness** | `webapp/scripts/eval/` — replays a curated Thai corpus through any LLM with mocked tools and emits a scored Markdown report ([[../40-Decisions/0015-agent-eval-harness\|ADR-0015]]) |
++| **Trace** | One row in `lungnote_chat_traces` representing one LINE turn (input, tool calls, reply, meta). Surfaced in the admin viewer at `admin.lungnote.com/traces` |
++| **Route reason** | `meta.route_reason` field on a trace — names which intent-router trigger fired (`default`, `update_verb`, `profile_fact`, `multi_position`, `long_message`, `complex_clause`, `router_disabled`). Suffix `+retry` means the [[../40-Decisions/0016-intent-router\|empty-reply rescue]] kicked in |
++| **Empty-reply rescue** | Post-hoc retry inside `runAgent` that calls the complex model with a reply-only tool subset when the fast model ends a turn with no bubble after a read-only tool call. Toggle via `LLM_REPLY_RETRY_ENABLED`. See [[../40-Decisions/0016-intent-router\|ADR-0016]] *Update 2026-05-15* |
++| **OpenRouter** | LLM provider aggregator we route through for non-Anthropic models (Gemini, GPT). Single `OPENROUTER_API_KEY` env covers all of them |
+ 
+ ## Supabase / DB
+ 
+@@ -78,4 +98,18 @@
+ | **Postback** | LINE event type — เมื่อ user แตะปุ่ม Rich Menu / Flex action ที่กำหนด `postback`, bot ได้ payload `data` |
+ | **Rich Menu** | UI menu ที่ load อยู่ที่ chat ของ OA — image 2500×1686 + tap regions |
+ | **Flex Message** | Rich card UI ของ LINE — JSON-defined layout, supports buttons/images/typography |
+-| **LIFF** | LINE Front-end Framework — webapp ที่รันใน LINE in-app browser, มี SDK เข้าถึง userId/profile |
++| **LIFF** | LINE Front-end Framework — webapp ที่รันใน LINE in-app browser, มี SDK เข้าถึง userId/profile. ใช้เป็น primary auth ใน LINE app ([[../40-Decisions/0010-liff-auth\|ADR-0010]]) |
++| **LIFF ID** | ID ของ LIFF app, สร้างที่ LINE Developer Console. Env: `NEXT_PUBLIC_LINE_LIFF_ID` |
++| **id_token** | JWT signed by LINE OIDC. Issued by LIFF (`liff.getIDToken()`) หรือ LINE Login OAuth. Server verify ผ่าน `https://api.line.me/oauth2/v2.1/verify` |
++| **LINE Login Channel ID** | Audience ของ id_token. Env: `LINE_LOGIN_CHANNEL_ID`. ต่างจาก Messaging API Channel ID, แต่อยู่ channel เดียวกันได้ถ้า enable ทั้ง 2 product |
++| **OAuth Code Flow** | ([[../40-Decisions/0011-web-line-login-oauth\|ADR-0011]]) browser flow: redirect → code → server exchange → id_token. ใช้ `state` (CSRF) + `nonce`. เหมาะ desktop / web ที่ไม่อยู่ใน LINE app |
++| **State (OAuth)** | random string ที่ server ส่งไป OAuth provider แล้ว verify match ตอน callback. กัน CSRF. เก็บใน HttpOnly cookie 5 นาที |
++
++## UI / Loading States
++
++| Term | Definition |
++|------|------------|
++| **Skeleton loader** | Shimmer placeholder ที่ render ก่อน real data — โครงเหมือนหน้าจริง (greeting + stats + list rows) ไม่ใช่ spinner ลอยๆ. ป้องกัน CLS, ทำให้ perceived speed เร็วขึ้น |
++| **Shimmer** | animation gradient ไหลผ่าน skeleton 1.5s loop. ใช้สื่อว่า loading. Spec: `linear-gradient(90deg, transparent 0, rgba(255,255,255,0.5) 50%, transparent 100%)` |
++| **Next loading.tsx** | Next App Router convention — ไฟล์ `loading.tsx` ที่ root ของ route segment = automatic Suspense boundary, render ระหว่าง async server data resolve |
++| **Rich Menu install script** | `webapp/scripts/install-rich-menu.sh` — idempotent installer (delete existing same-name + create + upload PNG + set default). Runbook: [[../50-Workflows/Rich-Menu-Install]] |
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Wikis/30-Domain: JTBD-Positioning.md
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Wikis/30-Domain: Schema-Relationships.md
+diff -ru -x .git -x .obsidian /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/wikis/40-Decisions/0007-line-oa-messaging.md /Users/gob/MoonieXHQ/Projects/LungNote/Wikis/40-Decisions/0007-line-oa-messaging.md
+--- /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/wikis/40-Decisions/0007-line-oa-messaging.md	2026-05-08 01:52:35
++++ /Users/gob/MoonieXHQ/Projects/LungNote/Wikis/40-Decisions/0007-line-oa-messaging.md	2026-05-20 12:08:37
+@@ -87,12 +87,14 @@
+ - [x] อัพเดท Glossary "LINE OA / Messaging"
+ - [x] Implement: `src/lib/line/{verify,client,types}.ts` + `src/app/api/line/webhook/route.ts`
+ - [x] Auto-reply rules เริ่มต้น (สวัสดี/ช่วย/เว็บ/เกี่ยวกับ + echo)
+-- [ ] **ทดสอบ**: ตั้ง webhook URL `https://lungnote.com/api/line/webhook` ใน LINE Console → toggle "Use webhook" ON → กด Verify → message OA → ตรวจ reply
+-- [ ] เพิ่ม `audit_log` table (Postgres) เก็บ webhook event payload
+-- [ ] LINE Login OAuth → Supabase Auth (ADR แยกเมื่อทำ)
++- [x] **ทดสอบ**: webhook URL ตั้ง + verify ผ่าน + message OA + reply ทำงาน
++- [x] **Rich Menu**: install ผ่าน [`scripts/install-rich-menu.sh`](https://github.com/PASAKON/LungNote-webapp/blob/main/scripts/install-rich-menu.sh) — `richmenu-4dbc093b428014ff81540b61f44f6f70` (default for all users)
++- [x] LINE Login OAuth → ADR แยก ([[0011-web-line-login-oauth]])
++- [x] Auto-reply ใช้ Flex Message (designer-supplied JSON ใน `lib/line/flex-templates/`)
++- [ ] เพิ่ม `lungnote_audit_log` table (Postgres) เก็บ webhook event payload (ดู [[../20-Conventions/Database-Naming]] §9)
+ - [ ] Push notification queue (rate limit + retry)
+-- [ ] ตั้ง webhook URL สำหรับ preview deploy แยก (Vercel preview = unique URL ต่อ PR)
+-- [ ] Decide: ตอบเป็น Flex Message หรือ plain text สำหรับ daily reminder
++- [ ] ตั้ง webhook URL สำหรับ preview deploy แยก (Vercel preview = unique URL ต่อ PR) — defer
++- [ ] Re-run install-rich-menu เมื่อ designer ส่ง PNG ใหม่ หรือ LIFF route เปลี่ยน
+ 
+ ## See Also
+ 
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Wikis/40-Decisions: 0009-lungnote-hierarchy-schema.md
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Wikis/40-Decisions: 0010-liff-auth.md
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Wikis/40-Decisions: 0011-web-line-login-oauth.md
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Wikis/40-Decisions: 0012-unified-todo-memory-model.md
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Wikis/40-Decisions: 0013-cardboard-theme-overhaul.md
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Wikis/40-Decisions: 0014-llm-default-gemini-2-5-flash.md
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Wikis/40-Decisions: 0015-agent-eval-harness.md
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Wikis/40-Decisions: 0016-intent-router.md
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Wikis/40-Decisions: 0017-gmail-integration-readonly-v1.md
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Wikis/40-Decisions: 0018-gmail-schema-delta.md
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Wikis/40-Decisions: 0019-gmail-extract-agent-tool.md
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Wikis/40-Decisions: 0021-gmail-send-scope-tier.md
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Wikis/40-Decisions: 0022-memory-directives-quick-actions.md
+diff -ru -x .git -x .obsidian /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/wikis/40-Decisions/README.md /Users/gob/MoonieXHQ/Projects/LungNote/Wikis/40-Decisions/README.md
+--- /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/wikis/40-Decisions/README.md	2026-05-08 04:10:13
++++ /Users/gob/MoonieXHQ/Projects/LungNote/Wikis/40-Decisions/README.md	2026-08-03 23:20:20
+@@ -19,6 +19,19 @@
+ | 0006 | [[0006-supabase-db-auth]] | Accepted | 2026-05-07 |
+ | 0007 | [[0007-line-oa-messaging]] | Accepted | 2026-05-08 |
+ | 0008 | [[0008-line-only-auth-account-linking]] | Accepted | 2026-05-08 |
++| 0009 | [[0009-lungnote-hierarchy-schema]] | Accepted | 2026-05-08 |
++| 0010 | [[0010-liff-auth]] | Accepted | 2026-05-08 |
++| 0011 | [[0011-web-line-login-oauth]] | Accepted | 2026-05-08 |
++| 0012 | [[0012-unified-todo-memory-model]] | Accepted | 2026-05-08 |
++| 0013 | [[0013-cardboard-theme-overhaul]] | Accepted | 2026-05-09 |
++| 0014 | [[0014-llm-default-gemini-2-5-flash]] | Accepted | 2026-05-14 |
++| 0015 | [[0015-agent-eval-harness]] | Accepted | 2026-05-14 |
++| 0016 | [[0016-intent-router]] | Accepted | 2026-05-14 |
++| 0017 | [[0017-gmail-integration-readonly-v1]] | Proposed | 2026-05-20 |
++| 0018 | [[0018-gmail-schema-delta]] | Proposed | 2026-05-20 |
++| 0019 | [[0019-gmail-extract-agent-tool]] | Proposed | 2026-05-20 |
++| 0021 | [[0021-gmail-send-scope-tier]] | Accepted | 2026-05-26 |
++| 0022 | [[0022-memory-directives-quick-actions]] | Accepted | 2026-05-26 |
+ 
+ ## Status legend
+ 
+diff -ru -x .git -x .obsidian /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/wikis/50-Workflows/Designer-Handoff-LINE-Dashboard.md /Users/gob/MoonieXHQ/Projects/LungNote/Wikis/50-Workflows/Designer-Handoff-LINE-Dashboard.md
+--- /Users/gob/LungNote Projects/.claude/worktrees/fervent-noether-9ebf32/wikis/50-Workflows/Designer-Handoff-LINE-Dashboard.md	2026-05-08 04:10:02
++++ /Users/gob/MoonieXHQ/Projects/LungNote/Wikis/50-Workflows/Designer-Handoff-LINE-Dashboard.md	2026-05-20 12:08:37
+@@ -9,6 +9,16 @@
+ 
+ Code/wiring จะทำหลัง assets ลง.
+ 
++> **Status (2026-05-08):** Round 1 + Round 2 ของ designer ส่ง [PASAKON/LungNote-design#1](https://github.com/PASAKON/LungNote-design/pull/1) + [PR #2](https://github.com/PASAKON/LungNote-design/pull/2) ลง main แล้ว. ทั้งหมด wired เข้า webapp:
++>
++> - ✅ Rich Menu PNG (default + light themes) → installed via [`scripts/install-rich-menu.sh`](https://github.com/PASAKON/LungNote-webapp/blob/main/scripts/install-rich-menu.sh)
++> - ✅ 5 Flex Message JSON → `webapp/src/lib/line/flex-templates/`, runtime URL rewrite ใน `lib/line/flex.ts`
++> - ✅ Mobile dashboard mocks (list/edit/empty/error/preview-all-states) → wired ใน `/dashboard` (mobile breakpoint ≤768px)
++> - ✅ Desktop dashboard mock (`brand/dashboard.html`) → wired ใน `/dashboard` ผ่าน `Sidebar.tsx` + responsive CSS (≥769px)
++> - ✅ Skeleton loaders (`lungnote-skeleton-loaders.html`) → ported เป็น Next `loading.tsx` + `skeleton.css`
++> - ✅ Login states (connecting/success/error) → wired ใน `/liff` (LiffClient)
++> - ✅ Brand icons (16 PNG light+dark) → ใช้ใน manifest + apple-icon (TODO: swap from ImageResponse to designer PNGs ใน next round)
++
+ ---
+ 
+ ## Brand Tokens (reference)
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Wikis/50-Workflows: Rich-Menu-Install.md
+Only in /Users/gob/MoonieXHQ/Projects/LungNote/Wikis: playbooks

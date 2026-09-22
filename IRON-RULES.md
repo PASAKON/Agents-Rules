@@ -1137,3 +1137,22 @@ Verbatim, after the CTO asked which of two gate-clean PRs to merge:
 **ก่อน spawn browser_operator ทุกครั้ง C-level ต้องตอบก่อนว่า runner มีอยู่แล้วไหม** — ต้นแบบ `scripts/higgsfield/gen_loop.py` (Playwright ต่อ Chrome debug port + โปรไฟล์แยก, ดัชนี resume ได้) และดีไซน์สำหรับ Flow `docs/ops/flow-operator-design.md`
 
 **ที่มา (วัดจาก transcript):** 19 ก.ย. 69 — operator 2 ตัว 6.2 ชม. 405 screenshot **650M token → 8 คลิป (~80M/คลิป)** ขณะที่ developer สร้างระบบจริง 1 งาน = 77M. claude-in-chrome กิน 67% ของ usage 7 วัน และชน 95% ของ limit รายสัปดาห์. เหตุผลเชิงโครงสร้าง: screenshot ไม่เคยออกจาก context (§42) ฉากที่ 12 จ่ายค่าฉาก 1-11 ซ้ำทุกเทิร์น — บรีฟดีแค่ไหนก็แก้ไม่ได้ ต้องเอาโมเดลออกจากลูป
+
+## Section 54 — MoonieX HQ: the map decides, the disk follows (CEO 2026-09-22, owner CTO)
+
+Everything MoonieX builds lives under `~/MoonieXHQ`, described by one map (`hq.yaml` → `MAP.md`)
+and enforced by `scripts/hq.py doctor`. Full rules: skill `hq-filing`, ADR 0028. Two are the
+CEO's own words and bind every agent on every project:
+
+1. **Every path created under HQ needs the CEO's approval first.** No folder without a row in the
+   map, no row without a yes. Propose, wait, then create. ("Path ต่างๆ ที่จะมาสร้างใน MoonieX HQ
+   ต้องผ่านการอนุมัติจาก CEO ก่อนเสมอ")
+2. **One project = one folder, fully independent. Projects connect only through APIs.** Never
+   import another project's code, read its files or share its tables — ClaudeFlow reads LungNote
+   through LungNote's API. Every project must keep working when moved to another host.
+   ("ถ้าจะเอาโปรเจค 2 อันมาเชื่อมกัน ต้องทำผ่าน API เท่านั้น")
+
+Corollaries: `Projects/<Brand>/<Suffix>` ⇔ `PASAKON/<Brand>-<Suffix>` (ADR 0012); media never in a
+code repo (→ `Assets/`); other people's code read-only in `External/`; the archive rule (on GitHub →
+delete local, else Drive then delete, note stays); `UNKNOWN/` empty at every `/session-close`; inside
+a project, `playbooks/project-layout.md`.

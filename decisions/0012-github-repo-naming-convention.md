@@ -107,3 +107,22 @@ until that page gets migrated too — its internal repo references are stale
 `LinkReed-Webapp`, `LinkReed-Design`, `LinkReed-Wikis` created with seed READMEs.
 Same as Chatudo: scaffold only, actual code extraction from `MoonieX-Webapp`'s
 `/links` + `/links/pasakon` has not started.
+
+---
+
+## Addendum 2026-09-22 — HQ renames (ADR 0028), same rule, new brand family `Agents-*`
+
+| Old | New | why |
+|---|---|---|
+| `Agents-Wikis` | **`Agents-Rules`** | it holds the rules (IRON-RULES, roles, playbooks, ADRs), not product knowledge |
+| `MoonieX-Wikis` (local `LLMs/`) | **`Agents-Wikis`** | the knowledge every agent reads — the old name was reused, so its redirect is gone; the Mac clone was repointed the same day |
+| `MoonieX-ClaudeSkills` | **`Agents-Skills`** | |
+| `MoonieX-Agents` | **`Agents-Core`** | the runtime |
+| `MoonieX-Webapp` | **`MoonieX-WebApp`** | case |
+| `MoonieX-Design` | **`MoonieX-WebDesign`** | says what it is (the site templates), ends the ClaudeSign confusion |
+| `MoonieX-CookieRun` | **`MoonieX-CookierunBot`** | |
+| *(GiordanoSouza remote)* | **`MoonieX-AlphaTrader`** | new — fork home for 29 local edits |
+| *(no remote)* | **`MoonieX-ComfyRunpod`** | new |
+| *(not a repo)* | **`MoonieX-NoHumanCompany`** | new, retired project, brand assets kept |
+
+HQ folder ⇔ repo: `Agents/<Suffix>` ⇔ `Agents-<Suffix>`, `Projects/<Brand>/<Suffix>` ⇔ `<Brand>-<Suffix>`.

@@ -1,0 +1,31 @@
+{
+  "collapse-filter": false,
+  "search": "-path:voice-samples -path:90-Templates -path:assets",
+  "showTags": false,
+  "showAttachments": false,
+  "hideUnresolved": true,
+  "showOrphans": false,
+  "collapse-color-groups": false,
+  "colorGroups": [
+    { "query": "path:decisions", "color": { "a": 1, "rgb": 13479013 } },
+    { "query": "path:40-Decisions", "color": { "a": 1, "rgb": 13479013 } },
+    { "query": "path:playbooks", "color": { "a": 1, "rgb": 8367732 } },
+    { "query": "path:50-Workflows", "color": { "a": 1, "rgb": 8367732 } },
+    { "query": "path:projects", "color": { "a": 1, "rgb": 6003669 } },
+    { "query": "path:10-Architecture", "color": { "a": 1, "rgb": 6003669 } },
+    { "query": "path:company OR path:policies OR path:roles OR path:reference", "color": { "a": 1, "rgb": 9413560 } },
+    { "query": "path:20-Conventions OR path:30-Domain", "color": { "a": 1, "rgb": 9413560 } }
+  ],
+  "collapse-display": false,
+  "showArrow": false,
+  "textFadeMultiplier": 0,
+  "nodeSizeMultiplier": 1.5,
+  "lineSizeMultiplier": 1.2,
+  "collapse-forces": false,
+  "centerStrength": 0.5,
+  "repelStrength": 12,
+  "linkStrength": 1.3,
+  "linkDistance": 180,
+  "scale": 0.6,
+  "close": false
+}

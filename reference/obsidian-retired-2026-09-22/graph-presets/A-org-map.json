@@ -1,0 +1,26 @@
+{
+  "collapse-filter": false,
+  "search": "",
+  "showTags": false,
+  "showAttachments": false,
+  "hideUnresolved": true,
+  "showOrphans": true,
+  "collapse-color-groups": false,
+  "colorGroups": [
+    { "query": "path:agents/", "color": { "a": 1, "rgb": 13479013 } },
+    { "query": "path:mooniex/", "color": { "a": 1, "rgb": 6003669 } },
+    { "query": "path:lungnote/", "color": { "a": 1, "rgb": 8367732 } }
+  ],
+  "collapse-display": false,
+  "showArrow": true,
+  "textFadeMultiplier": 0,
+  "nodeSizeMultiplier": 1.3,
+  "lineSizeMultiplier": 1,
+  "collapse-forces": false,
+  "centerStrength": 0.35,
+  "repelStrength": 15,
+  "linkStrength": 0.7,
+  "linkDistance": 300,
+  "scale": 0.5,
+  "close": false
+}

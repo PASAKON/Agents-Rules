@@ -1,0 +1,26 @@
+{
+  "collapse-filter": false,
+  "search": "",
+  "showTags": false,
+  "showAttachments": false,
+  "hideUnresolved": false,
+  "showOrphans": true,
+  "collapse-color-groups": false,
+  "colorGroups": [
+    { "query": "file:README OR file:CHEATSHEET OR file:IRON-RULES OR file:ads OR file:balance-precheck", "color": { "a": 1, "rgb": 12873823 } },
+    { "query": "file:desk", "color": { "a": 1, "rgb": 13934656 } },
+    { "query": "path:agents/ OR path:mooniex/ OR path:lungnote/", "color": { "a": 1, "rgb": 4602006 } }
+  ],
+  "collapse-display": false,
+  "showArrow": false,
+  "textFadeMultiplier": 0,
+  "nodeSizeMultiplier": 1.1,
+  "lineSizeMultiplier": 0.6,
+  "collapse-forces": false,
+  "centerStrength": 0.85,
+  "repelStrength": 6,
+  "linkStrength": 1.6,
+  "linkDistance": 110,
+  "scale": 0.5,
+  "close": false
+}

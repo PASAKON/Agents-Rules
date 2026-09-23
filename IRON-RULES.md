@@ -1156,3 +1156,24 @@ Corollaries: `Projects/<Brand>/<Suffix>` ⇔ `PASAKON/<Brand>-<Suffix>` (ADR 001
 code repo (→ `Assets/`); other people's code read-only in `External/`; the archive rule (on GitHub →
 delete local, else Drive then delete, note stays); `UNKNOWN/` empty at every `/session-close`; inside
 a project, `playbooks/project-layout.md`.
+
+## Section 55 — Work/: a task's bytes live in its own folder and leave with it (CEO 2026-09-23, owner CTO)
+
+**Why.** 2026-09-23 04:05 the Mac hit 0 bytes free and every tool, hook and worker died at once.
+Agents download plates, render takes and write reviews, finish, and leave the pile on `~/Desktop`,
+`~/Downloads`, `/tmp` and inside repos — "สะสมเป็นภูเขา". The CEO approved one place for it and
+ordered strict rules: "อนุมัติสร้าง ~/MoonieXHQ/Work/ และเขียนกฎอย่างเข้มงวด".
+
+The law is `~/MoonieXHQ/Work/RULES.md` (10 rules). The ones that bind every agent:
+
+1. **One task = one folder `Work/<task-id>/{in,tmp,out}`; every byte the task downloads or makes
+   goes there** — never Desktop / Downloads / Movies / `/tmp` / a repo / another task's folder.
+2. **`in/` files carry a `SOURCES.txt` line** (file ⇥ url ⇥ sha256); **`tmp/` is deleted at close;
+   `out/` goes home** (Assets via hq-filing, or Drive via gdrive-filing) and is verified there.
+3. **A task cannot close while its folder exists.** Merge / done is refused until it is filed and gone.
+4. **Stay in your folder** (IRON §33). Orphans are reported to the owning session, never cleaned by another.
+5. **Before a download > 1 GB, leave ≥ 10 GB free or stop and report; below 5 GB nothing starts.**
+
+Scope: pilot — enforced for `pilot_owner_cto` in Agents-Core `config/storage-policy.yaml`; the CEO
+widens it. A rule binds when a tool checks it; RULES.md lists which tool checks which rule.
+Full design: ADR 0030.

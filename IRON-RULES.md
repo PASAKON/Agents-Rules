@@ -1172,10 +1172,10 @@ The law is `~/MoonieXHQ/Work/RULES.md` (10 rules). The ones that bind every agen
    `out/` goes home** (Assets via hq-filing, or Drive via gdrive-filing) and is verified there.
 3. **A task cannot close while its folder exists.** Merge / done is refused until it is filed and gone.
 4. **Stay in your folder** (IRON §33). Orphans are reported to the owning session, never cleaned by another.
-5. **Before a download > 1 GB, leave ≥ 10 GB free or stop and report; below 5 GB nothing starts.**
+5. **Estimate the output first; proceed only if ≥ 5 GB stays free afterwards** (CEO 2026-09-23 — the project's worker/CTO owns the estimate: `--expect-gb` / `space_check.estimates_gb`); below 5 GB free nothing starts.
 
-Scope: pilot — enforced for `pilot_owner_cto` in Agents-Core `config/storage-policy.yaml`; the CEO
-widens it. A rule binds when a tool checks it; RULES.md lists which tool checks which rule.
+Scope: every session (CEO widened it 2026-09-23; per-feature `scope:` in Agents-Core
+`config/storage-policy.yaml`). A rule binds when a tool checks it; RULES.md lists which tool checks which rule.
 Full design: ADR 0030.
 
 ## Section 56 — English is the org's working language (CEO 2026-09-23, owner CTO)

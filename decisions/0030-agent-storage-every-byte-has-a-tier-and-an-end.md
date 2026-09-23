@@ -28,6 +28,9 @@
 - Claude worker C1: sparse worktrees + the red-band spawn refusal in delegate.
 - Later, after the CEO approves the work-dir root: C2 work dir + close gate; C3 runner `--dest` defaults; C4 COLD archive command.
 
+## Cross-machine free space
+The disk hub (built by CTO a29c7576, 2026-09-23) measures the Mac, winbox and Contabo every 10 min and serves the latest numbers at `GET https://webhook.mooniex.com/disk` (container `disk-serve` on Contabo; code MoonieX-Scriptable `server/disk-monitor`, 9760b88 + b116f2e). Its Mac colours follow this ADR's gauge. Anything here that needs another machine's free space reads that endpoint — it never measures again.
+
 ## Consequences
 - A task that downloads 3 GB of plates and finishes leaves 0 bytes behind, or its close fails loudly.
 - Delegate can refuse work; that is the point — a refused spawn costs a retry, a full disk costs every session at once.

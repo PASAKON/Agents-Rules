@@ -21,6 +21,8 @@
 6. **Runners never default their output under a NEVER path** (`~/Desktop`, `~/Downloads`, `~/Movies`).
 7. **The scan is the judge.** `storage scan` reports GB per tier and the UNCLASSIFIED remainder; a path nobody classified is the next thing to argue about, not something to delete.
 
+8. **Pilot scope first** (CEO 2026-09-23: "Scope เฉพาะงานตัวเองก่อน เผื่อมีงานอื่นที่คนอื่นกำลังทำ"). Every gauge action and the sparse worktree apply only to tasks whose `owner_cto` is in `pilot_owner_cto` (today: the owning session `0e8d80b8`). At that hour 18 other CTO sessions owned 58 in-flight tasks — an org-wide floor would have refused them all. A missing key applies to nobody; widening to `"all"` is the CEO's call. A future REBUILD auto-delete touches only the pilot's own task worktrees, never another session's `node_modules`/`.venv`.
+
 ## Build (2026-09-23)
 - Jules (repo Agents-Core, allowlisted; test of Jules per CEO): J1 policy loader + validator, J2 `storage scan`, J3 media guard (standalone; wired into git hooks after HQ step 4b).
 - Claude worker C1: sparse worktrees + the red-band spawn refusal in delegate.

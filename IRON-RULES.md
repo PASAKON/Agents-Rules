@@ -1177,3 +1177,25 @@ The law is `~/MoonieXHQ/Work/RULES.md` (10 rules). The ones that bind every agen
 Scope: pilot — enforced for `pilot_owner_cto` in Agents-Core `config/storage-policy.yaml`; the CEO
 widens it. A rule binds when a tool checks it; RULES.md lists which tool checks which rule.
 Full design: ADR 0030.
+
+## Section 56 — English is the org's working language (CEO 2026-09-23, owner CTO)
+
+**Why.** Every token an agent reads or writes is paid on every later turn, in every session, for
+as long as the text lives. English is the cheapest encoding for the models the org runs, and one
+language keeps skills, letters and code searchable. CEO: "อยากให้เขียนเป็น English ทั้งหมด ...
+เน้น English เพื่อ Save Token In + Out ในระยะยาว ระดับองค์กร".
+
+1. **Everything the org writes is English:** messages between agents (CTO↔CTO letters, briefs,
+   TASK.md, REPORT.md, reviews), skills, memory, wiki pages, ADRs, code and code comments, commit
+   messages, docs, configs, logs.
+2. **Another language only where translating would destroy the meaning:** story, script and
+   dialogue text; a person's own words, voice or writing style the work must keep; names and terms
+   with no English equivalent; content made for a non-English audience (Thai captions, Thai posts).
+   Keep it verbatim; everything around it stays English. Not fixed to Thai or English — use the
+   language the content itself lives in.
+3. **The CEO's own words are quoted in the original** — a quote is the person's voice (rule 2) —
+   with the rule stated in English next to it.
+4. **Replies to the CEO in chat follow the CEO's language.** This rule governs what the org writes
+   and sends to itself, not how it answers its human.
+5. **No bulk translation of existing text.** A file is converted to English the next time it is
+   edited for another reason; a translation pass for its own sake costs tokens and risks meaning.

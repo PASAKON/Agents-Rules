@@ -17,7 +17,7 @@
 2. **A free-space gauge, not a feeling** (`gauge` in the config): ≥ 20 GB green · < 20 yellow = daily notice + COLD candidate list · < 10 orange = REBUILD deleted automatically, no new download/video task spawns · < 5 red = delegate refuses every spawn. Zero is what happened at 04:05.
 3. **Every task gets one work dir named by its task id** (`in/` downloads, `tmp/` intermediates, `out/` deliverables) and **cannot close while it holds unfiled bytes**: tmp deleted, `in/` deleted only if every file is re-downloadable from `in/SOURCES.txt` else COLD, `out/` moved to the project's Assets folder (hq-filing) else COLD. Proposed root `~/MoonieXHQ/Work/` — not created until the CEO approves.
 4. **No new media into git.** A guard refuses an added media file > 1 MiB unless the repo opts the path in. The 722 MB already committed stays — no history rewrite on a shared repo.
-5. **Worker worktrees are sparse** — `docs/reports`, `docs/prompts`, `output` excluded; roles that need media (video_editor) get a full checkout.
+5. **Worker worktrees are sparse** — only EXISTING tracked media files > 256 KiB are excluded, each by exact path (877 → 78 MB). Never a directory: a directory exclude makes `git add -A` exit 1 for every new report under it (304 browser_operator tasks/30 d). Roles that need media (video_editor) get a full checkout.
 6. **Runners never default their output under a NEVER path** (`~/Desktop`, `~/Downloads`, `~/Movies`).
 7. **The scan is the judge.** `storage scan` reports GB per tier and the UNCLASSIFIED remainder; a path nobody classified is the next thing to argue about, not something to delete.
 

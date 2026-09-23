@@ -1199,3 +1199,29 @@ language keeps skills, letters and code searchable. CEO: "อยากให้�
    and sends to itself, not how it answers its human.
 5. **No bulk translation of existing text.** A file is converted to English the next time it is
    edited for another reason; a translation pass for its own sake costs tokens and risks meaning.
+
+## Section 57 — A helper that replaces AI work must prove, in measured numbers, that it does (CEO 2026-09-23, owner CTO)
+
+**Why.** A cheaper model, a script or a decision layer is brought in to take work off the big
+model. Whether it actually does so is a hypothesis, and it can be false: the helper can add review
+work, re-work and overhead until the AI spends more than before. CEO: "เป้าหมายที่เอา JEV เข้ามา
+คือ ประหยัด Token ช่วยลดงาน AI ได้จริง พิสูจน์ได้เป็นตัวเลข และปริมาณ" and "ถ้า JEV เอาเข้ามาแล้วแย่กว่าเดิม
+เพิ่มงานมากกว่าช่วยงาน Token Editor เพิ่มขึ้น แปลว่าสมมติฐานล้มเหลว".
+
+1. **The goal is measured AI work saved**, not decisions made. The headline number is the
+   replaced agent's MEASURED tokens per unit of output (e.g. the BL editor's tokens per minute of
+   finished video), read from its own transcripts. The helper's own cost is exact, from its ledger.
+   A counterfactual "would have cost" figure is an estimate and is always labelled as one.
+2. **Baseline first.** Before the helper is used, measure the same number on recent work done
+   without it.
+3. **Pre-register pass/fail before the first result**, in the helper's skill: how many units, what
+   counts as a pass, what counts as a failure. Overhead the helper creates (labelling, reviews,
+   re-evals, up-skilling) is charged to it, not hidden.
+4. **Report every unit** (every episode, every batch), with the direction (↑/↓) against the previous
+   one and against the baseline. The owner keeps the series; nobody reports only the good units.
+5. **A failed hypothesis is removed.** If the pre-registered test fails, the helper leaves that
+   workflow and the owner tells the CEO in numbers. Keeping a helper that does not pay for itself
+   is the failure this rule exists to stop.
+
+First instance: Jev in the BLACK LIQUIDITY edit, skill `VIDEO_EDITOR_jev-editor-helper`
+(§Goal and test), scoreboard `prototypes/bl-jev-scoreboard/` in Agents-Core.

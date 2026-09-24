@@ -1225,3 +1225,38 @@ work, re-work and overhead until the AI spends more than before. CEO: "เป้
 
 First instance: Jev in the BLACK LIQUIDITY edit, skill `VIDEO_EDITOR_jev-editor-helper`
 (§Goal and test), scoreboard `prototypes/bl-jev-scoreboard/` in Agents-Core.
+
+## Section 58 — Machine Contract: every machine is rebuildable, nothing lives only on one (CEO 2026-09-24, owner CTO)
+
+**Why.** 2026-09-24 winbox was reset before its Cookie Run data finished backing up: 84 GB of
+irreplaceable bot data gone, while code, rules, skills, memory and task definitions came back in
+~2 hours from git + a captured blueprint. CEO: "พร้อมเสมอ ไม่กังวลอีกต่อไป" — a reinstall or a new
+machine must be a routine, rehearsed operation, not a gamble on what someone remembered to back up.
+Full design: ADR 0031. Registry: Agents-Core `config/machine-contract.yaml`.
+
+1. **HARD — no OS reinstall, disk wipe, or delete of a registry path proceeds until every
+   IRREPLACEABLE row of that machine shows a Drive copy verified by checksum.** Why hard:
+   irreversible — the 2026-09-24 reset lost 84 GB that had no other copy; a wipe cannot be undone.
+2. **HARD — a `discovered` path past its 14-day classification window is a DISPOSABLE *candidate*;
+   no agent deletes it without an explicit human go.** Why hard: irreversible — guessing wrong on
+   an unclassified path cannot be undone; the clock creates pressure to classify, not licence to guess.
+3. Every entry is a path with a placeholder for what moves (`$CLAUDE_CONFIG_DIR`, `$HOME`,
+   `%USERPROFILE%`), never a function, a package or a version — Claude Code relocating a directory
+   or a toolkit bumping its version is a one-row edit, not a rewrite.
+4. `hq.yaml` maps HQ project folders under CEO approval (§54); `machine-contract.yaml` maps OS,
+   Claude-profile and toolkit paths outside that tree and is CTO-maintained — a path belongs in
+   exactly one of the two files.
+5. The weekly doctor reports every path over the size floor that matches no row as `discovered`;
+   the owner classifies it within 14 days (rule 2's clock).
+6. Reinstallable is never stored and garbage is never archived: a REBUILD row's only stored fact is
+   the one-line command that recreates it; a DISPOSABLE row is never written to Drive.
+7. Drive is the org's store (`BACKUP/MoonieX HQ/<what-is-kept>/`, each subfolder defined in
+   `gdrive-filing`); the Mac, winbox and Contabo are brains, tools and workspaces — each must be
+   able to go to zero and come back from git + the registry + Drive alone.
+8. A session or task leaves the disk where it found it: `workdir.py close --archive`, then
+   `stream_backup_to_drive.py --delete-after-verify` for bytes outside `Work/`, transcripts by the
+   daily archiver (never by hand), gauge back in green, no UNCLASSIFIED pile.
+9. CEO-personal paths (Pictures, Desktop, Downloads, iCloud on the Mac) stay out of the registry —
+   the disk-hygiene never-touch list governs them.
+10. A machine that has never been rebuilt on paper is not proven rebuildable: the re-OS drill
+    (ADR 0031) runs at least quarterly and is scored in `state/re-os-drills.jsonl`.

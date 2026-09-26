@@ -56,3 +56,19 @@ never kept or computed by the model) stand unchanged.
 - The CEO has to run `claude /login` once as the `sompong` user (via Run Inbox). The CTO never
   handles the code.
 - Telegram is out of scope for now. It stays on the secretary shim until LINE is proven.
+
+## Amendment — v2, 2026-09-26 (same session, CEO rulings)
+
+1. **Self-edit covers every file in its own repo, the cage included.** The CTO recommended locking
+   `runner/`, `profiles/` and `ops/` behind a CTO merge. The CEO chose "แก้ได้ทุกไฟล์" knowing the risk: a
+   prompt-injected CEO turn could widen its own permissions or read the CEO's Claude login. What still
+   holds is outside its reach: LINE targets are allowlisted inside ClaudeFlow, keys stay in
+   `/etc/sompong/ea.env` (root 0600, injected by systemd), family turns stay read-only, and every change
+   is committed with a LINE alert to the CEO when a cage file moves.
+2. **Same structure as the org** (CEO: "ออกแบบโครงสร้างของ SomPong แบบเดียวกับ ORG"): role file, role
+   registry row, skill toggle, MCP config per role, org-format memory, Field-note learning. SomPong is the
+   first role with its own skill + MCP toggle; workers follow the same schema later. **It is the one role
+   that cannot delegate.**
+3. Plain-text caveman replies, 30-day local retention of text and every file, Drive archive after that,
+   one Drive share folder (`SomPong Share/`, CEO-only shares). Contract: `mooniex:projects/sompong-ea.md`
+   (D) and (E).

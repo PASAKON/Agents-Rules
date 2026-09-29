@@ -1260,3 +1260,34 @@ Full design: ADR 0031. Registry: Agents-Core `config/machine-contract.yaml`.
    the disk-hygiene never-touch list governs them.
 10. A machine that has never been rebuilt on paper is not proven rebuildable: the re-OS drill
     (ADR 0031) runs at least quarterly and is scored in `state/re-os-drills.jsonl`.
+
+---
+
+## Section 59 — Delegate by usage: a worker runs where the quota is (CEO 2026-09-29, owner CTO)
+
+**Why.** From 2026-09-29 17:00 BKK the Claude plan is $20 a month; Google is $100 and OpenAI $20.
+Every C-level runs on Claude, so a worker that spends Claude quota by habit starves the sessions
+that plan, review and merge. CEO: "ทดสอบด้วยการใช้ worker จาก เจ้าอื่น ... เพื่อประหยัด token ของ
+Claude". Proven the same day: agy built the router's `pick_runner` (task-b2432e43), and codex built
+the `delegate_task` hook (task-ae42c0a7). Both merged after the same review gate. Playbook:
+[`playbooks/delegate-by-usage.md`](playbooks/delegate-by-usage.md). Cross-machine side: Agents-Core
+`docs/design/runner-routing/CONTRACT.md`.
+
+1. A worker's runner is chosen by the router, in this order: weekly quota remaining, then daily
+   within 5 points, then skill score from review history, then the CEO's order in
+   `config/plans.yaml`. A C-level leaves `tasks.runner` empty and does not pick claude because it is
+   the default.
+2. **HARD — a worker is forced onto Claude (`model_hint='claude'`) only for a reason from this
+   list, written in the task description:** reviewing, finishing or repairing another agent's code;
+   security-sensitive work; work where a silent wrong answer ships; work that needs a Claude-only
+   tool. **Why hard:** money. Every C-level runs on the $20 Claude plan, and quota spent on a worker
+   that another provider could do stops the org's planning and review.
+3. Every non-Claude worker's output passes the same gate as a Claude worker's (diff read, tests in a
+   worktree, merge checklist). The runner that wrote the code never reviews it. A reviewer's fix or
+   a reopen raises the row's `iteration`, so the skill score stays honest.
+4. A plan change is appended to `config/plans.yaml providers:` the same day, and a free grant goes
+   into `bonuses:`. Old entries are never deleted.
+5. `ORG_ROUTER=off` is for repairing the router or a quota reader only, and the reason is written
+   in the task description.
+6. The router decides WHICH runner and model. The mesh decides WHERE the worker runs and how its
+   report comes back. A change in the other side's files is asked for, not made (CONTRACT.md).

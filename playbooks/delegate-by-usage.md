@@ -72,10 +72,19 @@ A role with no mapping stays on claude and is not routed.
 External CLIs get no org MCP tools, no Claude skills and no mailbox wake. The brief carries
 everything (`CXO_Protocol_DelegateExternal` has the field notes):
 
-- **agy is edit-only.** It runs as `agy -p … --mode accept-edits` with no permission allow-list, so
-  every shell command is auto-denied, and the run then fails whole: it writes nothing
-  (task-e2306d6e; `mooniex:research/2026-09-30-agy-cli-permissions-headless.md`). An agy brief
-  asks for file edits only; the reviewer runs the tests. A job that must run commands goes to codex.
+- **agy runs only the commands on its allow-list** (CEO "เปิดแคบ", 2026-09-30; source Agents-Core
+  `config/agy-settings.json`, installed on the Mac and Contabo):
+  - allowed: the Core venv's pytest by absolute path
+    (`/Users/gob/MoonieXHQ/Agents/Core/.venv/bin/python -m pytest …`, or `/opt/MoonieXHQ/…` on
+    Contabo); `git status|diff|log|show|rev-parse|ls-files`; `ls cat head tail wc grep pwd hostname date`.
+  - denied (refused, the run goes on): `rm sudo curl wget ssh scp rsync`,
+    `git push|reset|checkout|clean`.
+  - **anything unlisted aborts the whole run and writes nothing**: `git commit`, `pip`, `npm`, a bare
+    `python` (task-e2306d6e;
+    `mooniex:research/2026-09-30-agy-cli-permissions-headless.md`). The brief names every command
+    agy may run, and the hub commits. A job that needs more goes to codex.
+  - Before 2026-09-30 agy was edit-only. A host whose settings file is missing is still edit-only
+    (winbox has no agy yet).
 - **Acceptance as commands** (codex): the exact test command and the expected result.
 - **Tests on fixtures only:** `tmp_path`, never the real `state/`, `.env` or a live service.
 - **The interpreter by absolute path** (a worktree has no `.venv`).
@@ -107,8 +116,8 @@ everything (`CXO_Protocol_DelegateExternal` has the field notes):
 ## 7. Where each runner works today
 
 CONTRACT §4 holds the live table. On 2026-09-29: Mac hub to Mac agy and Mac hub to Contabo codex are
-proven on real tasks; Contabo agy is wired, not yet run; winbox lost both CLIs in its reset. Only the
-Mac is a hub until the mesh ships.
+proven on real tasks. On 2026-09-30 the Contabo hub ran Contabo codex and Contabo agy (mesh lane B);
+winbox lost both CLIs in its reset.
 
 ## 8. Turning the router off
 

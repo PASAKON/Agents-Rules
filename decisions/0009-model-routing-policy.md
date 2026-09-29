@@ -315,3 +315,14 @@ version bump like the 2026-07-25 addendum.
 - Applies at the next spawn/restart. Live sessions keep the model they were
   launched with until someone runs `/model claude-opus-5-5[1m]` + `/effort xhigh`
   in them.
+
+## Addendum 2026-09-29 — Sonnet 5 workers move to Sonnet 5.5 (CEO)
+
+- Every Sonnet 5 worker role now runs `claude-sonnet-5-5` (Agents-Core af89076a,
+  WINDOWS CTO #fc5c2031). Same price as Sonnet 5 ($2 in / $10 out per MTok, cache
+  read $0.20, 5m write $2.50, 1h write $4), same tokenizer, 1M context, 128K output.
+  Efforts unchanged; the Opus workers and the C-levels (Opus 5.5 @ xhigh) are untouched.
+- Needs Claude Code ≥ 2.1.284. The bare `sonnet` alias now resolves to 5.5.
+- Smoke `claude -p --model claude-sonnet-5-5 "Reply with exactly: OK"` answered OK on
+  winbox (by #fc5c2031), and on the Mac and Contabo (by CTO #e6754203, 2026-09-29).
+- `tools/rtk_ab/run_ab.py` stays on Sonnet 5: its recorded results were measured there.

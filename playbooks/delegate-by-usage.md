@@ -72,7 +72,11 @@ A role with no mapping stays on claude and is not routed.
 External CLIs get no org MCP tools, no Claude skills and no mailbox wake. The brief carries
 everything (`CXO_Protocol_DelegateExternal` has the field notes):
 
-- **Acceptance as commands:** the exact test command and the expected result.
+- **agy is edit-only.** It runs as `agy -p … --mode accept-edits` with no permission allow-list, so
+  every shell command is auto-denied, and the run then fails whole: it writes nothing
+  (task-e2306d6e; `mooniex:research/2026-09-30-agy-cli-permissions-headless.md`). An agy brief
+  asks for file edits only; the reviewer runs the tests. A job that must run commands goes to codex.
+- **Acceptance as commands** (codex): the exact test command and the expected result.
 - **Tests on fixtures only:** `tmp_path`, never the real `state/`, `.env` or a live service.
 - **The interpreter by absolute path** (a worktree has no `.venv`).
 - **Scope:** only the files in `touches`; anything else is a report line, not an edit.

@@ -56,12 +56,15 @@ A role with no mapping stays on claude and is not routed.
    - A line reading `no ok candidate, fallback:` means every bucket would cross its reserve. Tell the CEO.
 3. Forecast by hand before a batch: `.venv/bin/python tools/route.py --plan developer --size L`.
    Limits: `.venv/bin/python tools/limits.py show`, and `set <bucket>.<key> <value>` (the CEO's call).
-4. An explicit `runner` on the row is never overridden. Set one only for an A/B test or a CEO order,
-   and say which in the task description.
+4. An explicit `runner` on the row is never overridden. Set one only for an A/B test, a CEO order or a
+   reason below, and write it as a line `override: <reason>` in the task description. On a routed
+   role, `delegate_task` refuses a hand pin without that line (`route.check_override`). A row the
+   router wrote earlier (runner and runner_model both set) is not a hand pin.
 
 ### Force Claude only for these, with the reason written in the task description
 
-`UPDATE tasks SET model_hint='claude' WHERE id='task-…'` when the job is:
+`UPDATE tasks SET model_hint='claude' WHERE id='task-…'`, plus the `override: <reason>` line in the
+description, when the job is:
 
 - reviewing, finishing or repairing another agent's code (including a worker that died mid-task);
 - security-sensitive: auth, secrets, tokens, permissions;

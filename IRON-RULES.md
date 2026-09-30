@@ -1273,13 +1273,17 @@ Full design: ADR 0031. Registry: Agents-Core `config/machine-contract.yaml`.
 >    It prints each candidate `ok` / `will_hit`. If every candidate is `will_hit`, tell the CEO.
 >    Never force Claude to get past it.
 > 4. Set a runner, host or `model_hint` by hand only for rule 2's reasons, a CEO order, an A/B test,
->    or a box-bound job (Flow on winbox). Write the reason in the task description.
+>    or a box-bound job (Flow on winbox). Write the reason as a line `override: <reason>` in the task
+>    description. Without that line `delegate_task` refuses a hand-pinned runner or `model_hint` on a
+>    routed role (`route.check_override`, PermissionError, since 2026-09-30).
 > 5. The CEO moves the limits: `.venv/bin/python tools/limits.py show | set <bucket>.<key> <value>`
 >    (`plan_usd`, `reserve_pct`, `min_5h_pct`). Nobody edits code to move a limit.
 >
 > The tools behind it: `config/plans.yaml` (buckets, candidates), `state/quota-snapshot.json`
 > (written every 10 min on the Mac and Contabo), `config/limits.yaml`, and `tools/forecast.py`
-> (seed cost per job, S/M/L). Machine choice by load (`ORG_HOST_ROUTER`) turns on at the mesh
+> (seed cost per job, S/M/L; replaced per cell by `state/cost-table.json` once `tools/cost_learn.py`
+> has 5 real jobs for it, relearned every snapshot). A brief that must run shell commands (psql,
+> docker, systemctl…) never goes to agy (`forecast.needs_shell`). Machine choice by load (`ORG_HOST_ROUTER`) turns on at the mesh
 > cutover W1.10. Until then a worker runs on the hub's own box.
 > Design: Agents-Core `docs/design/runner-routing/PLAN-auto-dispatch.md`.
 

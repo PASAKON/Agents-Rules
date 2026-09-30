@@ -47,12 +47,16 @@ A role with no mapping stays on claude and is not routed.
 ## 3. How to delegate
 
 1. `create_task` as usual, with `touches`. **Leave `runner` empty.**
-2. `delegate_task`. The hook (CONTRACT §3) calls `route.pick_runner(role, host)`, writes
-   `tasks.runner`, and logs `router: <runner> — <reason>`. Read that line; it is the record of why.
-   - Until the hook is live (CONTRACT §4 says so), do it by hand:
-     `.venv/bin/python tools/route.py --role dev_general --host <host>`, then
-     `UPDATE tasks SET runner='<runner>' WHERE id='task-…'` before `delegate_task`.
-3. An explicit `runner` on the row is never overridden. Set one only for an A/B test or a CEO order,
+2. `delegate_task`. The hook calls `route.pick_runner(role, host, touches=, brief=)`.
+   - It sizes the job S/M/L from `touches` and the brief.
+   - It forecasts each candidate from the 10-minute quota snapshot and `config/limits.yaml`.
+   - It takes the first candidate whose verdict is `ok`.
+   - It writes `tasks.runner` and `tasks.runner_model` (the CLI runs that model).
+   - It logs one line, e.g. `router: agy gemini-3.8-flash-high [agy-gemini] — … 98.2%→97.2% (M ≈1%) reserve 10% ok`.
+   - A line reading `no ok candidate, fallback:` means every bucket would cross its reserve. Tell the CEO.
+3. Forecast by hand before a batch: `.venv/bin/python tools/route.py --plan developer --size L`.
+   Limits: `.venv/bin/python tools/limits.py show`, and `set <bucket>.<key> <value>` (the CEO's call).
+4. An explicit `runner` on the row is never overridden. Set one only for an A/B test or a CEO order,
    and say which in the task description.
 
 ### Force Claude only for these, with the reason written in the task description

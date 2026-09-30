@@ -1265,6 +1265,24 @@ Full design: ADR 0031. Registry: Agents-Core `config/machine-contract.yaml`.
 
 ## Section 59 — Delegate by usage: a worker runs where the quota is (CEO 2026-09-29, owner CTO)
 
+> **The card — every C-level, every delegate (CEO 2026-09-30, "ลดขั้นตอนการคิดสำหรับ Agent"):**
+> 1. `create_task` with `touches`, and leave `runner`, `host` and `model_hint` **empty**.
+> 2. `delegate_task`. Read the one `router:` line in `delegate_log`: runner, model, bucket, size, cost,
+>    and `ok`. That line is the decision. Do not rank providers, read quotas or check RAM yourself.
+> 3. Before a batch, run `.venv/bin/python tools/route.py --plan developer --size L` once.
+>    It prints each candidate `ok` / `will_hit`. If every candidate is `will_hit`, tell the CEO.
+>    Never force Claude to get past it.
+> 4. Set a runner, host or `model_hint` by hand only for rule 2's reasons, a CEO order, an A/B test,
+>    or a box-bound job (Flow on winbox). Write the reason in the task description.
+> 5. The CEO moves the limits: `.venv/bin/python tools/limits.py show | set <bucket>.<key> <value>`
+>    (`plan_usd`, `reserve_pct`, `min_5h_pct`). Nobody edits code to move a limit.
+>
+> The tools behind it: `config/plans.yaml` (buckets, candidates), `state/quota-snapshot.json`
+> (written every 10 min on the Mac and Contabo), `config/limits.yaml`, and `tools/forecast.py`
+> (seed cost per job, S/M/L). Machine choice by load (`ORG_HOST_ROUTER`) turns on at the mesh
+> cutover W1.10. Until then a worker runs on the hub's own box.
+> Design: Agents-Core `docs/design/runner-routing/PLAN-auto-dispatch.md`.
+
 **Why.** From 2026-09-29 17:00 BKK the Claude plan is $20 a month; Google is $100 and OpenAI $20.
 Every C-level runs on Claude, so a worker that spends Claude quota by habit starves the sessions
 that plan, review and merge. CEO: "ทดสอบด้วยการใช้ worker จาก เจ้าอื่น ... เพื่อประหยัด token ของ

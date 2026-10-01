@@ -128,7 +128,7 @@ Each band keeps the actions of the bands above it:
 ### 7. The ledger, and the audit it makes possible
 
 - **One appender, one schema** (`lib/byte_ledger.py`). Fields: `{seq, ts, machine, kind, container, task_id, session_uuid, actor, charged_to, class, bytes, files, md5_local, drive_id, md5_drive, policy_version}`. `kind` is one of `create`, `checkpoint`, `close`, `close_partial`, `archive`, `verified`, `delete`, `reclaim`, `sweep`, `death`, `adopt`, `stuck`, `refuse`, `debt` or `janitor_run`. Every tool that creates, archives or deletes calls it, including Green deletes, as one aggregate `sweep` row per run. It replaces the four incompatible formats in `drive-archive.log`. A ledger failure never blocks a worker; it is a doctor failure.
-- **Ledgers are IRREPLACEABLE** (`machine-contract.yaml` rows, splitting `logs/**`). They leave the machine weekly, as one gzip per machine per week on Drive. The destination folder `BACKUP/MoonieX HQ/Ledgers/<machine>/` is **proposed**: under the filing rules it waits for the CEO's yes. They go to a hub table once the ADR 0025 hub is live.
+- **Ledgers are IRREPLACEABLE** (`machine-contract.yaml` rows, splitting `logs/**`). They leave the machine weekly, as one gzip per machine per week on Drive, at `BACKUP/MoonieX HQ/Ledgers/<machine>/<YYYY-WW>.jsonl.gz`. The CEO approved this folder on 2026-10-01 ("ข้อ 2 อณุมัติ"), and it has a row in `drive-archive-gate.md`. They go to a hub table once the ADR 0025 hub is live.
 - **The audit** is `playbooks/disk-audit.md`: 9 steps that any session can run from git, Drive and the ledger, plus the reduced procedure that works before the ledger exists.
 
 ### 8. A worker that dies mid-task: 13 steps
@@ -184,7 +184,7 @@ Today 7 of the 13 exist in full or in part, and none of the 7 returns a dead wor
 - New `tools/policy_lint.py` in CI. It fails on a config key with no reader, on a path classed differently by the two YAML files, and on a number in a rule that differs from the YAML.
 - Skills, same change set:
   - `ALL_Rules_DiskHygiene` (and its `references/*.md`): the agent card at the top, a ledger row for Green deletes, the journal settled as Green, the abandoned-Work row executed by the janitor at 72 h, the winbox floor from the bands, the 30-day hit window.
-  - `CXO_Rules_GDrive_Filing` and the folder map: film clean-up deletes Drive-verified files instead of trashing them; Work-Archive's definition gains checkpoint and scratch tars.
+  - `CXO_Rules_GDrive_Filing` and the folder map: film clean-up deletes Drive-verified files instead of trashing them; Work-Archive's definition gains checkpoint and scratch tars; `Ledgers/<machine>/` is added to the tree and the ID table in the same turn the folder is created (filing rule 6), and a new `drive_leg` verb `ledgers` uploads it weekly.
   - `session-close`: a disk step.
 
 **P2: waits on the ADR 0025 hub cutover.** The ledger moves to a hub table. The owner-gone test reads `c_level_sessions` from the hub. The debt gate reads the hub. Until then the gates read the local database, and a task unknown to it is reported, never cleaned.
@@ -196,7 +196,6 @@ Today 7 of the 13 exist in full or in part, and none of the 7 returns a dead wor
 - `drive-archive-gate.md` "nothing in this file runs on its own" and "2 TB plan": amended in this change.
 
 ## Open (not decided here)
-- The Drive folder `BACKUP/MoonieX HQ/Ledgers/<machine>/` (filing rule 3: needs the CEO's yes).
 - Contabo's Docker images (14.93 GB) have no clock; only the build cache does.
 - Whether an org janitor may ever act directly on winbox. The default stays: the janitor plans, the steward executes.
 - The ADR 0025 hub cutover, on which P2 waits.

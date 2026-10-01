@@ -6,6 +6,7 @@
 - **Relates:** ADR 0030 (tiers, gauge, Work/), ADR 0027 (claude-home in git), ADR 0028 (hq.yaml decides), IRON §54 (HQ paths), §55 (Work/), §58 (this contract); skills `disk-hygiene`, `gdrive-filing`, `session-close`
 - **Config:** Agents-Core `config/machine-contract.yaml` — the per-machine keep-manifest; `config/storage-policy.yaml` keeps the gauge and tiers
 - **Plan:** Agents-Core `docs/ops/machine-contract-plan-2026-09-24.md`
+- **Extended by:** ADR 0033 (2026-10-01). It scopes §58 rule 1 to wipes and reinstalls (a single-item delete needs that item's own verified copy), makes the transcript archiver daily on every machine, and classes the byte ledgers IRREPLACEABLE.
 
 ## Context (measured 2026-09-24)
 - winbox was reset (Reset this PC) at ~04:20 with the Cookie Run backup 4 minutes into its resumed

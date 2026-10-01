@@ -6,6 +6,17 @@ Rule for any agent asked to move data from the Mac to Google Drive. Nothing in
 this file runs on its own: the daily disk watch only *reports* candidates, and
 an agent moves them only after the CEO says go on a specific alert.
 
+> **Amended 2026-10-01 (IRON §61, [ADR 0033](../decisions/0033-disk-lifecycle-owner-class-clock-ledger.md)).**
+> These rows now run on a schedule, with no go per alert:
+> - transcripts: daily, on every machine, after 7 days;
+> - closed `Work/` folders: the janitor, at 72 h;
+> - worktree bundles of ended tasks: the janitor, at 24 h;
+> - session scratch with no Drive copy: archived first, 7 days after the session closed;
+> - winbox hit frames beyond the 30-day local window: the steward's loop.
+>
+> The copy, verify, delete order below still binds every one of them. A new destination still needs a row the CEO
+> approved first. On the Mac, a file whose Drive md5 has been read back is deleted, not moved to the Trash (decision 9).
+
 ## What may move (and where)
 
 | Source on the Mac | Destination in Google Drive (`ไดรฟ์ของฉัน/`) | Note |
@@ -28,10 +39,11 @@ an agent moves them only after the CEO says go on a specific alert.
 | `Agents/prototypes/bl-model-bakeoff/out/BL-*-Wan*.mp4` — 5 Wan 3.0 clips from the 2026-09-18 Kling-vs-Wan bake-off (1080x1920, 5.00 s, ~52 MB total) | `ALL DRAFT/ASSETS/AI Assets/BLACK LIQUIDITY (9:16)/(purpose) (D-M-YYYY) (Wan 3.0).mp4` | CEO-approved in chat 2026-09-18 ("เก็บ B-roll Wan 3.0 ไว้ใช้ต่อได้เลย เอาเก็บไว้ใน Google Drive"). Same loose-file EXCEPTION and the same reason as the Seedance row below: a worker fetches one clip at a time by Drive id out of `bl-broll-catalog/CATALOG.md`. Uploaded with `ilag_sync.upload()`, each verified by `md5Checksum` + size + parent (5/5), logged in `~/.claude/logs/drive-archive.log`, and registered as catalogue rows 85-89 with a 4-frame `sheets/<drive_id>.jpg` each. **Three carry baked-in ENGLISH text** ('RETURN 35% / MONTH', 'NOTICE OF SEIZURE', 'TRANSFER FAILED') — their `caution` column says to use them only for that claim and to keep the frame tight, because the secondary labels are gibberish. Local copies stay: they are 52 MB and also the bake-off evidence. |
 | `~/Desktop/archive/*.mp4` — 65 Seedance 2.0 B-roll clips (Higgsfield Unlimited, 3–7 Aug 2026, 1080x1920 8.08 s, 1.59 GB) | `ALL DRAFT/ASSETS/AI Assets/BLACK LIQUIDITY (9:16)/(purpose) (D-M-YYYY) (Seedance 2.0).mp4` | CEO-approved in chat 2026-09-18 ("ใช้ตามนี้ อัปขึ้น Drive ได้เลย" + "หลังจาก Up ลง Gdrive แล้วฝากลบในเครื่องด้วย เช็คให้ชัวร์ก่อนลบ"). **EXCEPTION to "one tar per item", deliberate:** loose files, because a video worker fetches clips one at a time by Drive id from the catalogue (`Agents/prototypes/bl-broll-catalog/CATALOG.md`, drive ids in `drive-manifest.json`). Uploaded from the Mac via `ilag_sync.upload()` (Drive REST resumable), `md5Checksum` + size + parent verified per file (`upload_broll.py`), then the local copy removed one file at a time only after a FRESH Drive md5 re-check (`delete_verified.py`, refuses unless all 65 verified). Every file logged in `~/.claude/logs/drive-archive.log`. |
 | Night run 2026-10-01 — BL B-roll from the Mac CTO session scratchpad (`bl/hf_out/*.mp4` Higgsfield Seedance 2.5 1080x1920 5 s, `champa_out/*.mp4` champa.io Seedance 2.0 Unlimited 720x1280 15 s) | `ALL DRAFT/ASSETS/AI Assets/BLACK LIQUIDITY (9:16)/(purpose) (D-M-YYYY) (Seedance 2.5|2.0).mp4` | CEO in chat 2026-10-01 ("เอา B-Roll ที่จำเป็นและไม่ซ้ำของเดิมของ ช่อง Blackliquidity และตั้งชื่อ + เก็บไว้ใน Google Drive blackliquidity ได้เลย ตามกฎ"). Same loose-file EXCEPTION as the Seedance row above. Uploaded by folder id with `ilag_sync.upload()`, `md5Checksum` + size + parent read back per file, a mismatch renamed `BROKEN-` (rule 10), one line each in `~/.claude/logs/drive-archive.log`, ids in the run's `drive-manifest.json`. champa clips carry champa's top-left watermark until the CEO picks a removal method; a cleaned file goes up as `_v2` (rule 11). Local copies are kept. |
+| Byte ledgers of every machine: the `lib/byte_ledger.py` output (ADR 0033 §7), plus until it ships `~/.claude/logs/drive-archive.log`, `Work/_ledger.jsonl`, `state/storage/reclaim.jsonl` and winbox `ledger/*.jsonl` | `BACKUP/MoonieX HQ/Ledgers/<machine>/<YYYY-WW>.jsonl.gz` | CEO-approved in chat 2026-10-01 ("ข้อ 2 อณุมัติ", answering the request that named this folder). IRON §61 rule 12. Weekly, by the `drive_leg` verb `ledgers`: one gzip per machine per ISO week, with the md5 read back by file id. The local ledger stays, because it is the live, IRREPLACEABLE source. Defined in the filing skill's tree the same turn the folder is created. |
 
 Anything not in this table needs a new row approved by the CEO first. The
 Drive folder is `/Users/gob/Library/CloudStorage/GoogleDrive-pass.gob1@gmail.com/ไดรฟ์ของฉัน`
-(stream mode, 2 TB plan, ~1.8 TB free on 2026-09-05).
+(stream mode, 2 TB plan, ~1.8 TB free on 2026-09-05). The plan is now about 20 TB (CEO 2026-10-01: "มีราวๆ 20TB").
 
 ## Never touch
 
@@ -61,6 +73,8 @@ Drive folder is `/Users/gob/Library/CloudStorage/GoogleDrive-pass.gob1@gmail.com
    and the same in the destination; `diff` must be empty. Size alone is not
    verification.
 5. Only now delete the source, and Empty Trash so the space actually returns.
+   Since 2026-10-01 (ADR 0033, decision 9), a file whose Drive md5 has been read back is deleted outright, not moved to
+   the Trash. Moving to the Trash frees nothing on APFS, and emptying it stays the CEO's decision.
 6. Append one line per source to `~/.claude/logs/drive-archive.log`:
    date, source, destination, file count, bytes, sha-list checksum.
 7. Tell the CEO over SomPong what moved, how much came back, and the
@@ -93,5 +107,7 @@ Worktrees / PARKED repos: follow the `restore` line inside the tar's manifest.
 (`com.gob.claude-prune-transcripts`). It messages the CEO (SomPong) when free
 space < 20 GB, transcripts ready to archive ≥ 2 GB, gate candidates ≥ 2 GB,
 or every Monday. Thresholds live in `~/.claude/prune-transcripts.json`.
+This job is replaced by `tools/disk_janitor.py --notify` once that tool ships (ADR 0033). Its bands will then be the Mac's
+row in `gauge_by_machine`. Until then this job stays.
 
 | winbox hit frames beyond 500 MB/day (`Documents/CookieRunScript/modelplay/session-*/run-*/hit_NN/`, tier A) | `BACKUP/CookieRun Backup/hits/hits-<YYYY-MM-DD>.tar` + `.manifest.json` (id `1e-TGFYiEecMKIu34dOhJeZMw1PREd2__`) | CEO 2026-09-24 (Machine Contract ruling: 500 MB/day stays on the box, the rest to Drive; folder "อนุมัติ" the same day). `tools/hits_plan.py --plan` picks an evenly spaced KEPT subset per past day; `archive_runner.py` queue item 5 tars the overflow (gate file `archive/hits_archive_enabled`); `archive_reclaim.py --apply` deletes only members of an ok, md5-verified manifest of kind `hits`; `rounds.jsonl` never leaves the box |

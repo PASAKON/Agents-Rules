@@ -13,7 +13,7 @@ Verbatim quotes from project source files. **Do not paraphrase these in code rev
 > language · §38 TOON · §39 no em dash · §40 LungNote SID tag · §41 graph-readable
 > wiki · §42 browser is a C-level decision · §43 suspect the environment first ·
 > §44 rules as values not adjectives · §45 no blocking prompts unattended ·
-> §46 a rented GPU is watched until dead · §47 check the research library first · §48 disk and transcript hygiene: alert first, move by hand · §49 Drive: the skill is the rule · §50 every session visible, every teardown proves identity · §60 a browser login goes through the relay request + recipe.
+> §46 a rented GPU is watched until dead · §47 check the research library first · §48 disk and transcript hygiene (disk part superseded by §61) · §49 Drive: the skill is the rule · §50 every session visible, every teardown proves identity · §60 a browser login goes through the relay request + recipe · §61 disk lifecycle: every byte has an owner, a class, a clock and a ledger row.
 >
 > **The other 21 are MoonieX-specific** (Vercel deploy, Supabase, migrations,
 > cron, fal.ai queue, design system, Drive convention, …) and live in
@@ -894,6 +894,12 @@ where it matters most.
 
 ## Section 48 — Disk and transcript hygiene on the Mac: alert first, move by hand (CEO 2026-09-05, owner CTO)
 
+> **Superseded 2026-10-01 for disk and transcripts by §61 and [ADR 0033](decisions/0033-disk-lifecycle-owner-class-clock-ledger.md)** (CEO decisions 7 and 9).
+> Rules 1-4 below no longer bind: the notify-only watch, manual archiving, the 30-day candidates and the
+> Drive-root path. Transcripts are now archived daily after 7 days by a scheduled job on every machine.
+> Rules 5, 6 and 8 still bind (RAM, overnight limits, the never-touch list, which is §61's PROTECTED class).
+> Rule 7 (worktrees die with their task) is now executed by the janitor on the §61 clock.
+
 **Why this rule exists.** Between 2026-08-28 and 2026-09-05 the 8 GB Mac
 kernel-panicked six mornings out of nine. Panic string: `watchdog timeout: no
 checkins from watchdogd in 93 seconds`, with `8 swapfiles and LOW swap space`.
@@ -1178,6 +1184,14 @@ Scope: every session (CEO widened it 2026-09-23; per-feature `scope:` in Agents-
 `config/storage-policy.yaml`). A rule binds when a tool checks it; RULES.md lists which tool checks which rule.
 Full design: ADR 0030.
 
+**Amended 2026-10-01 (CEO, §61, ADR 0033).**
+- **Rule 3:** any end other than merge (cancelled, failed, stalled, reverted) starts the §61 clock. `tmp/` and durable-source
+  `in/` go the same tick, and the owner is told.
+- **Rule 4:** after the clock (72 h, or 24 h at orange or red), `janitor@<machine>` runs the owner's own
+  `close --archive`, charged to the owner. The janitor is a tool, not another session. Before that point, orphans are still
+  the owner's ("ได้เลย", decision 3).
+- **Rule 5:** the floor after the work is the larger of 5 GB and the host's red band.
+
 ## Section 56 — English is the org's working language (CEO 2026-09-23, owner CTO)
 
 **Why.** Every token an agent reads or writes is paid on every later turn, in every session, for
@@ -1261,6 +1275,13 @@ Full design: ADR 0031. Registry: Agents-Core `config/machine-contract.yaml`.
 10. A machine that has never been rebuilt on paper is not proven rebuildable: the re-OS drill
     (ADR 0031) runs at least quarterly and is scored in `state/re-os-drills.jsonl`.
 
+**Amended 2026-10-01 (CEO, §61, ADR 0033).**
+- **Rule 1** binds an OS reinstall, a disk wipe, or deleting a registry row's whole path on a machine. Deleting a single
+  item needs that item's own Drive copy verified by checksum, or the item must be GARBAGE under §61 (decision 10).
+- **Rule 6:** a worktree's unpushed commits and dirty or untracked files, and media in a dead session's scratch with no
+  Drive md5 match, are not garbage. They are assets, bundled before removal. The byte ledgers are IRREPLACEABLE.
+- **Rule 8:** "the daily archiver" is a scheduled job on every machine, the Mac included (decision 7).
+
 ---
 
 ## Section 59 — Delegate by usage: a worker runs where the quota is (CEO 2026-09-29, owner CTO)
@@ -1338,3 +1359,89 @@ Google + SMS, recorded once then auto-run): "เยี่ยมมากเล�
 recorded login saves every later one, and a request-filtered menu replaced a list of 7–9 Chromes.
 Built in task-0601cec6 (requests, c5b62f3), task-8cf9ba1a (recipes, 22681b9), task-fe523583 (Back,
 741f2ef) and task-394641e1 (pacing, run-result, recorded ends, 0445d32).
+
+---
+
+## Section 61 — Disk lifecycle: every byte has an owner, a class, a clock and a ledger row (CEO 2026-10-01, owner CTO)
+
+> **The card: every agent, every machine.**
+> 1. Write only inside your container: `$WORK_DIR` (`Work/<task-id>/`), your worktree, or your own session scratch.
+>    Files you keep go in `out/`; everything else goes in `tmp/`. That is the only disk decision an agent makes.
+> 2. Before anything of 1 GB or more, set `expect_gb`. After the work, free space must stay at or above
+>    5 GB and at or above the host's red band.
+> 3. At the end, run `workdir.py close <task> --archive`. A session closes holding 0 bytes in ended containers.
+> 4. Never delete a PROTECTED path, and never delete a local ASSET copy until its Drive md5 has been read back.
+> Everything after that (archiving on a clock, garbage sweeps, clean-up after a crash) belongs to `janitor@<machine>`,
+> a scheduled tool, not a session. Full design, numbers and build list: [ADR 0033](decisions/0033-disk-lifecycle-owner-class-clock-ledger.md).
+
+**Why.** The CEO, 2026-10-01: "Rule สร้างมาเพื่อให้ Agents ทำงานเป็นระบบ ระเบียบมากขึ้นสามารถทำงานระยะยาวได้ผลดี
+โดยที่ Disk คงที่ ไม่เติบโตโดยไม่ จำเป็น ... ใครจะเป็นคนเครียนหลังจากนั้น เจ้าของเอง แล้สถ้าเขาไม่ทำตามกฏจะทำยังไง".
+A read of the code that day found:
+- Only four checks refuse anything.
+- No step reclaims a dead worker's bytes.
+- One Mac-sized gauge serves all three machines.
+- Every audit log lives on one machine, and some are classed DISPOSABLE.
+- §48 contradicts ADR 0030 and §58.
+
+The CEO approved 11 decisions in one message ("1. ใช้ มีราวๆ 20TB 2. ตามนั้น 3. ได้เลย 4. ตามนั้น 5. ตามนั้น 6. OK
+7. OK 8. OK 9. OK 10. OK 11. OK"). The rules below record them. Every number lives in Agents-Core
+`config/storage-policy.yaml`, and a rule binds through the tool named with it. Where that tool is still on ADR 0033's
+build list, the owner does the step by hand, and the audit counts it either way.
+
+1. **Five classes, asked in order; the first yes wins.**
+   - PROTECTED: the CEO's own, login state, secrets, `memory/`, live service data, Cookie Run data.
+   - WORKING: a live owner holds its container.
+   - ASSET: nothing stored can recreate it.
+   - GARBAGE: a command, a durable URL or a verified Drive copy recreates it, and no live owner uses it.
+   - UNCLASSIFIED: reported, and deleted only on a human go.
+
+   A worktree's unique bytes, and an `in/` file whose URL can expire, are ASSETS. A directory holding a login-state
+   file is skipped and reported, whatever its class (HARD, CEO 2026-09-28). Tool: `storage_policy classify`.
+2. **Assets live on Google Drive** (about 20 TB, decision 1). A machine copy is a cache, deleted only after its md5 is
+   read back by Drive file id. Deleting anything ON Drive is the CEO's decision.
+3. **Garbage has a maximum age** (`clocks:`).
+   - At close: `tmp/` and durable-source `in/`.
+   - At merge: the merged worktree.
+   - 24 h: the worktree of any other end (unique bytes bundled first).
+   - 14 d: dormant `node_modules` and `.venv`.
+   - Weekly, and at once at orange: caches.
+   - Weekly: Docker build cache older than 7 d.
+   - Daily: the journal over 500 MB.
+   - 7 d: transcripts on the machine, then Drive, where they are kept forever.
+   - 7 d after its session closed: session scratch, with archive first (paused sessions exempt).
+4. **Bands per machine** (decision 2), as yellow / orange / red GB free: Mac 20/10/5, Contabo 20/12/8, winbox 80/50/30.
+   - Red: refuse every spawn.
+   - Orange: run the Green sweep now, spawn no download or video task, and drop the janitor's grace to 24 h.
+   - Yellow: a daily notice naming the top 10 holders and the Mac's Trash size.
+
+   A failed probe refuses the spawn. A media task expecting more than 3 GB is refused on Contabo.
+5. **A live budget per task** (decision 5): Mac 5 GB, Contabo 3 GB.
+   - A finished `out/` file of 100 MB or more, idle for 30 min, is checkpointed to Drive.
+   - Over budget, its verified local copy is evicted and a restore stub is left.
+   - At 2× the budget, or at red, the worker stops writing. Nothing is killed.
+   - Exempt: assembled cuts, which go to Drive only when signed off or as the last of the day, and clips held for the
+     CEO's review.
+6. **The owner cleans; the clock enforces** (decisions 3 and 4). Task bytes belong to `tasks.owner_cto`, scratch and
+   transcripts to their session, caches to the machine. This binds C-level sessions as much as workers.
+   - Merge is refused while `Work/` is unfiled.
+   - Any other end starts the clock: `tmp/` is deleted at once and the owner is told.
+   - At 48 h the bytes are debt. The owner's next spawn closes them first, and the spawn is refused if more than 2 GB
+     or more than 3 containers cannot be closed (the CEO can override).
+   - At 72 h (24 h at orange or red) the janitor runs the owner's own `close --archive`, charged to the owner.
+   - 3 janitor closes in 7 d names the role in the CEO's weekly report and opens a fix task on its skill.
+7. **Transcripts** (decision 7): archived daily after 7 days, on every machine, by `tools/drive_leg.py transcripts`.
+   A live session is never archived.
+8. **winbox hit frames** (decision 8): the last 30 days stay on the box. The steward's loop streams older kept days to
+   Drive and deletes them after md5 (`DATA-STEWARD.md` stays the authority).
+9. **The Mac Trash** (decision 9): a file verified on Drive by md5 is deleted, not trashed. Emptying the Trash stays
+   the CEO's decision.
+10. **§58 rule 1** binds a wipe or reinstall. Deleting a single item needs that item's own verified copy (decision 10).
+11. **A weekly Green sweep on all three machines** (decision 11). On winbox the steward runs it, inside the org lanes only.
+12. **Every create, archive and delete writes one ledger row** (one schema, `lib/byte_ledger.py`), Green deletes
+    included. The ledgers are IRREPLACEABLE and leave the machine weekly. Any session can audit afterwards with
+    [`playbooks/disk-audit.md`](playbooks/disk-audit.md) (9 steps).
+13. **A dead worker** is covered by the 13 steps in ADR 0033 §8. The target: it loses at most the piece it was writing,
+    and its bytes are back to baseline within 72 h, with a ledger trail.
+
+Unchanged and HARD: login state is never deleted without asking the CEO. CEO-personal paths are never touched. Cookie
+Run data is handled only by the steward. Secrets never go to Drive. A new Drive folder needs the CEO's yes.

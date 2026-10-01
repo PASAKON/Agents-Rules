@@ -6,6 +6,17 @@ Rule for any agent asked to move data from the Mac to Google Drive. Nothing in
 this file runs on its own: the daily disk watch only *reports* candidates, and
 an agent moves them only after the CEO says go on a specific alert.
 
+> **Amended 2026-10-01 (IRON §61, [ADR 0033](../decisions/0033-disk-lifecycle-owner-class-clock-ledger.md)).**
+> These rows now run on a schedule, with no go per alert:
+> - transcripts: daily, on every machine, after 7 days;
+> - closed `Work/` folders: the janitor, at 72 h;
+> - worktree bundles of ended tasks: the janitor, at 24 h;
+> - session scratch with no Drive copy: archived first, 7 days after the session closed;
+> - winbox hit frames beyond the 30-day local window: the steward's loop.
+>
+> The copy, verify, delete order below still binds every one of them. A new destination still needs a row the CEO
+> approved first. On the Mac, a file whose Drive md5 has been read back is deleted, not moved to the Trash (decision 9).
+
 ## What may move (and where)
 
 | Source on the Mac | Destination in Google Drive (`ไดรฟ์ของฉัน/`) | Note |
@@ -31,7 +42,7 @@ an agent moves them only after the CEO says go on a specific alert.
 
 Anything not in this table needs a new row approved by the CEO first. The
 Drive folder is `/Users/gob/Library/CloudStorage/GoogleDrive-pass.gob1@gmail.com/ไดรฟ์ของฉัน`
-(stream mode, 2 TB plan, ~1.8 TB free on 2026-09-05).
+(stream mode, 2 TB plan, ~1.8 TB free on 2026-09-05). The plan is now about 20 TB (CEO 2026-10-01: "มีราวๆ 20TB").
 
 ## Never touch
 
@@ -61,6 +72,8 @@ Drive folder is `/Users/gob/Library/CloudStorage/GoogleDrive-pass.gob1@gmail.com
    and the same in the destination; `diff` must be empty. Size alone is not
    verification.
 5. Only now delete the source, and Empty Trash so the space actually returns.
+   Since 2026-10-01 (ADR 0033, decision 9), a file whose Drive md5 has been read back is deleted outright, not moved to
+   the Trash. Moving to the Trash frees nothing on APFS, and emptying it stays the CEO's decision.
 6. Append one line per source to `~/.claude/logs/drive-archive.log`:
    date, source, destination, file count, bytes, sha-list checksum.
 7. Tell the CEO over SomPong what moved, how much came back, and the
@@ -93,5 +106,7 @@ Worktrees / PARKED repos: follow the `restore` line inside the tar's manifest.
 (`com.gob.claude-prune-transcripts`). It messages the CEO (SomPong) when free
 space < 20 GB, transcripts ready to archive ≥ 2 GB, gate candidates ≥ 2 GB,
 or every Monday. Thresholds live in `~/.claude/prune-transcripts.json`.
+This job is replaced by `tools/disk_janitor.py --notify` once that tool ships (ADR 0033). Its bands will then be the Mac's
+row in `gauge_by_machine`. Until then this job stays.
 
 | winbox hit frames beyond 500 MB/day (`Documents/CookieRunScript/modelplay/session-*/run-*/hit_NN/`, tier A) | `BACKUP/CookieRun Backup/hits/hits-<YYYY-MM-DD>.tar` + `.manifest.json` (id `1e-TGFYiEecMKIu34dOhJeZMw1PREd2__`) | CEO 2026-09-24 (Machine Contract ruling: 500 MB/day stays on the box, the rest to Drive; folder "อนุมัติ" the same day). `tools/hits_plan.py --plan` picks an evenly spaced KEPT subset per past day; `archive_runner.py` queue item 5 tars the overflow (gate file `archive/hits_archive_enabled`); `archive_reclaim.py --apply` deletes only members of an ok, md5-verified manifest of kind `hits`; `rounds.jsonl` never leaves the box |

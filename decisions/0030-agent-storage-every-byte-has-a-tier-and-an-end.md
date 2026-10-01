@@ -5,6 +5,7 @@
 - **Owner:** CTO
 - **Relates:** skill `disk-hygiene` (the one law, Green list), `gdrive-filing` (every Drive destination), `hq-filing` (Assets), IRON §33 (stay in lane), IRON §54 (HQ paths need approval), ADR 0028 (the map decides)
 - **Config:** Agents-Core `config/storage-policy.yaml` — the only place the numbers and paths live
+- **Extended by:** ADR 0033 (2026-10-01): disk lifecycle. It adds per-machine bands (replacing the single gauge), garbage clocks, the janitor, the debt gate, the byte ledger and the audit; IRON §61.
 - **Extended by:** ADR 0031 (2026-09-24) — Machine Contract: the pilot scope of §8 is superseded org-wide; asset replaceability (IRREPLACEABLE / CONFIG / REBUILD / DISPOSABLE) lives in `config/machine-contract.yaml`, the tiers and gauge here are unchanged
 
 ## Context (measured 2026-09-23)

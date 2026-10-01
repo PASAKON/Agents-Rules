@@ -13,7 +13,7 @@ Verbatim quotes from project source files. **Do not paraphrase these in code rev
 > language · §38 TOON · §39 no em dash · §40 LungNote SID tag · §41 graph-readable
 > wiki · §42 browser is a C-level decision · §43 suspect the environment first ·
 > §44 rules as values not adjectives · §45 no blocking prompts unattended ·
-> §46 a rented GPU is watched until dead · §47 check the research library first · §48 disk and transcript hygiene: alert first, move by hand · §49 Drive: the skill is the rule · §50 every session visible, every teardown proves identity.
+> §46 a rented GPU is watched until dead · §47 check the research library first · §48 disk and transcript hygiene: alert first, move by hand · §49 Drive: the skill is the rule · §50 every session visible, every teardown proves identity · §60 a browser login goes through the relay request + recipe.
 >
 > **The other 21 are MoonieX-specific** (Vercel deploy, Supabase, migrations,
 > cron, fal.ai queue, design system, Drive convention, …) and live in
@@ -1313,3 +1313,28 @@ the `delegate_task` hook (task-ae42c0a7). Both merged after the same review gate
    in the task description.
 6. The router decides WHICH runner and model. The mesh decides WHERE the worker runs and how its
    report comes back. A change in the other side's files is asked for, not made (CONTRACT.md).
+
+---
+
+## Section 60 — A browser login goes through the relay: request, record once, auto-run after (CEO 2026-10-01, owner CTO)
+
+> **The card — every session, every role, every machine, from now on:**
+> 1. Blocked on a website login → open a request on the Console host that holds the Chrome:
+>    `node scripts/relay-request.mjs open --port <n> [--home <id>] --account "<label>" --why "<clause>" --by <sid>`.
+>    The CEO's relay menu shows only Chromes with an open request.
+> 2. Wait with no model in the loop: `node scripts/relay-request.mjs wait <id> --timeout <s>`
+>    (exit 0 = the CEO pressed Done; anything else = dismissed, expired or timed out). Carry on with
+>    work that does not need the login meanwhile.
+> 3. The CEO logs in once and saves the taps as a login recipe; every later login on that site is
+>    his Auto login + Face ID. The replay pauses at an SMS/2FA code until he presses "กรอกแล้ว ไปต่อ".
+> 4. Confirm the login from the site itself, then go on. Never ask the CEO to type a code into chat,
+>    never take his desk browser, never poll a login tab with a model.
+>
+> Procedure, traps and machine routes: skill `relay-login`. Console docs: `docs/relay.md` §10–§11.
+
+**Why.** CEO 2026-10-01, after the live test of login recipes (Console 0445d32, Higgsfield via
+Google + SMS, recorded once then auto-run): "เยี่ยมมากเลย ชอบมาก บังคับใช้กับ ทุก session ได้เลยนะ
+และ session ที่เริ่มใหม่ด้วย ... ทั้ง relay และ run เลย". The sites the org logs into repeat, so one
+recorded login saves every later one, and a request-filtered menu replaced a list of 7–9 Chromes.
+Built in task-0601cec6 (requests, c5b62f3), task-8cf9ba1a (recipes, 22681b9), task-fe523583 (Back,
+741f2ef) and task-394641e1 (pacing, run-result, recorded ends, 0445d32).

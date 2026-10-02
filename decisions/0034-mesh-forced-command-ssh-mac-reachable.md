@@ -96,6 +96,6 @@ variable, log in as another account, or connect from another address. `from=`,
 |---|---|---|
 | node_dispatch verbs, key line, caller builder | merged | W2.2, W2.7 review (task-42fdcda7), W2.8 `ssh -F none` redesign 2026-10-02 |
 | Contabo accepts `org_dispatch-mac` | live 2026-10-02 | Run card W2.8a: `probe` ok; 6 payloads refused with no `uid=`; `-W`/`-L`/`-R` refused; no pty; `events` rows with actor `node_dispatch` and caller `100.64.2.37` |
-| winbox | waits on W3.4 | the Windows line is not verified; it needs winbox's Org-Node identity |
+| winbox | waits on W3.4 | the Windows line is not verified; winbox's Infisical identity needs Agents-Core back for `org-db.env`, which the CEO set for G1 on 2026-10-01 (`tools/infisical_setup.py` MACHINES) |
 | Mac | waits on gate G2 | hardening written in W2.7, nothing applied yet |
 | `mac_agent` retired | after G2 + 24 h | plan W2.5 |

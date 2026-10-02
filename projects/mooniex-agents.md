@@ -1,8 +1,8 @@
 # mooniex-agents (orchestration meta-repo)
 
-Repo: `/Users/gob/Projects/Agents` · GitHub `PASAKON/mooniex-agents` · default branch `main` (direct push allowed, CTO merges).
+Repo: `/Users/gob/MoonieXHQ/Agents/Core` (was `/Users/gob/Projects/Agents`) · GitHub `PASAKON/Agents-Core` (was `PASAKON/mooniex-agents`) · default branch `main` (direct push allowed, CTO merges).
 
-The virtual-org runtime: CEO → CTO → DEV orchestration, task queue (`state/tasks.db`), iTerm visible-chat plumbing, MCP servers, watchdogs.
+The virtual-org runtime: CEO → CTO → DEV orchestration, task queue (`state/tasks.db`; the Postgres hub on Contabo since 2026-10-02), iTerm visible-chat plumbing, MCP servers, watchdogs.
 
 ## Changelog
 
@@ -62,3 +62,12 @@ CEO ruling 2026-09-17 #5: Contabo is the hub of the Agents repo, Mac/winbox are 
 - **Not done — waits on the CEO:** (1) Postgres on Contabo: the CTO session's auto-mode classifier refuses remote shell writes (and refused committing the script as a "bypass"), so the CEO runs the bring-up script by hand (`!`) or grants a permission rule; (2) restart moment for Contabo CTO sessions 6ebacd0e / e1e3d3ef before their tree is pulled and their 11 rows imported; (3) the Mac flip (`cutover-mac.sh --apply`) — only after the other live Mac sessions are restarted.
 - **Risk named:** the hub lives or dies with Contabo's bill (payment reboot 2026-09-16, LungNote d7c66504). Follow-up W2: nightly `pg_dump` + Contabo-side watchdog + GH #155 PATH fix.
 - Same session, parallel track (CEO order): Vercel Phase 3 replay kit for the mooniexofficials migration merged into `mooniex-webapp` (`654be587`): `scripts/deploy/vercel-env-export.sh` (59 keys exported from the old project, values never printed, `\n` defect stripped), `scripts/deploy/vercel-new-project.sh` (dry-run default, whoami-gated), `docs/deploy/vercel-new-project.md`. Waits on the CEO's Vercel token under mooniexofficials.
+
+### 2026-10-02 — Org Mesh: hub cutover live, CI green again, mesh decisions recorded — CTO e6754203
+Plan `glimmering-shimmying-eagle` (W0–W5, gates G1–G3); design `docs/design/org-mesh.md`.
+- **G1 hub cutover** (ADR 0025, now implemented): the Mac moved at 04:35 TH and Contabo imported and flipped at 04:56 TH (1276 tasks, 198 sessions, ~10,850 events). `state/tasks.db` is a tombstone; org tools reach the hub through `scripts/hub/with-org-db-env.sh`. Hub password rotated 2026-10-01.
+- **Backup:** a nightly `pg_dump` of the hub goes to Drive `State-DB/contabo/`; the restore drill into a throwaway database matched all 8 tables (Run card RUN-20261002-0238-1c6e).
+- **CI green again** after red since 09-29: the 20 failures were Mac vs ubuntu differences, not code (task-ec82f9ea, PR #201; run 36961142585, 6847 passed). Real CI before a merge = a draft PR.
+- **mesh_check L3** fails only on tracked dirt its own cycle added (`a7ed76ea`): the Mac's settings.json model line had made L3 from the Mac impossible.
+- **Decisions recorded:** `org:decisions/0034` (hosts reach each other, the Mac included, over ssh with one forced command; the Mac side waits on G2). `org-mesh.md` §6 now carries the CEO's 2026-09-28 rulings and the plan's scope moves (`44470ddc`).
+- **Waits on the CEO:** G2 (Remote Login + sshd hardening at the Mac), W3.4 (winbox's Infisical identity gets Agents-Core back, for `org-db.env`), G3 (Tailscale OAuth client, the `org-node` token), and the Mac main checkout, which has diverged from origin.

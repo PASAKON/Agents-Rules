@@ -4,6 +4,8 @@
 - **Status:** Accepted (CEO ruling 2026-09-17 #5, memory `project_org_session_architecture_2026_09`) — **implemented: the cutover (Org Mesh gate G1) ran on 2026-10-02**, see status table
 - **Owner:** CTO (session e8565613, carried forward from 4a904905)
 - **Supersedes:** ADR 0024 §Recommendation (Mac hub + Contabo front door), ADR 2026-07-12 §Decision 3 / Phase D (two independent `tasks.db`)
+- **Partly superseded:** Decision 3 ("Contabo→Mac stays closed") by ADR 0034 once Org Mesh
+  gate G2 lands: other hosts reach the Mac over ssh with one forced command
 - **Keeps:** `docs/design/multi-host-workers.md` rules 2–3 (git is the only cross-machine channel for work; the hub pushes to spokes, Contabo→Mac stays closed)
 - **Design + runbook:** `docs/design/tasks-db-hub.md` in the Agents repo (measured numbers, cutover steps, risks)
 

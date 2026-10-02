@@ -1365,12 +1365,16 @@ Built in task-0601cec6 (requests, c5b62f3), task-8cf9ba1a (recipes, 22681b9), ta
 ## Section 61 — Disk lifecycle: every byte has an owner, a class, a clock and a ledger row (CEO 2026-10-01, owner CTO)
 
 > **The card: every agent, every machine.**
-> 1. Write only inside your container: `$WORK_DIR` (`Work/<task-id>/`), your worktree, or your own session scratch.
->    Files you keep go in `out/`; everything else goes in `tmp/`. That is the only disk decision an agent makes.
+> 1. Put every new byte you produce (downloads, renders, generated and temp files) inside your container:
+>    `$WORK_DIR` (`Work/<task-id>/`), your worktree, or your own session scratch. Files you keep go in `out/`;
+>    everything else goes in `tmp/`. That is the only disk decision an agent makes. Editing a checkout, `memory/`,
+>    a skill or a wiki you own is not a disk-lifecycle decision.
 > 2. Before anything of 1 GB or more, set `expect_gb`. After the work, free space must stay at or above
 >    5 GB and at or above the host's red band.
 > 3. At the end, run `workdir.py close <task> --archive`. A session closes holding 0 bytes in ended containers.
-> 4. Never delete a PROTECTED path, and never delete a local ASSET copy until its Drive md5 has been read back.
+> 4. When reclaiming space, never delete a PROTECTED path, and never delete a local ASSET copy until its Drive md5
+>    has been read back. Editing content you own (removing a wrong memory file, a stale line in your repo) is an
+>    edit, not a delete under §61.
 > Everything after that (archiving on a clock, garbage sweeps, clean-up after a crash) belongs to `janitor@<machine>`,
 > a scheduled tool, not a session. Full design, numbers and build list: [ADR 0033](decisions/0033-disk-lifecycle-owner-class-clock-ledger.md).
 

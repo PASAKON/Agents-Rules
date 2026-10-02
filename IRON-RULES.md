@@ -13,7 +13,7 @@ Verbatim quotes from project source files. **Do not paraphrase these in code rev
 > language · §38 TOON · §39 no em dash · §40 LungNote SID tag · §41 graph-readable
 > wiki · §42 browser is a C-level decision · §43 suspect the environment first ·
 > §44 rules as values not adjectives · §45 no blocking prompts unattended ·
-> §46 a rented GPU is watched until dead · §47 check the research library first · §48 disk and transcript hygiene (disk part superseded by §61) · §49 Drive: the skill is the rule · §50 every session visible, every teardown proves identity · §60 a browser login goes through the relay request + recipe · §61 disk lifecycle: every byte has an owner, a class, a clock and a ledger row.
+> §46 a rented GPU is watched until dead · §47 check the research library first · §48 disk and transcript hygiene (disk part superseded by §61) · §49 Drive: the skill is the rule · §50 every session visible, every teardown proves identity · §60 a browser login goes through the relay request + recipe · §61 disk lifecycle: every byte has an owner, a class, a clock and a ledger row · §62 merge and deploy belong to the CTO online on Contabo.
 >
 > **The other 21 are MoonieX-specific** (Vercel deploy, Supabase, migrations,
 > cron, fal.ai queue, design system, Drive convention, …) and live in
@@ -453,6 +453,8 @@ Loop: act → verify → "closer to the DoD?". Every new topic that surfaces mid
 ## Section 36 — Review + merge are the CTO's job, not the CEO's (CEO directive 2026-06-15)
 
 **Hard rule.** When the CTO opens a PR for its own change — or a DEV's task is ready — **reviewing and merging it is the CTO's job. Never hand the merge to the CEO, never park a finished PR as "pending CEO merge", and never wait for the CEO to say "merge".** The CEO sets direction; landing the code is the CTO's. This supersedes any earlier note (§2 / push→PR-flow memory) that said "CEO merges".
+
+**Amended 2026-10-02 (CEO, §62):** the CTO who merges and deploys is the CTO online on Contabo. Every other CTO still reviews its own lane and runs the gate, then hands the merge over (§62 item 2).
 
 ### 1. The CTO merges
 - After `gh pr create`, the CTO runs the cto-merge-checklist gate, then `gh pr merge <#> --squash --delete-branch` itself. The classifier blocks only direct `git push origin main`; the PR-merge path is allowed (§2).
@@ -1445,3 +1447,38 @@ build list, the owner does the step by hand, and the audit counts it either way.
 
 Unchanged and HARD: login state is never deleted without asking the CEO. CEO-personal paths are never touched. Cookie
 Run data is handled only by the steward. Secrets never go to Drive. A new Drive folder needs the CEO's yes.
+
+---
+
+## Section 62 — Merge and deploy belong to the CTO online on Contabo (CEO 2026-10-02, owner CTO)
+
+> **The card — every CTO, every machine, from now on:**
+> 1. Only a CTO session running on Contabo merges into a repo's main branch and deploys. It does this
+>    for every lane, on top of its own work, whatever that work is.
+> 2. Every other CTO still reviews its own lane and runs `cto-merge-checklist` (§36), then hands over:
+>    the branch is on origin, the hub task is in `review`, and ONE CTO online on Contabo gets a message
+>    (claude.ai session list: "CONTABO CTO"; on the box: `tmux ls` shows `cto-*`) with the task id, the
+>    branch, the test evidence and what to deploy.
+> 3. That Contabo CTO owns it to the end: its own gate, `merge_task` (it merges in a clean worktree of
+>    `origin/main` on any host and fetches `origin/<branch>`, never using the box's live checkout as the
+>    base) or `gh pr merge`, the sha on origin (`git merge-base --is-ancestor`), the deploy, proof that
+>    the deploy is live, and one line back to the lane CTO.
+> 4. No answer within 30 minutes: send the same request to another Contabo CTO. No CTO online on
+>    Contabo: tell the CEO. Never merge it yourself.
+> 5. Deploys on Contabo run one at a time, after `free -m` and the tmux cgroup check in Agents-Core
+>    `CLAUDE.md` ("Contabo — one tmux server holds every session").
+> 6. Until Contabo reaches a machine over the mesh (Mac: G2, winbox: W3), a step that can only run on
+>    that machine is run by that machine's CTO when the Contabo CTO asks. The Contabo CTO still owns
+>    the result.
+> 7. CTO default, not the CEO's words (2026-10-02; the CEO may change it): wiki pages and docs-only
+>    commits (skill Field notes under `.claude/skills/`, files under `docs/`) may still be pushed by the
+>    CTO that wrote them. Anything that runs (code, scripts, config, tests, launchers) goes through
+>    item 2.
+
+**Why.** CEO 2026-10-02, verbatim: "ถามเพิ่มเติมหน่อย ใครจะเป็นคนดูแลเรื่องการ merge และ Deploy แนะนำ
+CTO Contabo ได้เลย เพราะเขาออนไลน์ตลอด สิทธิ์อยู่กับ CTO ที่ออนไลน์บน Contabo ไม่ว่าจะดูแลงานไหน จะ ดูแลงานนี้ด้วยเสมอ".
+Contabo sessions stay online; Mac and winbox sessions come and go. Merging from many machines let the
+checkouts drift. Measured the same day: the Mac's main checkout 69 ahead / 141 behind origin, Contabo's
+live checkout 106 ahead / 27 behind with 36 uncommitted files. Two pieces already make it possible: the
+G1 hub shows every machine's task rows on Contabo, and `merge_task` merges on any host (Org Mesh C5).
+Recorded by CTO e6754203.

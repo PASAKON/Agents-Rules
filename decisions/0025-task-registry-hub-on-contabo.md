@@ -1,7 +1,7 @@
 # ADR 0025 — One task registry on Contabo (Postgres); the Mac and winbox are spokes
 
 - **Date:** 2026-09-18
-- **Status:** Accepted (CEO ruling 2026-09-17 #5, memory `project_org_session_architecture_2026_09`) — **code complete on the Mac; hub provisioning and cutover wait on the CEO**, see status table
+- **Status:** Accepted (CEO ruling 2026-09-17 #5, memory `project_org_session_architecture_2026_09`) — **implemented: the cutover (Org Mesh gate G1) ran on 2026-10-02**, see status table
 - **Owner:** CTO (session e8565613, carried forward from 4a904905)
 - **Supersedes:** ADR 0024 §Recommendation (Mac hub + Contabo front door), ADR 2026-07-12 §Decision 3 / Phase D (two independent `tasks.db`)
 - **Keeps:** `docs/design/multi-host-workers.md` rules 2–3 (git is the only cross-machine channel for work; the hub pushes to spokes, Contabo→Mac stays closed)
@@ -62,6 +62,8 @@ placeholders, 1 `INSERT OR REPLACE`, 4 `PRAGMA`).
   a payment problem (LungNote d7c66504, due 2026-09-19). A nightly `pg_dump` to
   `state/backups/` (shipped by the existing Drive broker) is the follow-up W2, together
   with a Contabo-side watchdog for the hours the Mac sleeps and GH #155's PATH fix.
+  (Done 2026-10-02: a nightly `pg_dump` goes to Drive and a restore drill passed; see
+  the status table.)
 - Rollback at any point before the archive: unset `ORG_DB_URL` everywhere (the SQLite
   file is untouched until step 5); after the archive: `mv` it back and unset.
 - The CTO session's auto-mode classifier refuses remote shell writes to Contabo, so hub
@@ -76,7 +78,11 @@ placeholders, 1 `INSERT OR REPLACE`, 4 `PRAGMA`).
 | W1b case-insensitive id prefixes on both backends | merged | main b46dbfae (2-backend smoke 6/6) |
 | W1c migrate fixed (target schema, rollback-on-error, `events` identity, per-row report), pytest env isolation, `scripts/hub/cutover-mac.sh` | merged | main fa7cb56f |
 | Real-data migration rehearsal on a Mac-local Postgres 16 | **passed** | 948 tasks / 141 sessions / 7588 events moved, re-apply +0, identity insert OK (CTO reproduced the DEV's run) |
-| Postgres on Contabo | **waiting for the CEO** | classifier refuses remote shell writes; bring-up script ready for `! bash` |
-| Migrate Mac data + Mac cutover | ready, not run | `scripts/hub/cutover-mac.sh` dry-run refuses without the env file, as designed |
-| Contabo import + flip | **waiting for the CEO** | CTO sessions 6ebacd0e / e1e3d3ef live on that tree |
+| Postgres on Contabo | done | docker `org-postgres` (PG 16.15), tailnet `100.118.171.23:5432/org`; tables by an additive `db.init()` with the CEO's OK (2026-10-01) |
+| Migrate Mac data + Mac cutover | done 2026-10-02 04:35 TH | `scripts/hub/cutover-mac.sh`; `state/tasks.db` is now a tombstone (`lib.db` raises `ArchivedDB`) |
+| Contabo import + flip | done 2026-10-02 04:56 TH | hub at cutover: tasks 1276, c_level_sessions 198, events about 10,850 |
+| Read-only fallback | done 2026-10-02 | `state/tasks.snapshot.db`, refreshed by units that start through `scripts/hub/with-org-db-env.sh` (7dfa4280) |
+| Nightly backup + restore drill | done 2026-10-02 | cron 02:15 on Contabo runs `drive_leg.py state-db` (`pg_dump`, password in `PGPASSWORD`, not argv) to Drive `State-DB/contabo/`; the drill restored a dump into a throwaway database and all 8 tables matched (`docs/ops/machine-contract-drive-leg.md`, ec06c6e9) |
+| Concurrent schema init | fixed | 691b7950: two org MCP servers starting together deadlocked on DDL; now an advisory lock first, and no DDL when the catalog is current |
+| Hub password | rotated 2026-10-01 | `db.init()` printed the URL into a CTO transcript; `db.redact_url` (024bf79a), rotated with the CEO's OK in Infisical and both `org-db.env` files |
 | Wiki changelog `projects/mooniex-agents.md` | done 2026-09-18 | see that page |

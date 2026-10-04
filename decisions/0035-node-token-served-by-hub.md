@@ -68,3 +68,20 @@ CEO, 2026-10-03, picked option 1 ("Hub ส่ง token ให้"):
   token until they exit. The pull model already depends on the hub for the ledger.
 - **Tailnet ACL.** If the policy is not allow-all, it must let `tag:org-node` reach the token
   port.
+
+## Addendum 2026-10-04: two calls decided for the CEO
+
+Made by MAC CTO #e6754203 under the CEO's standing order of 2026-10-04 ("decide what the owning
+C-level can decide, don't stop to ask"), relayed by the COO. Both are logged to the COO.
+Agents-Core PR #227.
+
+- **1a: rotate the shared token after every live leave.** A node that left still holds a working
+  bearer token for the CEO's Claude account. `hq_join leave --live` prints the rotation as
+  required. The new token is a secret step, so it stays the CEO's: the CTO raises a Run card at
+  once, and the leave counts as finished only when the old token is revoked.
+- **2a: the service listens on port 792.** The answer is sealed, not signed. While the service is
+  down, any process that binds its port can answer a node with a token of its own choosing.
+  Contabo has `net.ipv4.ip_unprivileged_port_start = 1024`, so below 1024 only root or a holder of
+  CAP_NET_BIND_SERVICE can bind. The unit keeps that one capability through `setpriv
+  --ambient-caps`, measured on Contabo under NoNewPrivileges. The health card checks the sysctl.
+  Root on the hub can still do it; a hub signing key pinned at join would close that, not built.

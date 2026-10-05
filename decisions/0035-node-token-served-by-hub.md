@@ -85,3 +85,12 @@ Agents-Core PR #227.
   CAP_NET_BIND_SERVICE can bind. The unit keeps that one capability through `setpriv
   --ambient-caps`, measured on Contabo under NoNewPrivileges. The health card checks the sysctl.
   Root on the hub can still do it; a hub signing key pinned at join would close that, not built.
+
+**Confirmed by the CEO on 2026-10-05** (typed in the MAC CTO session: "1a 2a"). Both rules are now
+his rulings, not decisions taken for him.
+
+One scope note, decided for the CEO on 2026-10-05: **a join-drill leave does not need a
+rotation.** The drill node is a container on the hub itself. Its token lived only in a process's
+memory (R3: never a file), and the drill's cleanup removes the container and its volume. Root on
+the hub can read the token anyway, so a rotation would protect nothing. Every other live leave
+still needs one. The CEO can overrule this by saying so.

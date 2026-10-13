@@ -1395,8 +1395,15 @@ the `delegate_task` hook (task-ae42c0a7). Both merged after the same review gate
 ## Section 60 — A browser login goes through the relay: request, record once, auto-run after (CEO 2026-10-01, owner CTO)
 
 > **The card — every session, every role, every machine, from now on:**
-> 1. Blocked on a website login → open a request on the Console host that holds the Chrome:
->    `node scripts/relay-request.mjs open --port <n> [--home <id>] --account "<label>" --why "<clause>" --by <sid>`.
+> 1. Blocked on a website login → **check the inventory first**: `node scripts/relay-inventory.mjs --site <site>`
+>    on any Console host. It lists every Chrome on Contabo, the Mac and winbox that the site's own pages show
+>    signed in, and who holds it.
+>    - If one is idle: use it. Take its lock (`python3 tools/home_lock.py acquire home:<host>:<port>`), run
+>      the job on that host, then release the lock. Do not ask the CEO.
+>    - If none is idle, or every one is held by someone else: open a request on the Console host that holds
+>      the Chrome: `node scripts/relay-request.mjs open --port <n> [--home <id>] --site <url> --account "<label>" --why "<clause>" --by <sid>`.
+>      `open` runs the same check itself and refuses (exit 3) while an idle signed-in Chrome exists anywhere.
+>      Override it only with `--force "<why that Chrome will not do>"`. The reason is stored on the request.
 >    The CEO's relay menu shows only Chromes with an open request.
 > 2. Wait with no model in the loop: `node scripts/relay-request.mjs wait <id> --timeout <s>`
 >    (exit 0 = the CEO pressed Done; anything else = dismissed, expired or timed out). Carry on with
@@ -1406,7 +1413,7 @@ the `delegate_task` hook (task-ae42c0a7). Both merged after the same review gate
 > 4. Confirm the login from the site itself, then go on. Never ask the CEO to type a code into chat,
 >    never take his desk browser, never poll a login tab with a model.
 >
-> Procedure, traps and machine routes: skill `relay-login`. Console docs: `docs/relay.md` §10–§11.
+> Procedure, traps and machine routes: skill `relay-login`. Console docs: `docs/relay.md` §10–§12.
 
 **Why.** CEO 2026-10-01, after the live test of login recipes (Console 0445d32, Higgsfield via
 Google + SMS, recorded once then auto-run): "เยี่ยมมากเลย ชอบมาก บังคับใช้กับ ทุก session ได้เลยนะ
@@ -1414,6 +1421,11 @@ Google + SMS, recorded once then auto-run): "เยี่ยมมากเล�
 recorded login saves every later one, and a request-filtered menu replaced a list of 7–9 Chromes.
 Built in task-0601cec6 (requests, c5b62f3), task-8cf9ba1a (recipes, 22681b9), task-fe523583 (Back,
 741f2ef) and task-394641e1 (pacing, run-result, recorded ends, 0445d32).
+
+Step 1's inventory check: CEO 2026-10-14, "ก่อนจะขอมาให้เช็คก่อนได้ไหมว่ามี session ที่ login ไว้แล้วและไม่มีคนใช้ไหม
+ให้กลับไปใช้ tab เดิมก่อนเสมอ ไม่ว่าจะอยู่บนเครื่องไหนก็ตาม", confirmed on card Q-20261013-1917-0fa2. He was logging in
+again on one machine while another already held an idle signed-in Chrome. Built in Console a628e6c (inventory + the
+gate in `open`) and Agents-Core 302a4f8d (`tools/home_lock.py`, key `home:<host>:<port>`, TTL 1800 s).
 
 ---
 

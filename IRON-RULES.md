@@ -1310,7 +1310,8 @@ Full design: ADR 0031. Registry: Agents-Core `config/machine-contract.yaml`.
 > cutover W1.10. Until then a worker runs on the hub's own box.
 > Design: Agents-Core `docs/design/runner-routing/PLAN-auto-dispatch.md`.
 
-**Why.** From 2026-09-29 17:00 BKK the Claude plan is $20 a month; Google is $100 and OpenAI $20.
+**Why.** From 2026-09-29 17:00 BKK the Claude plan was $20 a month; on 2026-10-14 the CEO put it at $200
+(Q-20261013-1746-7d98; the start date of the $200 plan is not recorded). Google is $100 and OpenAI $20.
 Every C-level runs on Claude, so a worker that spends Claude quota by habit starves the sessions
 that plan, review and merge. CEO: "ทดสอบด้วยการใช้ worker จาก เจ้าอื่น ... เพื่อประหยัด token ของ
 Claude". Proven the same day: agy built the router's `pick_runner` (task-b2432e43), and codex built
@@ -1325,7 +1326,8 @@ the `delegate_task` hook (task-ae42c0a7). Both merged after the same review gate
 2. **HARD — a worker is forced onto Claude (`model_hint='claude'`) only for a reason from this
    list, written in the task description:** reviewing, finishing or repairing another agent's code;
    security-sensitive work; work where a silent wrong answer ships; work that needs a Claude-only
-   tool. **Why hard:** money. Every C-level runs on the $20 Claude plan, and quota spent on a worker
+   tool. **Why hard:** money. Every C-level runs on the Claude plan ($200 per the CEO on 2026-10-14; $20 when
+   this rule was written), and quota spent on a worker
    that another provider could do stops the org's planning and review.
 3. Every non-Claude worker's output passes the same gate as a Claude worker's (diff read, tests in a
    worktree, merge checklist). The runner that wrote the code never reviews it. A reviewer's fix or
@@ -1336,6 +1338,33 @@ the `delegate_task` hook (task-ae42c0a7). Both merged after the same review gate
    in the task description.
 6. The router decides WHICH runner and model. The mesh decides WHERE the worker runs and how its
    report comes back. A change in the other side's files is asked for, not made (CONTRACT.md).
+7. **HARD — outside quota first, used up, and every job teaches** (CEO 2026-10-14, confirmed on
+   Q-20261013-1746-7d98; enforcement in code approved on Q-20261013-1745-f56c).
+   - While any outside bucket (agy-gemini, agy-claude, codex, Jules) has room for an eligible job, that
+     job does not go to a Claude Sonnet/Opus worker. Eligible jobs are the job types in Agents-Core
+     `docs/plans/tool-value-weekly-and-enforcement-2026-10-13.md` §5. The only exceptions are a reason
+     code on line 1 of the task description: `review`, `security`, `silent-wrong`, `claude-tool`
+     (rule 2), `ceo-order`, `ab-test`, `box-bound` (card step 4).
+   - Haiku 5.5 runs on the Claude subscription, so it is not an outside bucket. It is a learning lane:
+     small, low-risk jobs go to it on purpose until measurement shows whether it moves Claude's weekly %.
+   - Target: by each Claude weekly reset, every outside bucket is close to fully used on accepted work,
+     before Claude reaches 100 %. A redo does not count as use.
+   - The router pushes harder toward outside runners as Claude's weekly % rises. A C-level never pins
+     Claude to "save time".
+   - Every outside-runner job ends with one `runner_fit` record: runner, job type, size,
+     pass / redo / fail, why, minutes.
+   - A failure is a lesson for that runner's Knowledge skill, never a silent fallback: a field note at
+     n=1, a rule at n≥2 (ADR 0026).
+   - The Monday tool-value report shows each bucket's % used at the Claude reset, the date Claude hit
+     100 %, and the runner-fit table.
+   - In code: `route.check_override` v2 refuses a Claude worker without a reason code, and the router
+     applies the pressure rule (M1). The C-level Agent-tool hook (M2) logs for 3 days, then blocks a
+     dev-shaped subagent call without a reason (CEO, Q-20261013-1745-f56c option 1).
+   **Why.** CEO 2026-10-14: "ใช้โควตาข้างนอกให้เป็นนิสัย … ช่วงแรกๆ อาจจะติดๆ ขัดๆ เพื่อเอามาเขียนเป็น
+   skill … ต้องใช้ให้หมด ก่อนที่ Claude Subscription จะเต็ม weekly … คุ้มค่าด้วย ได้เรียนรู้ด้วย". Every
+   plan is paid monthly, and Claude ($200) always runs out first. In the week of 6–12 Oct, Claude sat
+   at its cap for about 32 h while agy-gemini had used 3.4 % and codex 50 % (tool-value plan §1,
+   measured). Once the per-runner skills are complete, workers route by them and the saving compounds.
 
 ---
 

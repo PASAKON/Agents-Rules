@@ -1344,7 +1344,11 @@ the `delegate_task` hook (task-ae42c0a7). Both merged after the same review gate
      job does not go to a Claude Sonnet/Opus worker. Eligible jobs are the job types in Agents-Core
      `docs/plans/tool-value-weekly-and-enforcement-2026-10-13.md` §5. The only exceptions are a reason
      code on line 1 of the task description: `review`, `security`, `silent-wrong`, `claude-tool`
-     (rule 2), `ceo-order`, `ab-test`, `box-bound` (card step 4).
+     (rule 2), `ceo-order`, `ab-test`, `box-bound` (card step 4), `quota-handoff` (next point).
+   - An outside job that hits its runner's limit mid-way is finished at once by a Claude Sonnet worker
+     on the same branch, keeping the partial work (reason code `quota-handoff`). Never wait for the
+     reset. Its runner_fit record says fail = limit and how much was done (CEO 2026-10-14,
+     Q-20261013-1748-5efe: "สั่ง AGY ทำได้ 80% ติด limit สั่ง worker ของ Sonnet ทำต่อได้ทันที").
    - Haiku 5.5 runs on the Claude subscription, so it is not an outside bucket. It is a learning lane:
      small, low-risk jobs go to it on purpose until measurement shows whether it moves Claude's weekly %.
    - Target: by each Claude weekly reset, every outside bucket is close to fully used on accepted work,

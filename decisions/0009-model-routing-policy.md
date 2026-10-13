@@ -326,3 +326,47 @@ version bump like the 2026-07-25 addendum.
 - Smoke `claude -p --model claude-sonnet-5-5 "Reply with exactly: OK"` answered OK on
   winbox (by #fc5c2031), and on the Mac and Contabo (by CTO #e6754203, 2026-09-29).
 - `tools/rtk_ab/run_ab.py` stays on Sonnet 5: its recorded results were measured there.
+
+## Addendum 2026-10-13 — Haiku 5.5 price cliff on paid-API calls (CEO)
+
+CEO order 13 Oct (via SomPong): "อันนี้เป็นการใช้งาน haiku แบบประหยัดที่ถูกต้อง ให้ CTO ศึกษา และปรับใช้กับองค์กรเราได้เลย".
+
+**Rule:** Haiku 5.5 only for requests ≤100k total input incl. cache; measure; otherwise price at the 5× rate.
+
+This is a rule, not a field note: it rests on the published price, which was checked on
+platform.claude.com/docs/en/about-claude/pricing on 2026-10-13.
+
+| Haiku 5.5, $/MTok | Input | 5m write | 1h write | Cache read | Output |
+|---|---|---|---|---|---|
+| request ≤ 100k | 0.10 | 0.125 | 0.20 | 0.01 | 0.50 |
+| request > 100k | 0.50 | 0.625 | 1.00 | 0.05 | 2.50 |
+
+**How the cliff works.**
+- The 100k counts every input token: cache reads and cache writes are included.
+- Each request is priced on its own. A request over 100k pays the high card even on a cache hit.
+- Every other 4.6+ model bills its whole 1M window at one rate.
+- Haiku 4.5 stays flat at $1 / $5.
+
+**What to measure.**
+- Measure per request, never per turn: a tool loop re-sends the whole prompt every iteration.
+- Anthropic API: `input_tokens + cache_read_input_tokens + cache_creation_input_tokens`.
+- OpenRouter: `usage.prompt_tokens`. That it includes cached tokens is inferred, not documented.
+- Never size Thai with `chars/4`. Measured on 2026-10-13: 0.85 Haiku 5.5 tokens/char (0.33/byte)
+  on 79%-Thai text.
+
+**Scope.**
+- Applies to calls paid per token: an API key, or OpenRouter.
+- Subscription paths are not billed per token: Claude Code roles, and `claude -p` without `--bare`.
+- No Claude Code role moves to Haiku: the 2026-10-11 trial scored 0.66–0.72 of Sonnet against a
+  0.90 bar.
+- Nothing in the tier tables above changes.
+
+**State on 2026-10-13.**
+- No live job runs Haiku 5.5. Every Haiku call is on 4.5.
+- 2,007 logged Claude rows, 0 over 100k. The largest is ≤ 31,720.
+- Guards are log-only. They tag `prompt_cliff` = `near` (≥ 80k) or `over` (> 100k):
+  - ClaudeFlow: `cfo_track.js`, task-4b1d7ace;
+  - Agents-Core: `tools/decide.py`, task-d4498b47.
+- Call-site list, guards and the Chatudo G0 re-estimate: Agents-Core
+  `docs/ops/haiku-5-5-price-cliff-2026-10-13.md`.
+- Skill carrying the rule: `CFO_Rules_Finance` principle 6.

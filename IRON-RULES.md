@@ -79,17 +79,17 @@ Why this rule exists: most prod incidents in the audit log trace back to "I forg
 | `mooniex-option` | direct to `main` | User or Claude push from Windows |
 | Others | per-project default | n/a (read-only or local) |
 
-### From `mooniex-claudeflow/CLAUDE.md` — Branch + push (verbatim, Thai)
+### From `mooniex-claudeflow/CLAUDE.md` — Branch + push (verbatim; the file is English since ClaudeFlow 12bc471, 2026-10-14)
 
 > ### Branch Convention
-> - **ห้าม commit ตรงบน `main`** — ต้องสร้าง branch ก่อนเสมอ
+> - **Never commit directly on `main`** — must always create a branch first
 > - Codex: `codex/<feature-name>`
 > - Claude: `claude/<feature-name>`
 >
 > ### Push Rules
-> - **Claude เท่านั้น** ที่ push ได้ (Local → GitHub → VPS)
-> - **Codex ห้าม push** — commit บน Local branch เท่านั้น
-> - Claude เป็น Gatekeeper: review Codex branch → merge เข้า main → push → deploy
+> - **Only Claude** can push (Local → GitHub → VPS)
+> - **Codex must not push** — commit on Local branch only
+> - Claude is Gatekeeper: review Codex branch → merge into main → push → deploy
 
 ---
 
@@ -1133,18 +1133,18 @@ Verbatim, after the CTO asked which of two gate-clean PRs to merge:
 - Origin: Jules PRs #210/#211 on MoonieX-ClaudeFlow, verified on Node 20 with the
   workflow's env block (1,150/1,150) + Opus 5 review, merged 2026-09-19.
 
-## Section 53 — งานเบราว์เซอร์ที่ทำซ้ำ = script ไม่ใช่โมเดล (CEO directive 2026-09-19)
+## Section 53 — Repeated browser work = a script, not a model (CEO directive 2026-09-19)
 
-งานเบราว์เซอร์ใดที่ต้องทำขั้นตอนเดิมซ้ำ**เกิน 3 ครั้ง** ห้ามให้โมเดลคลิกเอง โมเดลทำได้ 2 อย่างเท่านั้น:
+A browser job that repeats the same steps **more than 3 times** must never be clicked through by a model. The model may do only 2 things:
 
-1. **รอบแรกรอบเดียว** เพื่อสร้าง script ที่รันได้โดยไม่มีโมเดล
-2. **แก้เฉพาะแถวที่ script ตัดสินเองไม่ได้** (ปฏิเสธซ้ำ, dialog ใหม่, chip ไม่ติด) — เปิดเป็นงานเล็ก context สด ไม่ใช่ให้ operator ตัวเดิมวนต่อ
+1. **The first round, once**, to build a script that runs with no model.
+2. **Fix only the rows the script cannot decide on its own** (a repeated rejection, a new dialog, a chip that does not stick) — opened as a small job with a fresh context, never by letting the same operator keep looping.
 
-**script = ไฟล์ที่ compile ผ่าน** (`python -m py_compile` / `node --check`) และมี ledger เป็นความจำ (1 แถวต่อชิ้นงาน, resume ได้, ชิ้นที่ verified แล้วไม่ทำซ้ำ) บันทึกวิธีทำเป็น prose **ไม่นับ** — `cto-merge-checklist` Gate 8 เช็คด้วย `tools/check_replay_script.py` ไม่ใช่ด้วยสายตา
+**A script = a file that compiles** (`python -m py_compile` / `node --check`) and keeps a ledger as its memory (1 row per item, resumable, verified items never redone). A how-to written as prose **does not count** — `cto-merge-checklist` Gate 8 checks it with `tools/check_replay_script.py`, not by eye.
 
-**ก่อน spawn browser_operator ทุกครั้ง C-level ต้องตอบก่อนว่า runner มีอยู่แล้วไหม** — ต้นแบบ `scripts/higgsfield/gen_loop.py` (Playwright ต่อ Chrome debug port + โปรไฟล์แยก, ดัชนี resume ได้) และดีไซน์สำหรับ Flow `docs/ops/flow-operator-design.md`
+**Before every browser_operator spawn, the C-level first answers whether a runner already exists** — the template is `scripts/higgsfield/gen_loop.py` (Playwright on a Chrome debug port + a separate profile, resumable index), and the design for Flow is `docs/ops/flow-operator-design.md`.
 
-**ที่มา (วัดจาก transcript):** 19 ก.ย. 69 — operator 2 ตัว 6.2 ชม. 405 screenshot **650M token → 8 คลิป (~80M/คลิป)** ขณะที่ developer สร้างระบบจริง 1 งาน = 77M. claude-in-chrome กิน 67% ของ usage 7 วัน และชน 95% ของ limit รายสัปดาห์. เหตุผลเชิงโครงสร้าง: screenshot ไม่เคยออกจาก context (§42) ฉากที่ 12 จ่ายค่าฉาก 1-11 ซ้ำทุกเทิร์น — บรีฟดีแค่ไหนก็แก้ไม่ได้ ต้องเอาโมเดลออกจากลูป
+**Source (measured from transcripts):** 2026-09-19 — 2 operators, 6.2 h, 405 screenshots, **650M tokens → 8 clips (~80M per clip)**, while a developer building a real system took 77M for 1 task. claude-in-chrome used 67 % of the 7-day usage and hit 95 % of the weekly limit. The structural reason: a screenshot never leaves the context (§42), so scene 12 pays again for scenes 1–11 on every turn — no brief, however good, fixes that; the model has to come out of the loop.
 
 ## Section 54 — MoonieX HQ: the map decides, the disk follows (CEO 2026-09-22, owner CTO)
 
@@ -1213,8 +1213,28 @@ language keeps skills, letters and code searchable. CEO: "อยากให้�
    with the rule stated in English next to it.
 4. **Replies to the CEO in chat follow the CEO's language.** This rule governs what the org writes
    and sends to itself, not how it answers its human.
-5. **No bulk translation of existing text.** A file is converted to English the next time it is
-   edited for another reason; a translation pass for its own sake costs tokens and risks meaning.
+5. **[SUPERSEDED 2026-10-14 by the amendment below, Q-20261013-1803-10b5]** No bulk translation of
+   existing text. A file is converted to English the next time it is edited for another reason; a
+   translation pass for its own sake costs tokens and risks meaning.
+
+**Amended 2026-10-14 (CEO, confirmed on Q-20261013-1803-10b5, "ยืนยันตามนี้").** The CEO ordered the
+existing text converted too, with a check on every translation: "ใน Skill code comment และอื่นๆ
+ในโปรเจคเราทั้งหมด ควรเป็น English เพื่อประหยัด token รวมถึงการสื่อสารในองค์กรของเราด้วย ยกเว้น คำเพราะ
+คำพูด ภาษาเขียนของภาษานั้นๆ อันนั้นอยู่ได้ … แต่ต้อง verify ก่อนนะ เพราะมันคือการเปลี่ยนแปลงโครงสร้างประโยค
+แปลแล้วอาจจะเพี้ยนได้ ต้องให้ C level verify".
+- **Existing internal text is translated to English:** skills, code comments, docs, role files,
+  CLAUDE.md files and messages between sessions. Files every session loads go first. Inventory:
+  Agents-Core `docs/ops/thai-inventory-2026-10-14/`; backlog with owners: LungNote f2209b5b.
+- **Stays in its own language:** the CEO's words verbatim (they are evidence, rule 3); Thai trigger
+  phrases in skill descriptions (Thai input must still match them); text people read (scripts,
+  captions, voice-over, LINE/Telegram replies); persona lines; test fixtures.
+- **A C-level verifies every translation before merge,** reading it side by side for meaning. A code
+  file must prove that only its comments changed (an AST or token check). A diff that fails goes
+  back to the runner as a lesson, not fixed silently.
+- **Translation jobs go to outside runners** (Jules, agy) or the Haiku learning lane, under §59 rule 7.
+- **Rule 4 stands:** chat replies to the CEO stay in his language (Thai mixed with English).
+- **Takes effect when a session starts.** A translated CLAUDE.md, role file or skill lands as a
+  normal merge, never as a hot edit to a running session.
 
 ## Section 57 — A helper that replaces AI work must prove, in measured numbers, that it does (CEO 2026-09-23, owner CTO)
 

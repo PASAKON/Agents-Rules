@@ -1024,7 +1024,7 @@ So state is stamped into the display name **while the session is still alive**:
 
 | transition | name becomes |
 |---|---|
-| `/session-close` | `✅ <MACHINE> <ROLE> #<id> (<topic>)` |
+| `/session-close` | `✅ <ROLE> (<Name>) — <topic>` (C-level), `✅ PH#<id3> (<LANE>) - <Project> — <topic>` (Project Head); names per CEO 2026-10-14, rule in Agents-Core `lib/session_names.py` |
 | `/session-save`, and a force-saved close | `⏸ …` |
 | `/session-merge`, the absorbed session | `⛔ MERGED→#<target> …` |
 | force-killed or crashed | **no prefix** |

@@ -13,7 +13,7 @@ Verbatim quotes from project source files. **Do not paraphrase these in code rev
 > language · §38 TOON · §39 no em dash · §40 LungNote SID tag · §41 graph-readable
 > wiki · §42 browser is a C-level decision · §43 suspect the environment first ·
 > §44 rules as values not adjectives · §45 no blocking prompts unattended ·
-> §46 a rented GPU is watched until dead · §47 check the research library first · §48 disk and transcript hygiene (disk part superseded by §61) · §49 Drive: the skill is the rule · §50 every session visible, every teardown proves identity · §60 a browser login goes through the relay request + recipe · §61 disk lifecycle: every byte has an owner, a class, a clock and a ledger row · §62 merge and deploy belong to the CTO online on Contabo · §63 stuck work climbs the ladder at once: PH → C-level → the CEO's question card.
+> §46 a rented GPU is watched until dead · §47 check the research library first · §48 disk and transcript hygiene (disk part superseded by §61) · §49 Drive: the skill is the rule · §50 every session visible, every teardown proves identity · §60 a browser login goes through the relay request + recipe · §61 disk lifecycle: every byte has an owner, a class, a clock and a ledger row · §62 merge and deploy belong to the CTO online on Contabo · §63 stuck work climbs the ladder at once; a C-level decides its lane, a PH posts a CEO-only question card itself.
 >
 > **The other 21 are MoonieX-specific** (Vercel deploy, Supabase, migrations,
 > cron, fal.ai queue, design system, Drive convention, …) and live in
@@ -1559,6 +1559,11 @@ Recorded by CTO e6754203.
 
 ## Section 63 — Stuck work climbs the ladder at once: PH → C-level → the CEO's question card (CEO 2026-10-14, owner CTO)
 
+> CEO 2026-10-14 ~13:20 TH, verbatim (relayed by COO SomPong): "หลังจาก Spawn PH มา PH ส่งงานให้ CXO บ่อยมาก และ CXO
+> ก็มาส่งให้ฉันผ่าน Run ซึ่งไม่ควร ห้ามมีแบบนี้เด็ดขาด งานที่จะส่งให้ CTO CMO เขาต้องมีอำนาจตัดสินใจเด็ดขาด · ส่วนงานที่ PH
+> สามารถส่งคำถามมาที่ Run ได้โดยตรงเพื่อถาม CEO ก็ส่งมาได้เลย ไม่ต้องผ่าน CXO -> CEO แบบรีเลย์ ระบบเราผิดพลาด เสียเวลาและ
+> token อย่างมาก"
+
 > CEO 2026-10-14 ~11:45 TH, verbatim: "ทำไมเวลา PH ติดปัญหาถึงไม่มาถาม C level · และทำไม C level ถึงไม่มาถามที่ run
 > เป็นกฎหลัก · ตอนนี้งานไม่เดินแล้ว session หยุดและตายไปช้า"
 
@@ -1568,19 +1573,30 @@ Recorded by CTO e6754203.
 >    or an answer you have waited 15 minutes for.
 > 2. **A worker** sends it to its Project Head or C-level at once: `dev_message` /
 >    `request_human_handoff`, or the `blocker` line of its report.
-> 3. **A Project Head** sends `send_to_cxo` with kind `blocker` to its C-level **within 15 minutes of
->    first hitting it**. One message holds four things: what is blocked, what was tried, what
->    would unblock it, and what it works on meanwhile. Then it keeps working on everything that does not depend
->    on the answer. A PH never waits silently, never contacts the CEO, never raises cards.
-> 4. **A C-level** that receives a blocker, or hits one itself, clears it **within 15 minutes**:
+> 3. **A Project Head** (13:20 ruling):
+>    - **CEO-only** = money past its brief, a secret or key, a permanent deletion, speaking in his name,
+>      his personal accounts or devices: it posts the question card on /run **itself** (`ask_ceo` /
+>      `tools/ask_run.py ask`, 2–4 options, one recommended) and sends its C-level one line, "cc: Q-…".
+>      A command that needs his tap goes to its C-level, which raises the command card.
+>    - **Anything else it cannot clear**: `send_to_cxo` kind `blocker` to its C-level **within 15 minutes
+>      of first hitting it**, holding four things: what is blocked, what was tried, what would unblock it,
+>      and what it works on meanwhile. Then it keeps working on everything that does not depend on the
+>      answer. A PH never waits silently.
+> 4. **A C-level decides everything in its lane itself** (13:20 ruling): priorities, approach, which
+>    option, go/no-go on work, re-shoots, merges in its lane, which PH does what. It clears a blocker
+>    **within 15 minutes**:
 >    - **in its own power** (a ruling, a merge, a relay to another lane, a reply): do it and tell the PH;
->    - **only the CEO can decide**: a question card on /run (`ask_ceo` / `tools/ask_run.py ask`), 2–4
->      options, one marked recommended (rules: skill `ALL_Protocol_RunInbox` §Question cards);
->    - **a command, money or a secret**: a command card (`ask_run`, Face ID);
->    - **a browser login**: a relay request (§60).
->    Then tell the PH the card id, and give the CEO one chat line (id + why). Never a LungNote todo,
->    never "wait for the CEO to come to the chat", never `AskUserQuestion` (§45), never hand the
->    question to the COO to relay instead of raising the card.
+>    - **CEO-only** (the list in 3): a question card on /run (`ask_ceo`) for a choice, a command card
+>      (`ask_run`, Face ID) for a command, money or a secret, a relay request (§60) for a browser login.
+>    **Never turn a PH's question into a card: decide it, or, if it is CEO-only, the PH posts it itself.
+>    A card for something the C-level could decide is a breach of this rule.** Give the CEO one chat line
+>    (id + why) for each card. Never a LungNote todo, never "wait for the CEO to come to the chat", never
+>    `AskUserQuestion` (§45), never hand the question to the COO to relay instead.
+>
+> [SUPERSEDED 2026-10-14 13:20 TH by the CEO ruling above] 3. "A PH never waits silently, never contacts the
+> CEO, never raises cards." 4. "only the CEO can decide: a question card on /run" (read as: any decision a
+> PH escalates becomes a card). Beaten by: the CEO's 13:20 words; PH → C-level → /run relays cost his time
+> and tokens the same afternoon.
 > 5. **The answer comes back**: act on it within 15 minutes and cite the `Q-…` / `RUN-…` id. A card
 >    that expires unanswered while the work still waits is re-raised once with the same content, saying
 >    "re-raised" in its why; if that one expires too, `email_ceo` kind `action` (its caps apply).

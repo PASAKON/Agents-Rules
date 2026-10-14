@@ -1398,6 +1398,29 @@ the `delegate_task` hook (task-ae42c0a7). Both merged after the same review gate
    plan is paid monthly, and Claude ($200) always runs out first. In the week of 6–12 Oct, Claude sat
    at its cap for about 32 h while agy-gemini had used 3.4 % and codex 50 % (tool-value plan §1,
    measured). Once the per-runner skills are complete, workers route by them and the saving compounds.
+8. **HARD — Claude is the conductor, so it runs out LAST. AGY and Codex are used up first, every week,
+   and nobody holds back for fear of a limit** (CEO 2026-10-15, CTO Main chat).
+   - **Order of spend, always:** AGY (Gemini 4 Argon first, then Flash, then agy-claude) and Codex reach their
+     weekly limit before Claude's weekly does. This holds for every lane: CTO and CMO, C-levels and PHs.
+   - **Gemini 4 Argon beats Sonnet 5.5** (CEO, and the Argon trial 9c078b65: judge points 8 vs 6). For any job
+     a Sonnet worker would do and an outside runner can do, Argon goes first: code, docs, text, research,
+     CMO copy and scripts. A PH sends its lane's work there by default and reviews the result (rule 3).
+   - **A limit is not a reason to wait or to pick Claude.** A runner that is close to its limit, or projected
+     to hit it, is still used. When it hits the limit mid-job, the PH does one of these at once:
+     (a) picks up the unfinished work itself, from the branch, or (b) hands it to a Sonnet 5.5 worker on Claude
+     quota (`quota-handoff`, rule 7). It never sits waiting for the reset.
+   - **In code:** the router ranks every outside candidate (ok, unknown and will_hit) ahead of Claude. Only an
+     outside bucket that cannot run the job at all (`cannot`: exhausted, or the job needs shell or a
+     Claude-only tool) falls behind Claude. Card step 3's "every candidate is `will_hit` → tell the CEO" now
+     applies only when Claude's own weekly is the one at risk.
+   - **Measured** by the Monday tool-value report (rule 7): at each Claude weekly reset, agy-gemini and codex
+     sit near 100 % of accepted work, and Claude has not hit 100 %.
+   **Why.** CEO 2026-10-15: "ใช้โควต้าให้หมดก่อนเสมอ ทั้ง AGY และ Codex ต้องหมดก่อน Claude Weekly เสมอ
+   ไม่ต้องกลัวชน Limit เพราะถ้าชน Limit PH จะหยิบงานค้างมาทำต่อเอง หรือสั่ง Sonnet 5.5 โควต้า Claude ได้เลย …
+   เรื่องนี้สำคัญมาก … ถ้า Claude หมดก่อน เราจะใช้ AGY หรือ Codex ไม่ได้เลย เพราะ Claude คือตัวสั่งงาน". Every
+   C-level and PH runs on Claude. When Claude's weekly runs out, no session is left to delegate, review or
+   merge, so unused AGY and Codex quota is lost with it. Outside quota left at Claude's reset is waste, and the
+   CEO has paid for it already.
 
 ---
 

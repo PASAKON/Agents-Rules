@@ -13,7 +13,7 @@ Verbatim quotes from project source files. **Do not paraphrase these in code rev
 > language · §38 TOON · §39 no em dash · §40 LungNote SID tag · §41 graph-readable
 > wiki · §42 browser is a C-level decision · §43 suspect the environment first ·
 > §44 rules as values not adjectives · §45 no blocking prompts unattended ·
-> §46 a rented GPU is watched until dead · §47 check the research library first · §48 disk and transcript hygiene (disk part superseded by §61) · §49 Drive: the skill is the rule · §50 every session visible, every teardown proves identity · §60 a browser login goes through the relay request + recipe · §61 disk lifecycle: every byte has an owner, a class, a clock and a ledger row · §62 merge and deploy belong to the CTO online on Contabo.
+> §46 a rented GPU is watched until dead · §47 check the research library first · §48 disk and transcript hygiene (disk part superseded by §61) · §49 Drive: the skill is the rule · §50 every session visible, every teardown proves identity · §60 a browser login goes through the relay request + recipe · §61 disk lifecycle: every byte has an owner, a class, a clock and a ledger row · §62 merge and deploy belong to the CTO online on Contabo · §63 stuck work climbs the ladder at once: PH → C-level → the CEO's question card.
 >
 > **The other 21 are MoonieX-specific** (Vercel deploy, Supabase, migrations,
 > cron, fal.ai queue, design system, Drive convention, …) and live in
@@ -768,10 +768,19 @@ allowlist per role (`scripts/lib/cxo_mcp_config.py --print-allowed`), and
 `--permission-mode auto`. What those three layers do not cover is a C-level *choosing* to
 call `AskUserQuestion` mid-background-run — nothing technical stopped that before this
 section; only the general "bias toward acting" instructions in global `CLAUDE.md` did, and
-those are soft. When a real judgement call is needed and no one is watching the pane: queue
-it — `mcp__lungnote__add_todo` for something only the CEO can decide (surfaced at the next
-`/session-open`), or `send_to_cxo` mailbox for a question aimed at another C-level — and
-keep working on whatever does not depend on the answer.
+those are soft. When a real judgement call is needed and no one is watching the pane: send
+it up the ladder of §63 — a `blocker` to your C-level if you are a Project Head or a worker, a
+question card on /run (`ask_ceo` / `tools/ask_run.py ask`) for something only the CEO can
+decide, or `send_to_cxo` mailbox for a question aimed at another C-level — and keep working on
+whatever does not depend on the answer. [SUPERSEDED 2026-10-14 by §63: "`mcp__lungnote__add_todo`
+for something only the CEO can decide (surfaced at the next `/session-open`)". A todo reaches
+the CEO only when he next opens a session, so the work behind it stood still until then.]
+
+**A session sitting on a permission prompt is blocked, not idle (CEO 2026-10-14).** The Claude
+app showed CMO Main #ef04792e and PH #13db8720 as "waiting for you" while `live-sessions`
+listed both as idle. A refused or prompted tool call in an unattended session is a blocker
+under §63 the moment it happens: report it up, do not wait on the prompt and do not retry the
+same call.
 
 **Suspended org-wide, interactive sessions included (CEO 2026-08-14).** The first draft of
 this section carved out an exception for "a session the CEO is actively driving right now."
@@ -1547,3 +1556,53 @@ checkouts drift. Measured the same day: the Mac's main checkout 69 ahead / 141 b
 live checkout 106 ahead / 27 behind with 36 uncommitted files. Two pieces already make it possible: the
 G1 hub shows every machine's task rows on Contabo, and `merge_task` merges on any host (Org Mesh C5).
 Recorded by CTO e6754203.
+
+## Section 63 — Stuck work climbs the ladder at once: PH → C-level → the CEO's question card (CEO 2026-10-14, owner CTO)
+
+> CEO 2026-10-14 ~11:45 TH, verbatim: "ทำไมเวลา PH ติดปัญหาถึงไม่มาถาม C level · และทำไม C level ถึงไม่มาถามที่ run
+> เป็นกฎหลัก · ตอนนี้งานไม่เดินแล้ว session หยุดและตายไปช้า"
+
+> **The card — every session, every machine:**
+> 1. **Stuck = anything you cannot clear yourself**: a decision outside your scope, money, a secret, a
+>    login, a command the classifier or a permission prompt refused, a session or host you cannot reach,
+>    or an answer you have waited 15 minutes for.
+> 2. **A worker** sends it to its Project Head or C-level at once: `dev_message` /
+>    `request_human_handoff`, or the `blocker` line of its report.
+> 3. **A Project Head** sends `send_to_cxo` with kind `blocker` to its C-level **within 15 minutes of
+>    first hitting it**. One message holds four things: what is blocked, what was tried, what
+>    would unblock it, and what it works on meanwhile. Then it keeps working on everything that does not depend
+>    on the answer. A PH never waits silently, never contacts the CEO, never raises cards.
+> 4. **A C-level** that receives a blocker, or hits one itself, clears it **within 15 minutes**:
+>    - **in its own power** (a ruling, a merge, a relay to another lane, a reply): do it and tell the PH;
+>    - **only the CEO can decide**: a question card on /run (`ask_ceo` / `tools/ask_run.py ask`), 2–4
+>      options, one marked recommended (rules: skill `ALL_Protocol_RunInbox` §Question cards);
+>    - **a command, money or a secret**: a command card (`ask_run`, Face ID);
+>    - **a browser login**: a relay request (§60).
+>    Then tell the PH the card id, and give the CEO one chat line (id + why). Never a LungNote todo,
+>    never "wait for the CEO to come to the chat", never `AskUserQuestion` (§45), never hand the
+>    question to the COO to relay instead of raising the card.
+> 5. **The answer comes back**: act on it within 15 minutes and cite the `Q-…` / `RUN-…` id. A card
+>    that expires unanswered while the work still waits is re-raised once with the same content, saying
+>    "re-raised" in its why; if that one expires too, `email_ceo` kind `action` (its caps apply).
+> 6. **A session on a host that stopped reporting** (stale in `live-sessions`) is the owning C-level's
+>    blocker: try every route that does not need the CEO's hands, then raise the question card. Stale for
+>    an hour with no card is a breach of this rule.
+> 7. **Visible state**: a session that cannot move at all shows 🔴 in its tab (§32) with the card id or
+>    the PH it waits on.
+
+**Enforcement (being built, 2026-10-14).** Agents-Core, PH OrgRestructure M11: a watchdog flags
+- any PH or C-level with no activity for 30+ minutes, or sitting on a "waiting for you" prompt;
+- any C-level holding a PH blocker for 15+ minutes with no card;
+- any host gone stale.
+It nudges the C-level and the COO. Until it lands, every C-level runs `bash scripts/live-sessions.sh --all`
+at the start of each work batch and treats an idle PH with an unanswered blocker as its own.
+
+**Why.** The ladder existed only in role files (`roles/project_head.md`: blocker → C-level;
+`roles/cto.md`, `roles/cmo.md`: question card), with no clock, and §45 still sent CEO-only decisions to a
+LungNote todo that reaches him only at his next `/session-open`. On 2026-10-14 the cost showed: Mac
+sessions for Lumina Skies and LAST BELL sat stale from 10-13 19:55 with nothing restarting them; two
+Contabo sessions sat on a permission prompt the CEO saw only on his phone; and a PH's blocker could
+wait unread in an idle C-level's mailbox. A silent stuck session looks the same as a working one,
+so the rule puts a number on every wait. Order relayed by COO SomPong
+(`Projects/MoonieX/SomPong/docs/drafts/ceo-order-2026-10-14-escalation-core-rule.md`); recorded by CTO
+c34459eb.

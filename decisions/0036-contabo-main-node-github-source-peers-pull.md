@@ -32,6 +32,13 @@ The org needs one centre for work and one file source for every host.
    target with a key-only sshd drop-in and forced command `node_dispatch`.
    This step is pending, not done.
 
+5. **Skill learning travels by PR (amendment, CEO 2026-10-17).** A skill note
+   (ADR 0026 field note) reaches GitHub only through a PR. The Mac and Contabo
+   open their own PRs. winbox cannot push to Agents-Core, so its PH puts the
+   Skill-learning lines in its report and its owner files them. CTO Main merges
+   and resolves git conflicts, keeping both notes. A content conflict follows the
+   ADR 0026 tiers, and a CONTESTED rule waits for the CEO.
+
 ## Consequences
 
 - Work has one centre on Contabo; dispatch and collection depend on that host.

@@ -13,7 +13,7 @@ Verbatim quotes from project source files. **Do not paraphrase these in code rev
 > language · §38 TOON · §39 no em dash · §40 LungNote SID tag · §41 graph-readable
 > wiki · §42 browser is a C-level decision · §43 suspect the environment first ·
 > §44 rules as values not adjectives · §45 no blocking prompts unattended ·
-> §46 a rented GPU is watched until dead · §47 check the research library first · §48 disk and transcript hygiene (disk part superseded by §61) · §49 Drive: the skill is the rule · §50 every session visible, every teardown proves identity · §60 a browser login goes through the relay request + recipe · §61 disk lifecycle: every byte has an owner, a class, a clock and a ledger row · §62 merge and deploy belong to the CTO online on Contabo · §63 stuck work climbs the ladder at once; a C-level decides its lane, a PH posts a CEO-only question card itself.
+> §46 a rented GPU is watched until dead · §47 check the research library first · §48 disk and transcript hygiene (disk part superseded by §61) · §49 Drive: the skill is the rule · §50 every session visible, every teardown proves identity · §60 a browser login goes through the relay request + recipe · §61 disk lifecycle: every byte has an owner, a class, a clock and a ledger row · §62 merge and deploy belong to the CTO online on Contabo · §63 stuck work climbs the ladder at once; a C-level decides its lane, a PH posts a CEO-only question card itself · §64 wake a session only for a real event; a zero-model script checks first.
 >
 > **The other 21 are MoonieX-specific** (Vercel deploy, Supabase, migrations,
 > cron, fal.ai queue, design system, Drive convention, …) and live in
@@ -1645,3 +1645,40 @@ wait unread in an idle C-level's mailbox. A silent stuck session looks the same 
 so the rule puts a number on every wait. Order relayed by COO SomPong
 (`Projects/MoonieX/SomPong/docs/drafts/ceo-order-2026-10-14-escalation-core-rule.md`); recorded by CTO
 c34459eb.
+
+## Section 64 — Wake a session only for a real event; a zero-model script checks first (CEO 2026-10-22, owner CTO)
+
+> CEO 2026-10-22 09:43 TH, verbatim, answering item 5 of the UsageBudget questions in CTO Main's chat
+> ("wake only when it really matters: a card answered, work done, work failed, a deadline"):
+> "5. ใช่เลย การปลุกใช้ได้เพราะ CXO และ PH เพื่อมาคุม worker อีกมีนึง"
+
+> CEO 2026-10-22 12:03 TH, question card Q-20261022-0436-7139, the option he tapped:
+> "อนุมัติ ใส่ IRON + role แล้วค่อยๆ แก้ 5 จุด"
+
+> **The rule, every C-level and Project Head, every machine:**
+> 1. **Only a real event wakes a session:** a Run or question card answered; a worker done, failed or
+>    stuck; a deadline due within 24 hours; a letter from the CEO, your C-level or your Project Head (a
+>    brief, a `blocker`, an answer). Supervising workers is a reason to wake, through these events.
+> 2. **A script checks first.** Every check runs as a zero-model script, and an unchanged result spends
+>    no model turn. Never schedule a model turn to learn that nothing changed: no clock `CronCreate`,
+>    `ScheduleWakeup` or `/loop` prompt, no `Monitor` re-arm turn. A backup check is a background script
+>    that exits only when the state changes.
+> 3. **One event wakes once.** A producer records the event ids or state transitions it has sent and
+>    skips them.
+> 4. **Budget pressure slows clocks, never events.** Multiply every clock check's interval by
+>    `lib/wake_backoff.backoff_factor()`: 2 while AGY, ChatGPT (Codex) or Claude is over today's target,
+>    4 while all three are. Never stop a check. A real event still wakes at once, and missing or stale
+>    budget data means no slowdown.
+> 5. **The producers today:** a card, `tools/ask_run.py wait <id>` run in the background right after
+>    `create` (the hub's result letter alone wakes nobody yet); a worker, Run Watch (`tools/run_watch.py`,
+>    `tools/run_watch_driver.py`) and `tools/escalation_watch.py` for stuck episodes; a deadline,
+>    `tools/email_ceo.py deadlines`; a letter, `send_to_cxo` (and `tools/mail_wake_sweep.py` for deferred
+>    letters where its timer is installed).
+> 6. **The clock sources still running** are listed in Agents-Core `docs/design/wake-rule.md`, and
+>    `tools/wake_audit.py` re-runs that inventory. They move to events one at a time ("ค่อยๆ แก้ 5 จุด");
+>    until one moves, it keeps running with the slowdown in 4.
+
+**Why:** the 22 Oct inventory found clock wakes of about 41 a day for the overnight self-wake and up to
+1,440 a day for a one-minute `/loop`. Each one is a model turn over the session's whole context, and most
+of them find nothing new. Recorded by CTO c34459eb from the UsageBudget proposal (PH#50f, Agents-Core
+PR #426).

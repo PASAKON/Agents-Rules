@@ -399,6 +399,13 @@ Anything short of these two → leave it alone. "It was right there in my chat a
 2. **No silent changes.** Every create / rotate / delete = an append to the registry Changelog (date · logical key · action · who · why · old-last4→new-last4) in the same change-set. A key changed without a Changelog line is a P1.
 3. **Update ALL stores at once.** One logical secret often lives under different var names in webapp (Vercel) vs claudeflow (`.env`) — e.g. `SUPABASE_SERVICE_ROLE_KEY` (webapp) is the SAME key as `SUPABASE_SERVICE_KEY` (claudeflow). Rotating one store but not the other = the "works in prod, 401 locally" split. Update every store in the registry row, then verify the consumer (`curl` the cron/endpoint → expect `ok:true`).
 4. **Values never live in the wiki or git** — names + purpose only.
+5. **Creating or deleting a provider key is the C-level's call, with no card per key, in every project
+   including Org-Infra** (CEO 2026-10-26, Q-20261026-0814-e94a, choice "ทุก project รวม Org-Infra", with his
+   note "จริง ๆ ทุกโปรเจคควรเอาไปใส่ ORG infa นะ แล้ว แยก Scpoe ให้ชัดเจนว่าอันไหนใครใช้ได้"). It runs only
+   through Agents-Core `CTO_Procedure_KeyFetch`: a worker pipes the value straight into Infisical, no model
+   sees it, and items 1–4 still apply (registry first, one Changelog line per create or delete, every store
+   updated). Every project's keys move into Org-Infra with a clear scope per consumer; the move waits for its
+   scope design.
 
 > CEO (verbatim, 2026-06-13): "อยากให้ Dev + Coder ทุกตัวรู้ว่า API Key ชื่อนี้ ใช้สำหรับอะไร และใครเป็นคนทำ … ก่อนจะเริ่มสร้างใหม่ เชคว่ามีแล้วชื่ออะไร"
 
@@ -455,6 +462,9 @@ Loop: act → verify → "closer to the DoD?". Every new topic that surfaces mid
 **Hard rule.** When the CTO opens a PR for its own change — or a DEV's task is ready — **reviewing and merging it is the CTO's job. Never hand the merge to the CEO, never park a finished PR as "pending CEO merge", and never wait for the CEO to say "merge".** The CEO sets direction; landing the code is the CTO's. This supersedes any earlier note (§2 / push→PR-flow memory) that said "CEO merges".
 
 **Amended 2026-10-02 (CEO, §62):** the CTO who merges and deploys is the CTO online on Contabo. Every other CTO still reviews its own lane and runs the gate, then hands the merge over (§62 item 2).
+
+**Amended 2026-10-26 (CEO, §62):** a Project Head merges its own project, and no merge goes on a CEO card;
+he reads the merges in his 08:00 digest (§62, amendment of 2026-10-26).
 
 ### 1. The CTO merges
 - After `gh pr create`, the CTO runs the cto-merge-checklist gate, then `gh pr merge <#> --squash --delete-branch` itself. The classifier blocks only direct `git push origin main`; the PR-merge path is allowed (§2).
@@ -1548,6 +1558,15 @@ Run data is handled only by the steward. Secrets never go to Drive. A new Drive 
 ---
 
 ## Section 62 — Merge and deploy belong to the CTO online on Contabo (CEO 2026-10-02, owner CTO)
+
+**Amended 2026-10-26 (CEO, Q-20261026-0814-4870: "เลิก ให้ CTO/PH merge เอง แล้วส่งสรุปให้พี่").**
+- A Project Head merges, pushes and deploys its own project after `CTO_Gate_MergeChecklist`, one PR at a
+  time (CEO 2026-10-14: "Merge Review Push->Main หน้าที่ของ PH ได้เลย ใช้ Skill เดียวกันกับ CTO").
+- No merge goes on a CEO card. He reads the merges in his 08:00 digest.
+- A merge the classifier refuses goes to CTO Main on Contabo as a ready list. CTO Main reviews each PR
+  itself and merges it.
+- A PR that changes hooks, settings, permissions or IRON still goes to him.
+- The card below still binds every CTO session that is not a Project Head.
 
 > **The card — every CTO, every machine, from now on:**
 > 1. Only a CTO session running on Contabo merges into a repo's main branch and deploys. It does this

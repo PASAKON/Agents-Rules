@@ -13,7 +13,7 @@ Verbatim quotes from project source files. **Do not paraphrase these in code rev
 > language · §38 TOON · §39 no em dash · §40 LungNote SID tag · §41 graph-readable
 > wiki · §42 browser is a C-level decision · §43 suspect the environment first ·
 > §44 rules as values not adjectives · §45 no blocking prompts unattended ·
-> §46 a rented GPU is watched until dead · §47 check the research library first · §48 disk and transcript hygiene (disk part superseded by §61) · §49 Drive: the skill is the rule · §50 every session visible, every teardown proves identity · §60 a browser login goes through the relay request + recipe · §61 disk lifecycle: every byte has an owner, a class, a clock and a ledger row · §62 merge and deploy belong to the CTO online on Contabo · §63 stuck work climbs the ladder at once; a C-level decides its lane, a PH posts a CEO-only question card itself · §64 wake a session only for a real event; a zero-model script checks first.
+> §46 a rented GPU is watched until dead · §47 check the research library first · §48 disk and transcript hygiene (disk part superseded by §61) · §49 Drive: the skill is the rule · §50 every session visible, every teardown proves identity · §60 a browser login goes through the relay request + recipe · §61 disk lifecycle: every byte has an owner, a class, a clock and a ledger row · §62 merge and deploy belong to the CTO online on Contabo · §63 stuck work climbs the ladder at once; a C-level decides its lane, a PH posts a CEO-only question card itself · §64 wake a session only for a real event; a zero-model script checks first · §65 work goes to the least-full host; the CTO runs only on Contabo.
 >
 > **The other 21 are MoonieX-specific** (Vercel deploy, Supabase, migrations,
 > cron, fal.ai queue, design system, Drive convention, …) and live in
@@ -1701,3 +1701,26 @@ c34459eb.
 1,440 a day for a one-minute `/loop`. Each one is a model turn over the session's whole context, and most
 of them find nothing new. Recorded by CTO c34459eb from the UsageBudget proposal (PH#50f, Agents-Core
 PR #426).
+
+## Section 65 — Work goes to the least-full host; the CTO runs only on Contabo (CEO 2026-10-30, owner CTO)
+
+> 1. A host's fill is the highest of its RAM used %, CPU % and disk used %. Contabo takes new work while its fill is
+>    under 80%. From 80%, the work goes to whichever of winbox and the Mac is online and less full. No host takes new
+>    work at 80% or more; when none can, the task waits in the queue.
+> 2. A C-level may open a Project Head on any host, and a Project Head may send its workers to any host by the same
+>    rule. ExpertAdvisor never runs on winbox, and winbox keeps 4 GB of RAM free for the live EA.
+> 3. The CTO runs only on Contabo. A session on the Mac or winbox sends its merge work to CTO Main as a PR.
+> 4. A Project Head on any host files a GitHub issue for a bug it finds, with no secret and no detail of a weakness
+>    in a public repo. It writes skills for its lane or its project, and its lane's C-level (the CTO or the CMO)
+>    reviews each one before other workers get it.
+> 5. Code comes back only through git. Media goes to Drive, is checked by md5, and is then deleted where it was made.
+
+**Why.** CEO, 30 Oct 2026 01:49 TH, on question card Q-20261029-1843-c03c: "ปัญหาที่แท้จริงคือ C level กระจายงานไปเครื่อง
+อื่นไม่เป็น กระจุกตัวแค่ Contabo". From 22 to 30 Oct about 175 tasks ran on Contabo, 4 on winbox and 15 on the Mac.
+Contabo (72 GB disk, 8 GB RAM) reached 89% disk from renders, while winbox had 120 GB free. His rulings, ~02:30 TH,
+verbatim: "ไม่ควรเลือก MAC หรือ WINDOW ก่อน ควรกระจายเท่าๆ กัน ให้มันไม่เต็ม เหลือไว้เผือ ฉุก เฉินเล้กน้อย เช่น Contabo
+ใช้ ประาน 80% ก็เริ่ม กระจาย Winbox กับ MAC เท่าๆ กันได้เลย" · "CTO ควรมี อยู่แค่ Contabo เครื่องเดียว MAC และ Window
+ไม่ควรมี" · "C level Spawn PH ต่างเครื่องได้" · "PH ในแต่ละเครื่องเมื่อเจอ บัค สามารถ ส่ง Github issue ได้เลย และ
+สามารถ เขียน Skills เรียนรู้ ได้ในแต่ ละสายงานและ Project ของตัวเอง เพื่อส่งมา ให้ CTO หรือ CMO ตรวจ". The 80% is his
+example and a starting value; it lives in config. Details: Agents-Core `CLAUDE.md` (§Which host runs the work, §The
+CTO runs only on Contabo) and `roles/project_head.md` (row "Bugs and skills"). Recorded by CTO Main (cto-fresh).

@@ -191,3 +191,12 @@ The in-app Designer (`mooniex-tmux`, per `.od/app-config.json`) already has
 `web_designer` needs the absolute design-source path in the brief (its
 worktree omits `.od/`) — and the autonomous spawn (§4a) auto-resolves it
 from the UUID via `designer_kickoff_suffix`.
+
+## 10. Icons, never emoji, in any app or web UI (CEO 2026-11-14)
+
+CEO, 14 Nov 2026: "Emoji ในแอปหรือเว็บ UI ใช้ ICON เท่านั้นนะ อันนี้เป็นกฏสำคัญ เพราะฉันชอบ ICON มันดูพรีเมี่ยมกว่า".
+Binds every role that builds a page, app screen or mockup (web_designer, developer, any worker), not only this playbook:
+- No emoji in UI text: labels, badges, buttons, status, empty states, sample data shown on screen.
+- Use one consistent line-icon set as inline SVG (e.g. Lucide or Tabler paths pasted in, no icon CDN). Status dots are CSS shapes.
+- Out of scope: chat messages, letters, commit text and session/tab names (not app UI).
+- A review that finds an emoji in a UI sends the work back.
